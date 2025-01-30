@@ -173,6 +173,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   feedbackContainer: {
-    minHeight: "50%",
+    minHeight: "60%",
   },
 });

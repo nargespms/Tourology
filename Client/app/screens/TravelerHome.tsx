@@ -73,48 +73,52 @@ const TravelerHome: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View>
+      <View style={styles.contentWrapper}>
         <SearchBar
           placeholder="Start your search"
           onSearch={handleSearch}
-          onClearSearch={() => setIsSearchOpen(false)} // Hide search result overlay when cleared
+          onClearSearch={() => setIsSearchOpen(false)}
         />
-      </View>
-      <View>
-        <CustomTabs
-          tabs={TABS}
-          activeTab={activeTab}
-          onTabPress={setActiveTab}
-        />
-
-        <FlatList
-          data={
-            activeTab === "forYou"
-              ? forYouData
-              : activeTab === "following"
-              ? followingData
-              : activeTab === "free"
-              ? freeData
-              : []
-          }
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TourCard data={item} />}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
-        />
-
-        {isSearchOpen && (
-          <SearchResults
-            searchQuery={searchValue}
-            results={[...searchResults, ...locationResults]}
-            onFetchNearbyTours={fetchNearbyTours}
+        <View>
+          <CustomTabs
+            tabs={TABS}
+            activeTab={activeTab}
+            onTabPress={setActiveTab}
           />
-        )}
+
+          <FlatList
+            data={
+              activeTab === "forYou"
+                ? forYouData
+                : activeTab === "following"
+                ? followingData
+                : activeTab === "free"
+                ? freeData
+                : []
+            }
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <TourCard data={item} />}
+            contentContainerStyle={styles.listContent}
+          />
+          {/* Search Results Overlay */}
+          {isSearchOpen && (
+            <SearchResults
+              searchQuery={searchValue}
+              results={[...searchResults, ...locationResults]}
+              onFetchNearbyTours={fetchNearbyTours}
+            />
+          )}
+        </View>
       </View>
-      <BottomNavBar
-        items={travelerNavbar}
-        currentTab={"Home"}
-        onTabPress={handleBottomNavChange}
-      />
+
+      {/* Bottom Navigation Bar */}
+      <View style={styles.navbarWrapper}>
+        <BottomNavBar
+          items={travelerNavbar}
+          currentTab={"Home"}
+          onTabPress={handleBottomNavChange}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -124,6 +128,22 @@ export default TravelerHome;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  contentWrapper: {
+    flex: 1, // This makes sure everything above the navbar takes full height
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    flexGrow: 1, // Ensures FlatList grows to fill available space
+  },
+  navbarWrapper: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 90, // Matches BottomNavBar height
     backgroundColor: "#fff",
   },
 });

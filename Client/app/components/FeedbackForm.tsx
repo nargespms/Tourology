@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   feedbackWrapper: {
+    paddingBottom: 50,
     width: "100%",
   },
   feedbackHeader: {
@@ -80,9 +81,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#666",
     marginBottom: 12,
+    marginTop: 4,
   },
   starsContainer: {
     flexDirection: "row",
