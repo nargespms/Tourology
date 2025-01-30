@@ -5,9 +5,10 @@ import { Tour } from "../data/tours";
 
 type TourCardProps = {
   data: Tour;
+  onPressTour?: (tour: Tour) => void;
 };
 
-const TourCard: React.FC<TourCardProps> = ({ data }) => {
+const LargePicTourCard: React.FC<TourCardProps> = ({ data, onPressTour }) => {
   const {
     title,
     location,
@@ -25,7 +26,7 @@ const TourCard: React.FC<TourCardProps> = ({ data }) => {
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => console.log("Clicked!")}
+      onPress={(data) => onPressTour(data)}
     >
       <View style={styles.imageWrapper}>
         {!imageLoaded && (
@@ -67,7 +68,7 @@ const TourCard: React.FC<TourCardProps> = ({ data }) => {
   );
 };
 
-export default TourCard;
+export default LargePicTourCard;
 
 const styles = StyleSheet.create({
   container: {

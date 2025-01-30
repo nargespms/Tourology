@@ -1,21 +1,21 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
   FlatList,
   StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BookingCard from "../components/BookingCard";
-import { Booking, pastBookings, upcomingBookings } from "../data/bookings";
-import FeedbackForm from "../components/FeedbackForm";
-import CustomTabs from "../components/CustomeTabs";
-import CustomModal from "../components/CustomeModal";
 import BottomNavBar from "../components/BottomNavBar";
+import CustomModal from "../components/CustomeModal";
+import CustomTabs from "../components/CustomeTabs";
+import FeedbackForm from "../components/FeedbackForm";
+import SmallPicTourCard from "../components/SmallPicTourCard";
+import { Booking, pastBookings, upcomingBookings } from "../data/bookings";
 import { travelerNavbar } from "../data/navbarOptions";
-import { useNavigation } from "@react-navigation/native";
 
 const Tabs = [
   { label: "Upcoming", value: "upcoming" },
@@ -66,8 +66,8 @@ const TravelerBookings: React.FC = () => {
         data={activeTab === "upcoming" ? upcomingBookings : pastBookings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <BookingCard
-            booking={item}
+          <SmallPicTourCard
+            data={item}
             isUpcoming={activeTab === "upcoming"}
             onCheckIn={
               activeTab === "upcoming" ? () => handleCheckIn(item) : undefined

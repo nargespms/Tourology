@@ -71,3 +71,46 @@ export const freeData: Tour[] = [
     isFree: true,
   },
 ];
+export const checkedInUsers = [
+  {
+    id: "1",
+    name: "James Robertson",
+    avatar: require("../../assets/avatar.png"),
+    checkedIn: true,
+    timeAgo: "10 minutes ago",
+    phone: "+1 555-1234",
+  },
+  {
+    id: "2",
+    name: "Maksym Tymchyk",
+    avatar: require("../../assets/avatar.png"),
+    checkedIn: true,
+    timeAgo: "50 minutes ago",
+    phone: "+1 555-5678",
+  },
+  {
+    id: "3",
+    name: "Negar Nikkhah",
+    avatar: require("../../assets/avatar.png"),
+    checkedIn: true,
+    timeAgo: "50 minutes ago",
+    phone: "+1 555-9012",
+  },
+];
+
+export const awaitingUsers = [
+  {
+    id: "4",
+    name: "Mohsen Ameri",
+    avatar: require("../../assets/avatar.png"),
+    checkedIn: false,
+    phone: "+1 555-3456",
+  },
+  {
+    id: "5",
+    name: "Alyssa Jane",
+    avatar: require("../../assets/avatar.png"),
+    checkedIn: false,
+    phone: "+1 555-7890",
+  },
+];

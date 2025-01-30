@@ -4,15 +4,15 @@ import { Booking } from "../data/bookings";
 import Entypo from "@expo/vector-icons/Entypo";
 
 interface BookingCardProps {
-  booking: Booking;
+  data: Booking;
   onCheckIn?: (item: Booking) => void;
   onLeaveFeedback?: (item: Booking) => void;
   isUpcoming?: boolean;
   enableButtons?: boolean;
 }
 
-const BookingCard: React.FC<BookingCardProps> = ({
-  booking,
+const SmallPicTourCard: React.FC<BookingCardProps> = ({
+  data,
   onCheckIn,
   onLeaveFeedback,
   isUpcoming,
@@ -20,14 +20,18 @@ const BookingCard: React.FC<BookingCardProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Image source={booking.image} style={styles.bookingImage} />
+      <Image source={data.image} style={styles.bookingImage} />
 
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{booking.title}</Text>
-        <Text style={styles.location}>{booking.location}</Text>
-        <Text style={styles.date}>{booking.date}</Text>
+        <Text style={styles.title}>{data.title}</Text>
+        <Text style={styles.location}>{data.location}</Text>
+        <Text style={styles.date}>{data.date}</Text>
 
-        {enableButtons && isUpcoming && booking.status === "paid" && (
+        {data.status !== "paid" && data.rating && (
+          <Text style={styles.ratingText}>★ {data.rating.toFixed(1)}</Text>
+        )}
+
+        {enableButtons && isUpcoming && data.status === "paid" && (
           <View style={styles.paidBadge}>
             <Text style={styles.paidText}>
               <Entypo name="check" size={12} color="green" /> Paid
@@ -38,7 +42,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
         {enableButtons && isUpcoming && (
           <TouchableOpacity
             style={styles.checkinButton}
-            onPress={() => onCheckIn && onCheckIn(booking)}
+            onPress={() => onCheckIn && onCheckIn(data)}
           >
             <Text style={styles.checkinButtonText}>Check-in</Text>
           </TouchableOpacity>
@@ -47,7 +51,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
         {enableButtons && !isUpcoming && (
           <TouchableOpacity
             style={styles.feedbackButton}
-            onPress={() => onLeaveFeedback && onLeaveFeedback(booking)}
+            onPress={() => onLeaveFeedback && onLeaveFeedback(data)}
           >
             <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
           </TouchableOpacity>
@@ -57,15 +61,14 @@ const BookingCard: React.FC<BookingCardProps> = ({
   );
 };
 
-export default BookingCard;
+export default SmallPicTourCard;
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 10,
-    marginBottom: 12,
+    marginBottom: 16,
     alignItems: "center",
   },
   bookingImage: {
@@ -75,8 +78,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   detailsContainer: {
+    alignSelf: "flex-start",
+    alignItems: "flex-start",
     flex: 1,
-    padding: 8,
+    paddingHorizontal: 8,
   },
   title: {
     fontSize: 16,
@@ -95,11 +100,11 @@ const styles = StyleSheet.create({
   },
   paidBadge: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 0,
+    right: 0,
     backgroundColor: "#E8F5E9",
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 4,
     borderRadius: 5,
   },
   paidText: {
@@ -123,7 +128,6 @@ const styles = StyleSheet.create({
   feedbackButton: {
     backgroundColor: "#D9D9DB",
     paddingVertical: 8,
-    paddingHorizontal: 16,
     borderRadius: 6,
     marginTop: 6,
     alignSelf: "flex-start",
@@ -131,6 +135,16 @@ const styles = StyleSheet.create({
   feedbackButtonText: {
     color: "#000",
     fontSize: 14,
+    paddingHorizontal: 16,
     fontWeight: "bold",
+  },
+  ratingText: {
+    fontSize: 14,
+    color: "#444",
+    marginTop: 4,
+    flexDirection: "row",
+    position: "absolute",
+    right: 0,
+    top: 0,
   },
 });

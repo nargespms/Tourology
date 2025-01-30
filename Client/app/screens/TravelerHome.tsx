@@ -7,7 +7,7 @@ import BottomNavBar from "../components/BottomNavBar";
 import CustomTabs from "../components/CustomeTabs";
 import SearchBar from "../components/SearchBar";
 import SearchResults from "../components/TravelerSearchResult";
-import TourCard from "../components/TourCard";
+import LargePicTourCard from "../components/LargePicTourCard";
 import { travelerNavbar } from "../data/navbarOptions";
 import { Tour, followingData, forYouData, freeData } from "../data/tours";
 
@@ -97,7 +97,14 @@ const TravelerHome: React.FC = () => {
                 : []
             }
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <TourCard data={item} />}
+            renderItem={({ item }) => (
+              <LargePicTourCard
+                data={item}
+                onPressTour={() =>
+                  navigation.navigate("TravelerRouteDetails" as never)
+                }
+              />
+            )}
             contentContainerStyle={styles.listContent}
           />
           {/* Search Results Overlay */}

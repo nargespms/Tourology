@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import TourCard, { Tour } from "./TourCard";
+import LargePicTourCard, { Tour } from "./LargePicTourCard";
 
 interface SearchResultsProps {
   searchQuery: string;
@@ -50,7 +50,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <FlatList
           data={results}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <TourCard data={item} />}
+          renderItem={({ item }) => <LargePicTourCard data={item} />}
         />
       </View>
     </SafeAreaView>
