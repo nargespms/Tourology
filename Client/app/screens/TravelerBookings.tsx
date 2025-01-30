@@ -9,7 +9,7 @@ import {
 import QRCode from "react-native-qrcode-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BookingCard from "../components/BookingCard";
-import { Booking, pastBookings, upcomingBookings } from "../data/Bookings";
+import { Booking, pastBookings, upcomingBookings } from "../data/bookings";
 import FeedbackForm from "../components/FeedbackForm";
 import CustomTabs from "../components/CustomeTabs";
 import CustomModal from "../components/CustomeModal";

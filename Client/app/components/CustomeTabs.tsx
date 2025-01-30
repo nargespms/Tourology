@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   },
   underline: {
     marginTop: 4,
+    marginBottom: 8,
     height: 3,
     width: "100%",
     backgroundColor: "#333",

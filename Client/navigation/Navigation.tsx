@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TravelerHome from "@/app/screens/TravelerHome";
 import TourGuideHome from "@/app/screens/TourGuideHome";
 import TravelerBookings from "@/app/screens/TravelerBookings";
+import TravelerSearchResults from "@/app/components/TravelerSearchResult";
 
 const Stack = createNativeStackNavigator();
 

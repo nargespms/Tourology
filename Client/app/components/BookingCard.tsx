@@ -1,13 +1,14 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { Booking } from "../data/Bookings";
+import { Booking } from "../data/bookings";
 import Entypo from "@expo/vector-icons/Entypo";
 
 interface BookingCardProps {
   booking: Booking;
   onCheckIn?: (item: Booking) => void;
   onLeaveFeedback?: (item: Booking) => void;
-  isUpcoming: boolean;
+  isUpcoming?: boolean;
+  enableButtons?: boolean;
 }
 
 const BookingCard: React.FC<BookingCardProps> = ({
@@ -15,6 +16,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
   onCheckIn,
   onLeaveFeedback,
   isUpcoming,
+  enableButtons = true,
 }) => {
   return (
     <View style={styles.container}>
@@ -25,7 +27,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
         <Text style={styles.location}>{booking.location}</Text>
         <Text style={styles.date}>{booking.date}</Text>
 
-        {isUpcoming && booking.status === "paid" && (
+        {enableButtons && isUpcoming && booking.status === "paid" && (
           <View style={styles.paidBadge}>
             <Text style={styles.paidText}>
               <Entypo name="check" size={12} color="green" /> Paid
@@ -33,7 +35,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
           </View>
         )}
 
-        {isUpcoming && (
+        {enableButtons && isUpcoming && (
           <TouchableOpacity
             style={styles.checkinButton}
             onPress={() => onCheckIn && onCheckIn(booking)}
@@ -42,7 +44,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
           </TouchableOpacity>
         )}
 
-        {!isUpcoming && (
+        {enableButtons && !isUpcoming && (
           <TouchableOpacity
             style={styles.feedbackButton}
             onPress={() => onLeaveFeedback && onLeaveFeedback(booking)}

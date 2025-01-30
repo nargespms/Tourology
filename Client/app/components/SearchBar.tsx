@@ -1,28 +1,30 @@
 import React, { useState } from "react";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Text,
-} from "react-native";
+import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 type SearchBarProps = {
   placeholder?: string;
   onSearch?: (text: string) => void;
+  onClearSearch?: () => void; // New prop to notify clearing
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "Search",
   onSearch,
+  onClearSearch,
 }) => {
   const [searchText, setSearchText] = useState("");
-  console.log("SearchBar");
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    if (onSearch) {
+      onSearch(text);
+    }
+  };
 
   const handleClear = () => {
     setSearchText("");
-    if (onSearch) onSearch("");
+    if (onClearSearch) onClearSearch(); // Notify parent when cleared
   };
 
   return (
@@ -33,18 +35,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
         color="#777"
         style={styles.iconLeft}
       />
-
       <TextInput
         style={styles.input}
         placeholder={placeholder}
         placeholderTextColor="#999"
         value={searchText}
-        onChangeText={(text) => {
-          setSearchText(text);
-          if (onSearch) onSearch(text);
-        }}
+        onChangeText={handleSearch}
       />
-
       {searchText.length > 0 && (
         <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
           <Ionicons name="close-outline" size={22} color="#777" />
@@ -65,7 +62,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 12,
-    // flex: 1,
   },
   iconLeft: {
     marginRight: 8,

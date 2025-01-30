@@ -1,18 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import SkeletonPlaceholder from "./SkeletonPlaceholder";
-
-export type Tour = {
-  id: string;
-  title: string;
-  location: string;
-  price: string;
-  rating: number;
-  placeImage: any;
-  userName?: string;
-  userImage?: any;
-  isFree?: boolean;
-};
+import { Tour } from "../data/tours";
 
 type TourCardProps = {
   data: Tour;
