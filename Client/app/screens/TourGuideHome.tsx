@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 import BottomNavBar from "../components/BottomNavBar";
 import SmallPicTourCard from "../components/SmallPicTourCard";
@@ -49,6 +50,21 @@ const TourGuideHome: React.FC = () => {
         />
       </View>
 
+      <View style={styles.createTourButtonContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("CreateTour" as never)}
+          style={styles.createTourButton}
+        >
+          <AntDesign
+            name="plus"
+            size={18}
+            color="white"
+            style={{ paddingRight: 8 }}
+          />
+          <Text style={{ color: "#fff", fontSize: 14 }}>New tour</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.navbarWrapper}>
         <BottomNavBar
           items={tourGuideNavbar}
@@ -88,7 +104,7 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
   },
   listContent: {
     paddingBottom: 16,
@@ -142,5 +158,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+
+  createTourButtonContainer: {
+    position: "absolute",
+    bottom: 100,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  createTourButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "#000",
+    borderRadius: 4,
+    padding: 16,
+    alignItems: "center",
+    width: 150,
   },
 });

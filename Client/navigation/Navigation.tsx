@@ -10,13 +10,14 @@ import TravelerBookings from "@/app/screens/TravelerBookings";
 import TravelerSearchResults from "@/app/components/TravelerSearchResult";
 import TourGuideActiveTour from "@/app/screens/TourGuideActiveTour";
 import TravelerRouteDetails from "@/app/screens/TravelerRouteDetails";
+import CreateTour from "@/app/screens/CreateTour";
 
 const Stack = createNativeStackNavigator();
 
 const Navigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Welcome"
+      initialRouteName="TourGuideHome"
       screenOptions={{
         headerStyle: {
           backgroundColor: "#000",
@@ -65,6 +66,11 @@ const Navigator = () => {
       <Stack.Screen
         name="TravelerRouteDetails"
         component={TravelerRouteDetails}
+        options={{ headerShown: false, gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="CreateTour"
+        component={CreateTour}
         options={{ headerShown: false, gestureEnabled: true }}
       />
     </Stack.Navigator>

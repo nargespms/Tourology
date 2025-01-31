@@ -28,6 +28,16 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": false,
+          "rationale": {
+            "title": "Allow location access",
+            "message": "We need your permission to get location"
+          }
+        }
       ]
     ]
   }
