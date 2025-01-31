@@ -6,9 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import StopForm, { StopFormData } from "./StopForm";
 import { StopData } from "./StopListSection";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   visible: boolean;
@@ -85,36 +87,47 @@ export default function AddStopModal({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.modalContainer}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>
             {existingStop ? "Edit stop" : "Add stop"}
           </Text>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.closeText}>✕</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* STOP FORM */}
-        <StopForm formData={formData} onFormChange={setFormData} />
-
-        {/* ACTION BUTTONS */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.discardBtn} onPress={handleDiscard}>
-            <Text>Discard</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
-            <Text style={{ color: "#fff" }}>
-              {existingStop ? "Save" : "Add"}
+            <Text>
+              <Ionicons name="close" size={24} />
             </Text>
           </TouchableOpacity>
         </View>
+        <ScrollView>
+          <View style={styles.modalContainer}>
+            <StopForm formData={formData} onFormChange={setFormData} />
+
+            {/* ACTION BUTTONS */}
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.discardBtn}
+                onPress={handleDiscard}
+              >
+                <Text>Discard</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
+                <Text style={{ color: "#fff" }}>
+                  {existingStop ? "Save" : "Add"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   modalContainer: {
     flex: 1,
     marginHorizontal: 18,
@@ -126,6 +139,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    zIndex: 2,
+    backgroundColor: "#f4f3f3",
   },
   title: {
     fontSize: 20,
@@ -137,7 +154,6 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: "row",
-    marginTop: 20,
     marginBottom: 40,
   },
   discardBtn: {

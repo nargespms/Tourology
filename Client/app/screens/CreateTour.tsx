@@ -1,30 +1,34 @@
-import React, { useEffect, useState, useRef } from "react";
+import * as Location from "expo-location";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
+  Alert,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker"; // optional for "Paid"/"Free"
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
 
-import ImagePickerSection from "../components/ImagePickerSection";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import AddStopModal from "../components/AddStopModal";
+import ImagePickerSection from "../components/ImagePickerSection";
 import StopListSection, { StopData } from "../components/StopListSection";
-import { AntDesign } from "@expo/vector-icons";
+import SingleLocationMap from "../components/SingleLocationMap";
+import PickerButton from "../components/PickerButton";
 
 export default function CreateTour() {
   const [routeName, setRouteName] = useState("");
   const [routeDescription, setRouteDescription] = useState("");
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [locationText, setLocationText] = useState("");
+
+  const navigation = useNavigation();
 
   // Map region state
   const [region, setRegion] = useState({
@@ -35,7 +39,7 @@ export default function CreateTour() {
   });
 
   // Pricing
-  const [pricingOption, setPricingOption] = useState<"Paid" | "Free">("Paid");
+  const [pricingOption, setPricingOption] = useState<string>("Paid");
   const [price, setPrice] = useState("299");
   const [maxAttendees, setMaxAttendees] = useState("10");
 
@@ -115,16 +119,25 @@ export default function CreateTour() {
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: "padding", android: undefined })}
       >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.newTourStickyHeader}>
+          <TouchableOpacity
+            style={[styles.topButton]}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.topButtonText}>
+              <Ionicons name="arrow-back" size={18} />
+            </Text>
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>New tour</Text>
-
+        </View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.label}>Name</Text>
           <TextInput
             style={styles.input}
             value={routeName}
             onChangeText={setRouteName}
           />
-          <Text style={styles.label}>Description</Text>
+          <Text style={[styles.label]}>Description</Text>
           <TextInput
             style={[styles.input, styles.multiLineInput]}
             placeholder="Provide a short description about the tour and the location"
@@ -140,21 +153,17 @@ export default function CreateTour() {
             onImagesChange={setGalleryImages}
           />
 
-          <Text style={styles.label}>Location</Text>
+          <Text style={styles.label}>City/ Province/ State</Text>
           <TextInput
             style={styles.input}
-            placeholder="e.g. Banff, Alberta, Canada"
+            placeholder="e.g. Banff, Alberta, Florida"
             placeholderTextColor="#b0acac"
             value={locationText}
             onChangeText={handleLocationChange}
           />
 
           {/* Map (updates when location changes) */}
-          <View style={styles.mapContainer}>
-            <MapView style={styles.map} region={region}>
-              <Marker coordinate={region} />
-            </MapView>
-          </View>
+          <SingleLocationMap region={region} />
 
           {/* Stops Section */}
           <Text style={[styles.label, { marginTop: 20 }]}>Stops</Text>
@@ -164,7 +173,7 @@ export default function CreateTour() {
             onDeleteStop={handleDeleteStopPress}
           />
           {stops.length === 0 && (
-            <Text style={styles.placeholderText}>
+            <Text style={styles.placeholderStopText}>
               No stops added yet. Please add the first stop.
             </Text>
           )}
@@ -187,38 +196,12 @@ export default function CreateTour() {
           {/* 6) Pricing Options */}
           <View style={styles.pricingContainer}>
             <Text style={styles.label}>Pricing option</Text>
-            <View style={styles.pickerRow}>
-              <TouchableOpacity
-                onPress={() => setPricingOption("Paid")}
-                style={[
-                  styles.pickerButton,
-                  pricingOption === "Paid" && styles.pickerButtonActive,
-                ]}
-              >
-                <Text
-                  style={{
-                    color: pricingOption === "Paid" ? "#fff" : "#000",
-                  }}
-                >
-                  Paid
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setPricingOption("Free")}
-                style={[
-                  styles.pickerButton,
-                  pricingOption === "Free" && styles.pickerButtonActive,
-                ]}
-              >
-                <Text
-                  style={{
-                    color: pricingOption === "Free" ? "#fff" : "#000",
-                  }}
-                >
-                  Free
-                </Text>
-              </TouchableOpacity>
-            </View>
+
+            <PickerButton
+              options={["Paid", "Free"]}
+              activeOption={pricingOption}
+              onSelect={(option) => setPricingOption(option)}
+            />
           </View>
           {pricingOption === "Paid" && (
             <>
@@ -256,8 +239,7 @@ export default function CreateTour() {
             onChangeText={setEndDate}
           />
 
-          {/* Buttons at the bottom */}
-          <View style={styles.buttonRow}>
+          <View style={{ flexDirection: "row", marginTop: 16 }}>
             <TouchableOpacity
               style={styles.draftButton}
               onPress={handleSaveDraft}
@@ -270,7 +252,6 @@ export default function CreateTour() {
           </View>
         </ScrollView>
 
-        {/* 5.1) Add Stop Modal */}
         <AddStopModal
           visible={isStopModalVisible}
           onClose={() => setIsStopModalVisible(false)}
@@ -293,18 +274,42 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContainer: {
-    paddingBottom: 40,
+    paddingBottom: 70,
     paddingHorizontal: 18,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    marginVertical: 16,
+    paddingLeft: 12,
   },
+  newTourStickyHeader: {
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    zIndex: 2,
+    backgroundColor: "#f4f3f3",
+  },
+  topButton: {
+    zIndex: 2,
+    width: 32,
+    height: 32,
+    backgroundColor: "#4b4b4b",
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 4,
+  },
+  topButtonText: {
+    color: "#fff",
+    fontSize: 18,
+  },
+
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
-    marginTop: 12,
+    marginTop: 18,
     marginBottom: 4,
   },
   input: {
@@ -341,34 +346,20 @@ const styles = StyleSheet.create({
   addStopBtnText: {
     fontWeight: "600",
   },
-  placeholderText: {
+  placeholderStopText: {
     marginTop: 4,
-    color: "#888",
-    fontSize: 12,
+    color: "#757575",
+    fontSize: 13,
     textAlign: "center",
     paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: "#969696",
+    borderRadius: 8,
   },
   pricingContainer: {
     marginTop: 16,
   },
-  pickerRow: {
-    flexDirection: "row",
-    marginTop: 4,
-  },
-  pickerButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingVertical: 10,
-    alignItems: "center",
-  },
-  pickerButtonActive: {
-    backgroundColor: "#007AFF",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    marginVertical: 20,
-  },
+
   draftButton: {
     flex: 1,
     backgroundColor: "#eee",
@@ -384,5 +375,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginLeft: 8,
     alignItems: "center",
+  },
+
+  navbarWrapper: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 90,
+    backgroundColor: "#fff",
   },
 });

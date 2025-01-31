@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import SingleLocationMap from "./SingleLocationMap";
 
 export interface StopFormData {
   name: string;
@@ -33,7 +34,7 @@ export default function StopForm({ formData, onFormChange }: Props) {
   });
 
   // Update region if location text changes
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
     (async () => {
       try {
@@ -103,14 +104,9 @@ export default function StopForm({ formData, onFormChange }: Props) {
       />
 
       {/* MAP PREVIEW */}
-      <View style={styles.mapContainer}>
-        <MapView style={styles.map} region={region}>
-          <Marker coordinate={region} />
-        </MapView>
-      </View>
+      <SingleLocationMap region={region} />
 
-      {/* Photo */}
-      <Text style={styles.label}>Photos</Text>
+      <Text style={styles.label}>Photo</Text>
       <View style={styles.photoRow}>
         {formData.imageUri ? (
           <View style={styles.photoWrapper}>
