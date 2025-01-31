@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
 
 export interface StopData {
   id?: string; // optional
@@ -22,16 +23,15 @@ export default function StopListSection({
   onDeleteStop,
 }: Props) {
   return (
-    <View style={styles.container}>
+    <View>
       {stops.map((stop, index) => (
         <View style={styles.stopItem} key={index}>
-          {/* Stop image */}
           <Image source={{ uri: stop.imageUri }} style={styles.stopImage} />
 
-          {/* Stop details */}
           <View style={{ flex: 1, marginHorizontal: 8 }}>
-            <Text style={styles.stopTitle}>
-              {stop.name} – {stop.time}
+            <Text style={styles.stopTitle}>{stop.name}</Text>
+            <Text style={[styles.stopDescription, { marginVertical: 6 }]}>
+              {stop.time}
             </Text>
             <Text style={styles.stopDescription} numberOfLines={2}>
               {stop.description}
@@ -41,16 +41,27 @@ export default function StopListSection({
           {/* Action buttons */}
           <View style={styles.actions}>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: "#eee" }]}
+              style={[styles.actionBtn, styles.deleteBtn]}
               onPress={() => onDeleteStop(index)}
             >
-              <Text style={{ color: "red" }}>🗑</Text>
+              <Text style={{ color: "red" }}>
+                <Feather name="trash" size={18} color="red" />
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.actionBtn, { backgroundColor: "#eee" }]}
+              style={[
+                styles.actionBtn,
+                {
+                  backgroundColor: "#eee",
+                  borderColor: "#c4c4c4",
+                  marginLeft: 12,
+                },
+              ]}
               onPress={() => onEditStop(index)}
             >
-              <Text style={{ color: "#007AFF" }}>✎</Text>
+              <Text style={{ color: "#007AFF" }}>
+                <Feather name="edit" size={18} color="black" />
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -60,20 +71,16 @@ export default function StopListSection({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
-  },
   stopItem: {
     flexDirection: "row",
-    backgroundColor: "#fafafa",
     borderRadius: 6,
-    padding: 8,
+    paddingVertical: 8,
     marginBottom: 8,
     alignItems: "center",
   },
   stopImage: {
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
     borderRadius: 6,
     backgroundColor: "#ccc",
   },
@@ -90,11 +97,15 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   actionBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 4,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 4,
+    borderWidth: 1,
+  },
+  deleteBtn: {
+    borderColor: "red",
   },
 });
