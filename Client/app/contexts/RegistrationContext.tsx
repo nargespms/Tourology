@@ -14,6 +14,7 @@ export interface RegistrationData {
 
   profileName?: string;
   yearsOfExperience?: number;
+  profilePicUri?: string;
 
   role?: "guide" | "traveler";
 }
@@ -30,6 +31,7 @@ const RegistrationContext = createContext<RegistrationContextType>({
     email: "",
     phoneNumber: "",
     password: "",
+    profilePicUri: "",
   },
   updateData: () => {},
 });
@@ -43,6 +45,7 @@ export const RegistrationProvider: React.FC<{
     email: "",
     phoneNumber: "",
     password: "",
+    profilePicUri: "",
   });
 
   const updateData = (newData: Partial<RegistrationData>) => {

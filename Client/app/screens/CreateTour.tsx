@@ -147,12 +147,6 @@ export default function CreateTour() {
             multiline
           />
 
-          <Text style={styles.label}>Photos</Text>
-          <ImagePickerSection
-            images={galleryImages}
-            onImagesChange={setGalleryImages}
-          />
-
           <Text style={styles.label}>City/ Province/ State</Text>
           <TextInput
             style={styles.input}
@@ -220,23 +214,28 @@ export default function CreateTour() {
                 value={maxAttendees}
                 onChangeText={setMaxAttendees}
               />
+              <Text style={styles.label}>Start date</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="DD MMM YYYY"
+                value={startDate}
+                onChangeText={setStartDate}
+              />
+
+              <Text style={styles.label}>End date</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="DD MMM YYYY"
+                value={endDate}
+                onChangeText={setEndDate}
+              />
             </>
           )}
 
-          <Text style={styles.label}>Start date</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="DD MMM YYYY"
-            value={startDate}
-            onChangeText={setStartDate}
-          />
-
-          <Text style={styles.label}>End date</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="DD MMM YYYY"
-            value={endDate}
-            onChangeText={setEndDate}
+          <Text style={styles.label}>Photos</Text>
+          <ImagePickerSection
+            images={galleryImages}
+            onImagesChange={setGalleryImages}
           />
 
           <View style={{ flexDirection: "row", marginTop: 16 }}>

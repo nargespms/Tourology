@@ -13,16 +13,13 @@ import { useRegistration } from "../contexts/RegistrationContext";
 
 const RegisterChooseRole: React.FC = () => {
   const navigation = useNavigation();
-  const { updateData } = useRegistration();
+  const { updateData, data } = useRegistration();
 
   const { mutate, isPending } = useSubmitRegister((data: any) => {
-    console.log("Registration successful", data);
     navigation.navigate("TravelerHome" as never);
   });
 
   const handleSelectRole = (role: "traveler" | "guide") => {
-    // Todo: store the role
-
     if (role === "traveler") {
       mutate();
 
@@ -44,7 +41,7 @@ const RegisterChooseRole: React.FC = () => {
       />
 
       <View style={styles.bodyContainer}>
-        <Text style={styles.title}>Welcome Narges!</Text>
+        <Text style={styles.title}>Welcome {data.firstName}!</Text>
         <Text style={styles.subtitle}>Are you a traveler or a tour guide?</Text>
 
         <View style={styles.roleContainer}>

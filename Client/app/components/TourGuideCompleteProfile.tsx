@@ -16,10 +16,11 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import useSubmitRegister from "../hooks/useSubmitRegister";
 import { useRegistration } from "../contexts/RegistrationContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const TourGuideCompleteProfile: React.FC = () => {
   const navigation = useNavigation();
-  const { data } = useRegistration();
+  const { data, updateData } = useRegistration();
 
   const [profilePicUri, setProfilePicUri] = useState<string>("");
   const [profileName, setProfileName] = useState(data?.firstName);
@@ -56,22 +57,27 @@ const TourGuideCompleteProfile: React.FC = () => {
   };
 
   const { mutate, isPending } = useSubmitRegister((data: any) => {
-    console.log("Registration successful", data);
     navigation.navigate("TourGuideHome" as never);
   });
 
   const handleSave = () => {
     // upload data to  server
-    console.log("Profile Name:", profileName);
-    console.log("Bio:", bio);
-    console.log("Profile Pic URI:", profilePicUri);
+    console.log("profilePicUri", profilePicUri);
+
+    updateData({
+      profileName,
+      bio,
+      profilePicUri,
+    });
 
     mutate();
-    // Alert.alert("Profile Updated", "Your profile info was saved successfully.");
   };
 
   const handleSkip = () => {
     mutate();
+  };
+  const onGoBackTap = () => {
+    navigation.goBack();
   };
 
   return (
@@ -81,11 +87,21 @@ const TourGuideCompleteProfile: React.FC = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Image
-            source={require("../../assets/choose-role.png")}
-            style={styles.topImage}
-            resizeMode="cover"
-          />
+          <View>
+            <Image
+              source={require("../../assets/choose-role.png")}
+              style={styles.topImage}
+              resizeMode="cover"
+            />
+            <TouchableOpacity
+              style={[styles.topButton, { left: 18 }]}
+              onPress={() => onGoBackTap()}
+            >
+              <Text style={styles.topButtonText}>
+                <Ionicons name="arrow-back" size={18} />
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.bodyContainer}>
             <Text style={styles.title}>Complete your profile</Text>
@@ -265,5 +281,21 @@ const styles = StyleSheet.create({
   skipButtonText: {
     fontSize: 16,
     color: "#333",
+  },
+  topButton: {
+    position: "absolute",
+    top: 20,
+    zIndex: 2,
+    width: 32,
+    height: 32,
+    backgroundColor: "#fff",
+    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 4,
+  },
+  topButtonText: {
+    color: "#393939",
+    fontSize: 18,
   },
 });

@@ -35,18 +35,14 @@ export default function TravelerRouteDetails() {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
-  // We'll capture the Y position of the reviews section
   const [reviewsPositionY, setReviewsPositionY] = useState(0);
 
-  // This is called when the "Reviews" section's layout is done
   const handleReviewsLayout = (e: NativeSyntheticEvent<LayoutChangeEvent>) => {
     const { y } = e.nativeEvent.layout;
     setReviewsPositionY(y);
   };
 
-  // Handler for "74 reviews" or rating text near the top
   const scrollToReviews = () => {
-    // ScrollView must have a valid ref
     scrollViewRef.current?.scrollTo({
       y: reviewsPositionY,
       animated: true,
@@ -59,7 +55,6 @@ export default function TravelerRouteDetails() {
         contentContainerStyle={{ paddingBottom: 50 }}
         ref={scrollViewRef}
       >
-        {/* Tour Gallery */}
         <RouteDetailsGallery onGoBackTap={() => navigation.goBack()} />
 
         <View style={styles.infoContainer}>
@@ -79,7 +74,6 @@ export default function TravelerRouteDetails() {
           </Text>
         </View>
 
-        {/* TourHost */}
         <TourHost tourGuide={{ name: "John Doe", experience: 5 }} />
 
         <Text style={styles.sectionTitle}>Tour details</Text>
@@ -116,7 +110,6 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     textDecorationStyle: "solid",
   },
-  // MAIN CONTENT
   infoContainer: {
     padding: 16,
   },

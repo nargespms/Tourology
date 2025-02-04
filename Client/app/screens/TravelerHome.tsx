@@ -1,6 +1,14 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Keyboard,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 import * as Location from "expo-location";
 
 import BottomNavBar from "../components/BottomNavBar";
@@ -74,51 +82,59 @@ const TravelerHome: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentWrapper}>
-        <SearchBar
-          placeholder="Start your search"
-          onSearch={handleSearch}
-          onClearSearch={() => setIsSearchOpen(false)}
-        />
-        <View>
-          <CustomTabs
-            tabs={TABS}
-            activeTab={activeTab}
-            onTabPress={setActiveTab}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <SearchBar
+            placeholder="Start your search"
+            onSearch={handleSearch}
+            onClearSearch={() => setIsSearchOpen(false)}
+            enableSearchResults={() => setIsSearchOpen(true)}
           />
+          <View>
+            <CustomTabs
+              tabs={TABS}
+              activeTab={activeTab}
+              onTabPress={setActiveTab}
+            />
 
-          <FlatList
-            data={
-              activeTab === "forYou"
-                ? forYouData
-                : activeTab === "following"
-                ? followingData
-                : activeTab === "free"
-                ? freeData
-                : []
-            }
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <LargePicTourCard
-                data={item}
-                onPressTour={() =>
-                  navigation.navigate("TravelerRouteDetails" as never)
-                }
+            <FlatList
+              data={
+                activeTab === "forYou"
+                  ? forYouData
+                  : activeTab === "following"
+                  ? followingData
+                  : activeTab === "free"
+                  ? freeData
+                  : []
+              }
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <LargePicTourCard
+                  data={item}
+                  onPressTour={() =>
+                    navigation.navigate("TravelerRouteDetails" as never)
+                  }
+                />
+              )}
+              contentContainerStyle={[
+                styles.listContent,
+                { paddingBottom: 190 },
+              ]}
+            />
+            {/* Search Results Overlay */}
+            {isSearchOpen && (
+              <SearchResults
+                searchQuery={searchValue}
+                results={[...searchResults, ...locationResults]}
+                onFetchNearbyTours={fetchNearbyTours}
               />
             )}
-            contentContainerStyle={styles.listContent}
-          />
-          {/* Search Results Overlay */}
-          {isSearchOpen && (
-            <SearchResults
-              searchQuery={searchValue}
-              results={[...searchResults, ...locationResults]}
-              onFetchNearbyTours={fetchNearbyTours}
-            />
-          )}
-        </View>
+          </View>
+        </KeyboardAvoidingView>
       </View>
 
-      {/* Bottom Navigation Bar */}
       <View style={styles.navbarWrapper}>
         <BottomNavBar
           items={travelerNavbar}
@@ -138,19 +154,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   contentWrapper: {
-    flex: 1, // This makes sure everything above the navbar takes full height
+    flex: 1,
   },
   listContent: {
     paddingHorizontal: 16,
     paddingVertical: 16,
-    flexGrow: 1, // Ensures FlatList grows to fill available space
+    flexGrow: 1,
   },
   navbarWrapper: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    height: 90, // Matches BottomNavBar height
+    height: 90,
     backgroundColor: "#fff",
   },
 });

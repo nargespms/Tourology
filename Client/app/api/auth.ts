@@ -12,11 +12,20 @@ export const registerHandler = async (data: RegistrationData) => {
     body: JSON.stringify(data),
   });
 
-  if (response.ok) {
-    return response.json();
-  } else {
-    throw new Error("Failed to register");
+  if (!response.ok) {
+    const errorData = await response.json();
+
+    if (
+      response.status === 400 &&
+      errorData?.message === "User already exists"
+    ) {
+      throw new Error("USER_ALREADY_EXISTS");
+    }
+
+    throw new Error(errorData?.message || "Registration failed");
   }
+
+  return response.json();
 };
 
 export const loginHandler = async (data: {

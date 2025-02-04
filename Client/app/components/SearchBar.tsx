@@ -5,13 +5,15 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 type SearchBarProps = {
   placeholder?: string;
   onSearch?: (text: string) => void;
-  onClearSearch?: () => void; // New prop to notify clearing
+  onClearSearch?: () => void;
+  enableSearchResults?: () => void;
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "Search",
   onSearch,
   onClearSearch,
+  enableSearchResults,
 }) => {
   const [searchText, setSearchText] = useState("");
 
@@ -24,7 +26,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleClear = () => {
     setSearchText("");
-    if (onClearSearch) onClearSearch(); // Notify parent when cleared
+    if (onClearSearch) onClearSearch();
   };
 
   return (
@@ -40,6 +42,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         placeholderTextColor="#999"
         value={searchText}
+        onFocus={enableSearchResults}
         onChangeText={handleSearch}
       />
       {searchText.length > 0 && (

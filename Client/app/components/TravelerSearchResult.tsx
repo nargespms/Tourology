@@ -7,6 +7,9 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import LargePicTourCard, { Tour } from "./LargePicTourCard";
@@ -26,33 +29,36 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   return (
     <SafeAreaView style={styles.overlay}>
-      <View style={styles.searchResultContainer}>
-        <TouchableOpacity
-          style={styles.nearbyOption}
-          onPress={() => {
-            setLoading(true);
-            onFetchNearbyTours();
-            setTimeout(() => setLoading(false), 1500);
-          }}
-        >
-          <Ionicons name="location-outline" size={18} color="#007AFF" />
-          <Text style={styles.nearbyText}>Search for nearby tours</Text>
-        </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.searchResultContainer}>
+          <TouchableOpacity
+            style={styles.nearbyOption}
+            onPress={() => {
+              setLoading(true);
+              onFetchNearbyTours();
+              setTimeout(() => setLoading(false), 1500);
+            }}
+          >
+            <Ionicons name="location-outline" size={18} color="#007AFF" />
+            <Text style={styles.nearbyText}>Search for nearby tours</Text>
+          </TouchableOpacity>
 
-        {loading && (
-          <ActivityIndicator
-            size="small"
-            color="#007AFF"
-            style={{ paddingVertical: 16 }}
+          {loading && (
+            <ActivityIndicator
+              size="small"
+              color="#007AFF"
+              style={{ paddingVertical: 16 }}
+            />
+          )}
+
+          <FlatList
+            data={results}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <LargePicTourCard data={item} />}
+            contentContainerStyle={[{ paddingBottom: 190 }]}
           />
-        )}
-
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <LargePicTourCard data={item} />}
-        />
-      </View>
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };
