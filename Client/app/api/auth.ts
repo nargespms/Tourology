@@ -18,3 +18,25 @@ export const registerHandler = async (data: RegistrationData) => {
     throw new Error("Failed to register");
   }
 };
+
+export const loginHandler = async (data: {
+  email: string;
+  password: string;
+}) => {
+  const response = await fetch(`${BASE_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: data.email,
+      password: data.password,
+    }),
+  });
+
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error("Failed to login");
+  }
+};

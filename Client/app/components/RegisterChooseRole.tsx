@@ -59,7 +59,7 @@ const RegisterChooseRole: React.FC = () => {
             />
             <Text style={styles.roleText}>Traveler</Text>
           </TouchableOpacity>
-
+           
           <TouchableOpacity
             style={styles.roleCard}
             onPress={() => handleSelectRole("guide")}

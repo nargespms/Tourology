@@ -1,5 +1,3 @@
-// this module stores the user registration data on a context and exposes a hook to access and update it plus the context provider
-
 import React, { createContext, useContext, useState } from "react";
 
 export interface RegistrationData {

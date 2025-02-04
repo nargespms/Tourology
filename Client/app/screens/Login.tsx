@@ -1,99 +1,157 @@
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { loginHandler } from "../api/auth";
+import { useLoggedUser } from "../contexts/loggedUserData";
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const { updateData } = useLoggedUser();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
   };
 
-  const handleLogin = () => {
-    // TODO: Handle actual login logic
-    console.log("Logging in with:", { email, password });
+  const handleLogin = async () => {
+    setLoading(true);
+    Keyboard.dismiss();
+    try {
+      const response = await loginHandler({ email, password });
+      Toast.show({
+        type: "success",
+        text1: "Login Successful",
+        text2: "Welcome back!",
+        visibilityTime: 5000,
+        topOffset: 50,
+      });
+
+      updateData({
+        id: response.userId,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        role: response.role,
+      });
+
+      if (response.role === "traveler") {
+        navigation.navigate("TravelerHome" as never);
+      } else if (response.role === "guide") {
+        navigation.navigate("TourGuideHome" as never);
+      }
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Login Failed",
+        text2: "Invalid email or password",
+        visibilityTime: 5000,
+        topOffset: 50,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image
-        source={require("../../assets/login-cover.png")}
-        style={styles.topImage}
-        resizeMode="cover"
-      />
-
-      <View style={styles.bodyContainer}>
-        <Text style={styles.loginTitle}>Login</Text>
-
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          placeholderTextColor="#999"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-
-        <Text style={styles.label}>Password</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={[styles.input, styles.passwordInput]}
-            placeholder="Enter your password"
-            placeholderTextColor="#999"
-            secureTextEntry={!isPasswordVisible}
-            value={password}
-            onChangeText={setPassword}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <Image
+            source={require("../../assets/login-cover.png")}
+            style={styles.topImage}
+            resizeMode="cover"
           />
 
-          <TouchableOpacity
-            style={styles.eyeIconContainer}
-            onPress={togglePasswordVisibility}
-          >
-            <Icon
-              name={isPasswordVisible ? "eye-off" : "eye"}
-              size={20}
-              color="#666"
+          <View style={styles.bodyContainer}>
+            <Text style={styles.loginTitle}>Login</Text>
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              placeholderTextColor="#999"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
             />
-          </TouchableOpacity>
-        </View>
 
-        <TouchableOpacity
-          style={styles.forgotPasswordContainer}
-          onPress={() => console.log("Forgot password tapped")}
-        >
-          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-        </TouchableOpacity>
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={[styles.input, styles.passwordInput]}
+                placeholder="Enter your password"
+                placeholderTextColor="#999"
+                secureTextEntry={!isPasswordVisible}
+                value={password}
+                onChangeText={setPassword}
+              />
 
-        <TouchableOpacity style={styles.continueButton} onPress={handleLogin}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.eyeIconContainer}
+                onPress={togglePasswordVisibility}
+              >
+                <Icon
+                  name={isPasswordVisible ? "eye-off" : "eye"}
+                  size={20}
+                  color="#666"
+                />
+              </TouchableOpacity>
+            </View>
 
-        <View style={styles.divider} />
+            {/* <TouchableOpacity
+              style={styles.forgotPasswordContainer}
+              onPress={() => console.log("Forgot password tapped")}
+            >
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity> */}
 
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>New to Tourology? </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Register" as never)}
-          >
-            <Text style={styles.registerLink}>Register</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+            <TouchableOpacity
+              style={[styles.continueButton, loading && { opacity: 0.7 }]}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              <Text style={styles.continueButtonText}>
+                {loading ? "Logging in..." : "Login"}
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.divider} />
+
+            <View style={styles.footerContainer}>
+              <Text style={styles.footerText}>New to Tourology? </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Register" as never)}
+              >
+                <Text style={styles.registerLink}>Register</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -139,10 +197,10 @@ const styles = StyleSheet.create({
   },
   passwordInput: {
     flex: 1,
-    marginBottom: 0, // override marginBottom from base input style
+    marginBottom: 0,
   },
   eyeIconContainer: {
-    marginLeft: -35, // pull the icon to overlap input’s right side
+    marginLeft: -35,
     padding: 8,
   },
   forgotPasswordContainer: {
@@ -159,6 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: "center",
     marginBottom: 20,
+    marginTop: 24,
   },
   continueButtonText: {
     color: "#fff",
@@ -180,6 +239,12 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     color: "#4285F4",
+    fontSize: 14,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
     fontSize: 14,
   },
 });
