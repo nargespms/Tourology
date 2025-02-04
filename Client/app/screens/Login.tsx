@@ -24,20 +24,53 @@ const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
-
   const [loading, setLoading] = useState(false);
-
   const { updateData } = useLoggedUser();
+
+  // Validation state
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [loginError, setLoginError] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
   };
 
+  /**
+   * Basic validation: checks for empty fields.
+   */
+  const validateInputs = () => {
+    let valid = true;
+
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      valid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+      valid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    return valid;
+  };
+
   const handleLogin = async () => {
-    setLoading(true);
     Keyboard.dismiss();
+    setLoginError(false);
+
+    if (!validateInputs()) {
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await loginHandler({ email, password });
+
       Toast.show({
         type: "success",
         text1: "Login Successful",
@@ -59,6 +92,7 @@ const LoginScreen: React.FC = () => {
         navigation.navigate("TourGuideHome" as never);
       }
     } catch (err) {
+      setLoginError(true);
       Toast.show({
         type: "error",
         text1: "Login Failed",
@@ -89,24 +123,42 @@ const LoginScreen: React.FC = () => {
 
             <Text style={styles.label}>Email</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                (emailError || loginError) && styles.inputError,
+              ]}
               placeholder="Enter your email"
               placeholderTextColor="#999"
               autoCapitalize="none"
               keyboardType="email-address"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                setEmailError("");
+                setLoginError(false);
+              }}
             />
+            {emailError ? (
+              <Text style={styles.errorText}>{emailError}</Text>
+            ) : null}
 
             <Text style={styles.label}>Password</Text>
             <View style={styles.passwordContainer}>
               <TextInput
-                style={[styles.input, styles.passwordInput]}
+                style={[
+                  styles.input,
+                  styles.passwordInput,
+                  (passwordError || loginError) && styles.inputError,
+                ]}
                 placeholder="Enter your password"
                 placeholderTextColor="#999"
                 secureTextEntry={!isPasswordVisible}
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setPasswordError("");
+                  setLoginError(false);
+                }}
               />
 
               <TouchableOpacity
@@ -120,25 +172,24 @@ const LoginScreen: React.FC = () => {
                 />
               </TouchableOpacity>
             </View>
-
-            {/* <TouchableOpacity
-              style={styles.forgotPasswordContainer}
-              onPress={() => console.log("Forgot password tapped")}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-            </TouchableOpacity> */}
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
 
             <TouchableOpacity
-              style={[styles.continueButton, loading && { opacity: 0.7 }]}
+              style={[
+                styles.continueButton,
+                (loading || !email.trim() || !password.trim()) && {
+                  opacity: 0.7,
+                },
+              ]}
               onPress={handleLogin}
-              disabled={loading}
+              disabled={loading || !email.trim() || !password.trim()}
             >
               <Text style={styles.continueButtonText}>
                 {loading ? "Logging in..." : "Login"}
               </Text>
             </TouchableOpacity>
-
-            <View style={styles.divider} />
 
             <View style={styles.footerContainer}>
               <Text style={styles.footerText}>New to Tourology? </Text>
@@ -190,6 +241,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
+  inputError: {
+    borderColor: "red",
+  },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -203,14 +257,6 @@ const styles = StyleSheet.create({
     marginLeft: -35,
     padding: 8,
   },
-  forgotPasswordContainer: {
-    alignSelf: "flex-end",
-  },
-  forgotPasswordText: {
-    color: "#4285F4",
-    fontSize: 14,
-    marginBottom: 20,
-  },
   continueButton: {
     backgroundColor: "#4285F4",
     paddingVertical: 14,
@@ -223,11 +269,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#ccc",
-    marginBottom: 20,
   },
   footerContainer: {
     flexDirection: "row",
@@ -243,8 +284,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    textAlign: "center",
-    marginTop: 10,
     fontSize: 14,
+    marginBottom: 10,
   },
 });
