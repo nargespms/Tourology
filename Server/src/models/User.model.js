@@ -19,6 +19,13 @@ const userSchema = new Schema(
     languages: { type: [String], default: [], optional: true },
     skills: { type: [String], default: [], optional: true },
     yearsOfExperience: { type: Number, default: 0, optional: true },
+    tours: { type: [String], default: [], optional: true },
+    numberOfFollowers: { type: Number, default: 0, optional: true },
+
+    // for traveler
+    favoriteTours: { type: [String], default: [], optional: true }, // id of the ours
+    followingGuides: { type: [String], default: [], optional: true }, // id of the guides
+    bookedTours: { type: [String], default: [], optional: true }, // id of the tours
   },
   { timestamps: true }
 );
