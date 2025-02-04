@@ -9,16 +9,20 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import useSubmitRegister from "../hooks/useSubmitRegister";
+import { useRegistration } from "../contexts/RegistrationContext";
 
 const TourGuideCompleteProfile: React.FC = () => {
   const navigation = useNavigation();
+  const { data } = useRegistration();
 
   const [profilePicUri, setProfilePicUri] = useState<string>("");
-
-  const [profileName, setProfileName] = useState("Narges");
+  const [profileName, setProfileName] = useState(data?.firstName);
   const [bio, setBio] = useState("");
 
   const handleUpload = async () => {
@@ -51,100 +55,110 @@ const TourGuideCompleteProfile: React.FC = () => {
     setProfilePicUri("");
   };
 
+  const { mutate, isPending } = useSubmitRegister((data: any) => {
+    console.log("Registration successful", data);
+    navigation.navigate("TourGuideHome" as never);
+  });
+
   const handleSave = () => {
     // upload data to  server
     console.log("Profile Name:", profileName);
     console.log("Bio:", bio);
     console.log("Profile Pic URI:", profilePicUri);
 
-    Alert.alert("Profile Updated", "Your profile info was saved successfully.");
-    navigation.navigate("TourGuideHome" as never);
+    mutate();
+    // Alert.alert("Profile Updated", "Your profile info was saved successfully.");
   };
 
   const handleSkip = () => {
-    navigation.navigate("TourGuideHome" as never);
+    mutate();
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image
-          source={require("../../assets/choose-role.png")}
-          style={styles.topImage}
-          resizeMode="cover"
-        />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Image
+            source={require("../../assets/choose-role.png")}
+            style={styles.topImage}
+            resizeMode="cover"
+          />
 
-        <View style={styles.bodyContainer}>
-          <Text style={styles.title}>Complete your profile</Text>
+          <View style={styles.bodyContainer}>
+            <Text style={styles.title}>Complete your profile</Text>
 
-          <Text style={styles.label}>Your profile picture</Text>
+            <Text style={styles.label}>Your profile picture</Text>
 
-          <View style={styles.profilePicRow}>
-            <View style={styles.profilePicWrapper}>
-              {profilePicUri ? (
-                <Image
-                  source={{ uri: profilePicUri }}
-                  style={styles.profilePic}
-                  resizeMode="cover"
-                />
-              ) : (
-                <Image
-                  source={require("../../assets/avatar.png")}
-                  style={styles.profilePic}
-                  resizeMode="cover"
-                />
-              )}
+            <View style={styles.profilePicRow}>
+              <View style={styles.profilePicWrapper}>
+                {profilePicUri ? (
+                  <Image
+                    source={{ uri: profilePicUri }}
+                    style={styles.profilePic}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Image
+                    source={require("../../assets/avatar.png")}
+                    style={styles.profilePic}
+                    resizeMode="cover"
+                  />
+                )}
+              </View>
+
+              <View style={styles.profilePicButtons}>
+                <TouchableOpacity
+                  style={styles.uploadButton}
+                  onPress={handleUpload}
+                >
+                  <Text style={styles.uploadButtonText}>Upload</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.removeButton,
+                    { opacity: profilePicUri ? 1 : 0.6 },
+                  ]}
+                  onPress={handleRemove}
+                  disabled={!profilePicUri}
+                >
+                  <Text style={styles.removeButtonText}>Remove</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={styles.profilePicButtons}>
-              <TouchableOpacity
-                style={styles.uploadButton}
-                onPress={handleUpload}
-              >
-                <Text style={styles.uploadButtonText}>Upload</Text>
-              </TouchableOpacity>
+            <Text style={styles.label}>Profile name</Text>
+            <TextInput
+              style={styles.input}
+              value={profileName}
+              onChangeText={setProfileName}
+              placeholder="Enter your name"
+              placeholderTextColor="#999"
+            />
 
-              <TouchableOpacity
-                style={[
-                  styles.removeButton,
-                  { opacity: profilePicUri ? 1 : 0.6 },
-                ]}
-                onPress={handleRemove}
-                disabled={!profilePicUri}
-              >
-                <Text style={styles.removeButtonText}>Remove</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.label}>Short biography</Text>
+            <TextInput
+              style={[styles.input, styles.bioInput]}
+              value={bio}
+              onChangeText={setBio}
+              placeholder="Tell us a little about yourself"
+              placeholderTextColor="#999"
+              multiline
+            />
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+              <Text style={styles.skipButtonText}>Skip</Text>
+            </TouchableOpacity>
           </View>
-
-          <Text style={styles.label}>Profile name</Text>
-          <TextInput
-            style={styles.input}
-            value={profileName}
-            onChangeText={setProfileName}
-            placeholder="Enter your name"
-            placeholderTextColor="#999"
-          />
-
-          <Text style={styles.label}>Short biography</Text>
-          <TextInput
-            style={[styles.input, styles.bioInput]}
-            value={bio}
-            onChangeText={setBio}
-            placeholder="Tell us a little about yourself"
-            placeholderTextColor="#999"
-            multiline
-          />
-
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-            <Text style={styles.skipButtonText}>Skip</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

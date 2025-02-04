@@ -17,7 +17,7 @@ const Stack = createNativeStackNavigator();
 const Navigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="TourGuideHome"
+      initialRouteName="Welcome"
       screenOptions={{
         headerStyle: {
           backgroundColor: "#000",

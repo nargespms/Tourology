@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useRegistration } from "../contexts/RegistrationContext";
 
 const RegisterStepOne: React.FC = () => {
   const navigation = useNavigation();
@@ -24,13 +25,15 @@ const RegisterStepOne: React.FC = () => {
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
+  const { updateData } = useRegistration();
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
   };
 
   const handleRegister = () => {
-    // TODO: Implement your register logic
-    console.log("Registering with:", {
+    // Save registration data to context
+    updateData({
       firstName,
       lastName,
       email,

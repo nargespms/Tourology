@@ -8,12 +8,16 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ChipSelectDropDown from "../components/ChipSelectDropDown";
+import { useRegistration } from "../contexts/RegistrationContext";
 
 const TourGuideSkillSet: React.FC = () => {
   const navigation = useNavigation();
+  const { updateData } = useRegistration();
 
   const languageOptions = ["English", "Spanish", "French", "German", "Italian"];
   const expertiseOptions = [
@@ -23,72 +27,79 @@ const TourGuideSkillSet: React.FC = () => {
     "Cultural",
   ];
 
-  const [languages, setLanguages] = useState<string[]>(["English", "Spanish"]);
+  const [languages, setLanguages] = useState<string[]>(["English"]);
   const [expertiseList, setExpertiseList] = useState<string[]>(["Adventure"]);
 
-  const [yearsOfExperience, setYearsOfExperience] = useState("");
+  const [yearsOfExperience, setYearsOfExperience] = useState<number>();
 
   const handleContinue = () => {
-    console.log("Languages:", languages);
-    console.log("Expertise:", expertiseList);
-    console.log("Years of experience:", yearsOfExperience);
+    updateData({
+      languages,
+      skills: expertiseList,
+      yearsOfExperience,
+    });
 
     navigation.navigate("TourGuideCompleteProfile" as never);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image
-          source={require("../../assets/choose-role.png")}
-          style={styles.topImage}
-          resizeMode="cover"
-        />
-
-        <View style={styles.bodyContainer}>
-          <Text style={styles.title}>Let us know your skills</Text>
-
-          <ChipSelectDropDown
-            label="Languages spoken"
-            items={languageOptions}
-            selectedItems={languages}
-            onSelectedItemsChange={setLanguages}
-            placeholder="Select a language"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Image
+            source={require("../../assets/choose-role.png")}
+            style={styles.topImage}
+            resizeMode="cover"
           />
 
-          <ChipSelectDropDown
-            label="Areas of expertise"
-            items={expertiseOptions}
-            selectedItems={expertiseList}
-            onSelectedItemsChange={setExpertiseList}
-            placeholder="Select an expertise"
-          />
+          <View style={styles.bodyContainer}>
+            <Text style={styles.title}>Let us know your skills</Text>
 
-          <Text style={styles.label}>Years of experience</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="E.g., 5"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            value={yearsOfExperience}
-            onChangeText={setYearsOfExperience}
-          />
+            <ChipSelectDropDown
+              label="Languages spoken"
+              items={languageOptions}
+              selectedItems={languages}
+              onSelectedItemsChange={setLanguages}
+              placeholder="Select a language"
+            />
 
-          <TouchableOpacity
-            style={styles.continueButton}
-            onPress={handleContinue}
-          >
-            <Text style={styles.continueButtonText}>Continue</Text>
-          </TouchableOpacity>
+            <ChipSelectDropDown
+              label="Areas of expertise"
+              items={expertiseOptions}
+              selectedItems={expertiseList}
+              onSelectedItemsChange={setExpertiseList}
+              placeholder="Select an expertise"
+            />
 
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+            <Text style={styles.label}>Years of experience</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="E.g., 5"
+              placeholderTextColor="#999"
+              keyboardType="numeric"
+              value={yearsOfExperience}
+              onChangeText={setYearsOfExperience}
+            />
+
+            <TouchableOpacity
+              style={styles.continueButton}
+              onPress={handleContinue}
+            >
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
