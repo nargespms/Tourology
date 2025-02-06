@@ -1,6 +1,20 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.model.js";
+import multer from "multer";
+
+// Configure multer for file storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Store files in "uploads" directory
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
 
 const register = async (req, res) => {
   try {
@@ -15,9 +29,15 @@ const register = async (req, res) => {
       phoneNumber,
       role,
       profileName,
-      profilePicture,
       bio,
     } = req.body;
+
+    let profilePicturePath = "";
+    console.log(req.file);
+    console.log("req", req);
+    // if (req.file) {
+    //   profilePicturePath = req.file.path;
+    // }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -39,7 +59,7 @@ const register = async (req, res) => {
       phoneNumber,
       role,
       profileName,
-      profilePicture,
+      profilePicture: profilePicturePath,
       bio,
       languages: languages?.map((lang) => lang.trim().toLowerCase()),
       skills: skills?.map((exp) => exp.trim().toLowerCase()),

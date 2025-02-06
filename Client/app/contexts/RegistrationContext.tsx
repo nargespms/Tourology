@@ -10,7 +10,11 @@ export interface RegistrationData {
   bio?: string;
   skills?: string[];
   languages?: string[];
-  profilePicture?: string;
+  profilePicture?: {
+    uri: string;
+    name: string;
+    type: string;
+  };
 
   profileName?: string;
   yearsOfExperience?: number;
@@ -31,7 +35,16 @@ const RegistrationContext = createContext<RegistrationContextType>({
     email: "",
     phoneNumber: "",
     password: "",
+    bio: "",
+    skills: [],
+    languages: [],
     profilePicUri: "",
+    profilePicture: {
+      uri: "",
+      name: "",
+      type: "",
+    },
+    profileName: "",
   },
   updateData: () => {},
 });
@@ -45,7 +58,16 @@ export const RegistrationProvider: React.FC<{
     email: "",
     phoneNumber: "",
     password: "",
+    bio: "",
+    skills: [],
+    languages: [],
     profilePicUri: "",
+    profilePicture: {
+      uri: "",
+      name: "",
+      type: "",
+    },
+    profileName: "",
   });
 
   const updateData = (newData: Partial<RegistrationData>) => {

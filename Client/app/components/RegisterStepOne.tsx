@@ -18,7 +18,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Toast from "react-native-toast-message";
 
 import { useRegistration } from "../contexts/RegistrationContext";
-import { registerHandler } from "../api/auth"; // <-- Your backend API call
 
 const RegisterStepOne: React.FC = () => {
   const navigation = useNavigation();
@@ -102,8 +101,7 @@ const RegisterStepOne: React.FC = () => {
 
     try {
       setLoading(true);
-
-      const response = await registerHandler({
+      updateData({
         firstName,
         lastName,
         email,
@@ -116,15 +114,6 @@ const RegisterStepOne: React.FC = () => {
         text1: "Registration Successful",
         text2: "Welcome!",
         topOffset: 50,
-      });
-
-      // Update partial data in context (if needed)
-      updateData({
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        password,
       });
 
       navigation.navigate("RegisterChooseRole" as never);

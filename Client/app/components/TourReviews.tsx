@@ -7,23 +7,21 @@ const TourReviews = () => {
     <View style={styles.reviewsContainer}>
       <Text style={styles.sectionTitle}>★4.8 – 74 reviews</Text>
 
-      <ScrollView style={{ maxHeight: 250 }} nestedScrollEnabled={true}>
-        {REVIEWS.map((review) => (
-          <View style={styles.reviewCard} key={review.id}>
-            <Text style={styles.reviewRating}>
-              {`★`.repeat(Math.round(review.rating))} {review.date}
-            </Text>
-            <Text style={styles.reviewText}>{review.text}</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Image
-                source={require("../../assets/avatar.png")}
-                style={styles.avatar}
-              />
-              <Text style={styles.reviewAuthor}>{review.author}</Text>
-            </View>
+      {REVIEWS.map((review) => (
+        <View style={styles.reviewCard} key={review.id}>
+          <Text style={styles.reviewRating}>
+            {`★`.repeat(Math.round(review.rating))} {review.date}
+          </Text>
+          <Text style={styles.reviewText}>{review.text}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Image
+              source={require("../../assets/avatar.png")}
+              style={styles.avatar}
+            />
+            <Text style={styles.reviewAuthor}>{review.author}</Text>
           </View>
-        ))}
-      </ScrollView>
+        </View>
+      ))}
     </View>
   );
 };

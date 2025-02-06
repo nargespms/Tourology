@@ -27,7 +27,7 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
 
   const handleFavorite = () => {
     setIsFavorite((prev) => !prev);
-    Alert.alert("Favorite", "Route added to favorites!");
+    Alert.alert("Favorite", "Tour added to favorites!");
   };
 
   return (

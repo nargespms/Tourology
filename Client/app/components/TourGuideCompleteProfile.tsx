@@ -15,7 +15,10 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import useSubmitRegister from "../hooks/useSubmitRegister";
-import { useRegistration } from "../contexts/RegistrationContext";
+import {
+  RegistrationData,
+  useRegistration,
+} from "../contexts/RegistrationContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const TourGuideCompleteProfile: React.FC = () => {
@@ -64,11 +67,28 @@ const TourGuideCompleteProfile: React.FC = () => {
     // upload data to  server
     console.log("profilePicUri", profilePicUri);
 
-    updateData({
-      profileName,
-      bio,
-      profilePicUri,
-    });
+    const formData = new FormData();
+    formData.append("firstName", data.firstName);
+    formData.append("lastName", data.lastName);
+    formData.append("email", data.email);
+    formData.append("phoneNumber", data.phoneNumber);
+    formData.append("password", data.password);
+    formData.append("profileName", profileName);
+    formData.append("bio", bio);
+    // Convert the local `profilePicUri` into a file-like object:
+    if (profilePicUri) {
+      const uriParts = profilePicUri.split(".");
+      const fileType = uriParts[uriParts.length - 1];
+      const file = {
+        uri: profilePicUri,
+        name: `profile.${fileType}`, // or any name
+        type: `image/${fileType}`, // e.g. 'image/jpg', 'image/png'
+      };
+
+      formData.append("profilePicture", file);
+    }
+
+    updateData({ ...data, ...formData } as Partial<RegistrationData>);
 
     mutate();
   };

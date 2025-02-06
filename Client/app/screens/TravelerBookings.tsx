@@ -54,70 +54,73 @@ const TravelerBookings: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Bookings</Text>
+      <View style={{ flex: 1, paddingHorizontal: 18 }}>
+        <Text style={styles.title}>Bookings</Text>
 
-      <CustomTabs
-        tabs={Tabs}
-        activeTab={activeTab}
-        onTabPress={(val) => setActiveTab(val)}
-      />
+        <CustomTabs
+          tabs={Tabs}
+          activeTab={activeTab}
+          onTabPress={(val) => setActiveTab(val)}
+        />
 
-      <FlatList
-        data={activeTab === "upcoming" ? upcomingBookings : pastBookings}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <SmallPicTourCard
-            data={item}
-            isUpcoming={activeTab === "upcoming"}
-            onCheckIn={
-              activeTab === "upcoming" ? () => handleCheckIn(item) : undefined
-            }
-            onLeaveFeedback={
-              activeTab === "previous"
-                ? () => handleLeaveFeedback(item)
-                : undefined
-            }
-          />
-        )}
-      />
-
-      <CustomModal
-        visible={!!selectedBooking}
-        onClose={() => {
-          setSelectedBooking(null);
-          setModalType(null);
-        }}
-      >
-        {modalType === "qr" && selectedBooking && (
-          <View style={styles.checkinContainer}>
-            <Text style={styles.modalTitle}>Check-in</Text>
-            <Text style={styles.modalSubtitle}>
-              Ask your tour guide to scan the QR code to check you in.
-            </Text>
-            <View style={styles.qrCodeContainer}>
-              <QRCode value={selectedBooking.qrCodeValue} size={270} />
-            </View>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setSelectedBooking(null)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {modalType === "feedback" && (
-          <View style={styles.feedbackContainer}>
-            <FeedbackForm
-              onSubmit={handleFeedbackSubmit}
-              onClose={() => {
-                setSelectedBooking(null);
-                setModalType(null);
-              }}
+        <FlatList
+          data={activeTab === "upcoming" ? upcomingBookings : pastBookings}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <SmallPicTourCard
+              data={item}
+              isUpcoming={activeTab === "upcoming"}
+              onCheckIn={
+                activeTab === "upcoming" ? () => handleCheckIn(item) : undefined
+              }
+              onLeaveFeedback={
+                activeTab === "previous"
+                  ? () => handleLeaveFeedback(item)
+                  : undefined
+              }
             />
-          </View>
-        )}
-      </CustomModal>
+          )}
+        />
+
+        <CustomModal
+          visible={!!selectedBooking}
+          onClose={() => {
+            setSelectedBooking(null);
+            setModalType(null);
+          }}
+        >
+          {modalType === "qr" && selectedBooking && (
+            <View style={styles.checkinContainer}>
+              <Text style={styles.modalTitle}>Check-in</Text>
+              <Text style={styles.modalSubtitle}>
+                Ask your tour guide to scan the QR code to check you in.
+              </Text>
+              <View style={styles.qrCodeContainer}>
+                <QRCode value={selectedBooking.qrCodeValue} size={270} />
+              </View>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setSelectedBooking(null)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {modalType === "feedback" && (
+            <View style={styles.feedbackContainer}>
+              <FeedbackForm
+                onSubmit={handleFeedbackSubmit}
+                onClose={() => {
+                  setSelectedBooking(null);
+                  setModalType(null);
+                }}
+              />
+            </View>
+          )}
+        </CustomModal>
+      </View>
+
       <BottomNavBar
         items={travelerNavbar}
         currentTab="Bookings"
@@ -133,7 +136,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: 16,
     paddingTop: 20,
   },
   title: {

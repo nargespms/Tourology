@@ -14,10 +14,11 @@ const PickerButton: React.FC<PickerButtonProps> = ({
 }) => {
   return (
     <View>
-      <TouchableOpacity style={styles.container}>
+      <TouchableOpacity>
         <View style={styles.pickerRow}>
           {options.map((option) => (
             <TouchableOpacity
+              key={option}
               onPress={() => onSelect(option)}
               style={[
                 styles.pickerButton,

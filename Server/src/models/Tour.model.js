@@ -39,6 +39,7 @@ const tourSchema = new Schema({
   },
   photos: { type: [String], required: false },
   attendees: { type: [User], ref: "User", required: false },
+  qrCode: { type: String, required: false },
 });
 const Tour = mongoose.model("Tour", tourSchema);
 export default Tour;
