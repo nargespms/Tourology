@@ -1,50 +1,44 @@
-# Welcome to your Expo app 👋
+# Tourology
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Tourology is a mobile application that connects Tour Guides and Travelers. Tour Guides can showcase their services and expertise, and Travelers can browse and book tours all around the world.
 
-## Get started
+## Frontend Structure
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+.
+├── client
+│   ├── app
+│       ├── api
+│       ├── components
+│       ├── contexts
+│       ├── hooks
+│       ├── screens
+│   ├── assets
+│   ├── navigation
+│   ├── theme
+│   ├── App.tsx
+│   └── metro.config.js
+│   └── package.json
+│   └── tsconfig.json
+│   └── app.json
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Getting Started
 
-## Learn more
+### Prerequisites
 
-To learn more about developing your project with Expo, look at the following resources:
+- **Node.js** (v14+ recommended)
+- **npm**
+- **Expo** (for running the React Native app)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Running the client:
 
-## Join the community
+From the Client directory, run the following command:
 
-Join our community of developers creating universal apps.
+```bash
+npm install
+npm run start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- This will open the Expo Dev Tools in your console.
+- Use an iOS or Android emulator, or scan the QR code with the Expo app on your device to run on a physical device.
