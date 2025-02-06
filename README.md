@@ -30,10 +30,11 @@ Tourology is designed to make booking and hosting tours effortless. Users can si
 
 ### Features
 
-- **Tour Guide Registration**: Create a tour guide profile, complete with bio, skills, languages, and years of experience.
 - **File Upload**: Upload profile pictures using Expo ImagePicker on the frontend and Multer on the backend.
 - **JWT Authentication**: Secure routes with JSON Web Tokens.
 - **Role-Based**: Different dashboards for Tour Guides and Travelers.
+- **Global State**: Manage user authentication state with React Context.
+- **Scan QRCode**: Travelers can scan the QR code of the tour guide to get the information of the tour guide.
 
 ---
 
