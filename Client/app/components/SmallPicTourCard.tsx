@@ -29,6 +29,7 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
         <Text style={styles.title}>{tour.name}</Text>
         <Text style={styles.location}>{tour.location}</Text>
         <Text style={styles.date}>{tour.date}</Text>
+        <Text>{tour.description}</Text>
 
         {!tour.paid && tour.rating && (
           <Text style={styles.ratingText}>★ {tour.rating.toFixed(1)}</Text>

@@ -26,7 +26,7 @@ export default function AddStopModal({
   existingStop,
 }: Props) {
   // If editing, initialize the form data with existing stop
-  const initialForm: StopFormData = existingStop
+  let initialForm: StopFormData = existingStop
     ? {
         name: existingStop.name,
         time: existingStop.time,
@@ -37,7 +37,7 @@ export default function AddStopModal({
       }
     : {
         name: "",
-        time: "12:00 AM",
+        time: "",
         description: "",
         location: "",
         photo: "",
@@ -83,6 +83,19 @@ export default function AddStopModal({
       location: formData.location,
       photo: formData.photo,
       region: formData.region,
+    };
+    initialForm = {
+      name: "",
+      time: "",
+      description: "",
+      location: "",
+      photo: "",
+      region: {
+        latitude: 51.1784,
+        longitude: -115.5708,
+        latitudeDelta: 1.5,
+        longitudeDelta: 1.5,
+      },
     };
     onSaveStop(newStop);
     onClose();

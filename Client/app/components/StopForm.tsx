@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ export interface StopFormData {
   name: string;
   time: string;
   description: string;
-  location: string; // e.g. "Lake Louise, Alberta"
+  location: string;
   region?: {
     latitude: number;
     longitude: number;
@@ -81,21 +81,25 @@ export default function StopForm({ formData, onFormChange }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Name</Text>
+      <Text style={styles.label}>Name*</Text>
       <TextInput
         style={styles.input}
         value={formData.name}
+        placeholder="e.g. Lake Louise"
+        placeholderTextColor="#999"
         onChangeText={(val) => onFormChange({ ...formData, name: val })}
       />
 
-      <Text style={styles.label}>Expected time</Text>
+      <Text style={styles.label}>Expected time*</Text>
       <TextInput
         style={styles.input}
         value={formData.time}
+        placeholder="e.g. 12:00 AM"
+        placeholderTextColor="#999"
         onChangeText={(val) => onFormChange({ ...formData, time: val })}
       />
 
-      <Text style={styles.label}>Description</Text>
+      <Text style={styles.label}>Description*</Text>
       <TextInput
         style={[styles.input, styles.multiLine]}
         multiline
@@ -105,9 +109,11 @@ export default function StopForm({ formData, onFormChange }: Props) {
         placeholderTextColor="#b0acac"
       />
 
-      <Text style={styles.label}>Location</Text>
+      <Text style={styles.label}>Location*</Text>
       <TextInput
         style={styles.input}
+        placeholder="e.g. Lake Louise"
+        placeholderTextColor="#999"
         value={formData.location}
         onChangeText={(val) => onFormChange({ ...formData, location: val })}
       />
@@ -115,7 +121,7 @@ export default function StopForm({ formData, onFormChange }: Props) {
       {/* MAP PREVIEW */}
       <SingleLocationMap region={region} />
 
-      <Text style={styles.label}>Photo</Text>
+      <Text style={styles.label}>Photo*</Text>
       <View style={styles.photoRow}>
         {formData.photo ? (
           <View style={styles.photoWrapper}>

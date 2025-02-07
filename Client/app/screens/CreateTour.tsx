@@ -1,7 +1,6 @@
 import * as Location from "expo-location";
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -12,20 +11,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import AddStopModal from "../components/AddStopModal";
-import ImagePickerSection from "../components/ImagePickerSection";
-import StopListSection, { StopData } from "../components/StopListSection";
-import SingleLocationMap from "../components/SingleLocationMap";
-import PickerButton from "../components/PickerButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTour } from "../api/tours";
+import AddStopModal from "../components/AddStopModal";
+import ImagePickerSection from "../components/ImagePickerSection";
+import PickerButton from "../components/PickerButton";
+import SingleLocationMap from "../components/SingleLocationMap";
+import StopListSection, { StopData } from "../components/StopListSection";
 import getId from "../utils/getId";
 import { getUserInfo } from "../utils/userSession";
-import uriToFile from "../utils/uriToFile";
+import Toast from "react-native-toast-message";
 
 export default function CreateTour() {
   const [routeName, setRouteName] = useState("");
@@ -45,12 +43,12 @@ export default function CreateTour() {
 
   // Pricing
   const [pricingOption, setPricingOption] = useState<string>("Paid");
-  const [price, setPrice] = useState("299");
-  const [maxAttendees, setMaxAttendees] = useState("10");
+  const [price, setPrice] = useState("");
+  const [maxAttendees, setMaxAttendees] = useState("");
 
   // Dates
-  const [startDate, setStartDate] = useState("12 Jun 2025");
-  const [endDate, setEndDate] = useState("13 Jun 2025");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Stops
   const [stops, setStops] = useState<StopData[]>([]);
@@ -61,17 +59,27 @@ export default function CreateTour() {
 
   const queryClient = useQueryClient();
 
+  //local error state for inputs
+  const [errors, setErrors] = useState({
+    routeName: false,
+    routeDescription: false,
+    locationText: false,
+    price: false,
+    maxAttendees: false,
+    startDate: false,
+    endDate: false,
+    photos: false,
+  });
+
   const { mutate } = useMutation({
     mutationFn: createTour,
     onSuccess: () => {
-      Alert.alert("Route Saved", "Your new tour route has been saved!");
+      // If successful, reset or navigate
       navigation.goBack();
-
-      // invalidate the query to refetch the data
       queryClient.invalidateQueries("tourGuideTours");
     },
-    onError: (error) => {
-      Alert.alert("Error", "Failed to save the route. Please try again.");
+    onError: () => {
+      // Could handle error toast or something else here
     },
   });
 
@@ -96,7 +104,7 @@ export default function CreateTour() {
       }
     } catch (error) {
       console.log("Geocode error:", error);
-      // fallback: do nothing or show an alert
+      // fallback: do nothing
     }
   };
 
@@ -108,6 +116,12 @@ export default function CreateTour() {
   const handleEditStopPress = (index: number) => {
     setEditingStopIndex(index);
     setIsStopModalVisible(true);
+  };
+  const handleSetGalleryImages = (images: string[]) => {
+    setGalleryImages(images);
+    if (errors.photos && images.length > 0) {
+      setErrors((prev) => ({ ...prev, photos: false }));
+    }
   };
 
   const handleDeleteStopPress = (index: number) => {
@@ -131,8 +145,41 @@ export default function CreateTour() {
   };
 
   const handleSave = async (state = "published") => {
-    const user = await getUserInfo();
+    // error object for validations
+    const newErrors = {
+      routeName: !routeName.trim(),
+      routeDescription: !routeDescription.trim(),
+      locationText: !locationText.trim(),
+      price: false,
+      maxAttendees: false,
+      startDate: false,
+      endDate: false,
+      photos: galleryImages.length === 0,
+    };
 
+    // If pricing is Paid, validate required fields too
+    if (pricingOption === "Paid") {
+      newErrors.price = !price.trim();
+      newErrors.maxAttendees = !maxAttendees.trim();
+      newErrors.startDate = !startDate.trim();
+      newErrors.endDate = !endDate.trim();
+    }
+
+    setErrors(newErrors);
+
+    // If any error is true, stop here
+    if (Object.values(newErrors).some((val) => val === true)) {
+      Toast.show({
+        type: "error",
+        text1: "Please fill in all required fields",
+        visibilityTime: 5000,
+        topOffset: 50,
+      });
+      return;
+    }
+
+    // passing all validations
+    const user = await getUserInfo();
     mutate({
       name: routeName,
       state,
@@ -144,12 +191,12 @@ export default function CreateTour() {
       maxAttendees: parseInt(maxAttendees),
       startDate: startDate,
       endDate: endDate,
-      stops: stops.reduce((acc, stop, index) => {
+      stops: stops.reduce((acc, stop) => {
         const id = getId();
         acc[id] = stop;
         stop.id = id;
         return acc;
-      }, {}),
+      }, {} as Record<string, StopData>),
       photos: galleryImages,
       host: {
         id: user.id,
@@ -162,6 +209,7 @@ export default function CreateTour() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: "padding", android: undefined })}
+        style={{ flex: 1 }}
       >
         <View style={styles.newTourStickyHeader}>
           <TouchableOpacity
@@ -174,30 +222,55 @@ export default function CreateTour() {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>New tour</Text>
         </View>
+
+        {/* Scrollable content */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Text style={styles.label}>Name</Text>
+          <Text style={styles.label}>Name*</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.routeName && styles.errorInput]}
             value={routeName}
-            onChangeText={setRouteName}
+            placeholderTextColor="#999"
+            placeholder="e.g. Banff National Park Tour"
+            onChangeText={(txt) => {
+              setRouteName(txt);
+              if (errors.routeName && txt.trim()) {
+                setErrors((prev) => ({ ...prev, routeName: false }));
+              }
+            }}
           />
-          <Text style={[styles.label]}>Description</Text>
+
+          <Text style={[styles.label]}>Description*</Text>
           <TextInput
-            style={[styles.input, styles.multiLineInput]}
+            style={[
+              styles.input,
+              styles.multiLineInput,
+              errors.routeDescription && styles.errorInput,
+            ]}
             placeholder="Provide a short description about the tour and the location"
-            placeholderTextColor="#b0acac"
+            placeholderTextColor="#999"
             value={routeDescription}
-            onChangeText={setRouteDescription}
+            onChangeText={(txt) => {
+              setRouteDescription(txt);
+              if (errors.routeDescription && txt.trim()) {
+                setErrors((prev) => ({ ...prev, routeDescription: false }));
+              }
+            }}
             multiline
           />
 
-          <Text style={styles.label}>City/ Province/ State</Text>
+          <Text style={styles.label}>City/ Province/ State*</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.locationText && styles.errorInput]}
             placeholder="e.g. Banff, Alberta, Florida"
-            placeholderTextColor="#b0acac"
+            placeholderTextColor="#999"
             value={locationText}
-            onChangeText={handleLocationChange}
+            onChangeText={(txt) => {
+              setLocationText(txt);
+              if (errors.locationText && txt.trim()) {
+                setErrors((prev) => ({ ...prev, locationText: false }));
+              }
+              handleLocationChange(txt);
+            }}
           />
 
           {/* Map (updates when location changes) */}
@@ -231,7 +304,7 @@ export default function CreateTour() {
             <Text style={styles.addStopBtnText}> Add stop</Text>
           </TouchableOpacity>
 
-          {/* 6) Pricing Options */}
+          {/* Pricing Options */}
           <View style={styles.pricingContainer}>
             <Text style={styles.label}>Pricing option</Text>
 
@@ -241,63 +314,100 @@ export default function CreateTour() {
               onSelect={(option) => setPricingOption(option)}
             />
           </View>
+
+          {/* Paid Only Fields */}
           {pricingOption === "Paid" && (
             <>
-              <Text style={styles.label}>Price (CAD)</Text>
+              <Text style={styles.label}>Price (CAD)*</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.price && styles.errorInput]}
                 keyboardType="numeric"
+                placeholderTextColor="#999"
+                placeholder="e.g. 100"
                 value={price}
-                onChangeText={setPrice}
+                onChangeText={(txt) => {
+                  setPrice(txt);
+                  if (errors.price && txt.trim()) {
+                    setErrors((prev) => ({ ...prev, price: false }));
+                  }
+                }}
               />
 
-              <Text style={styles.label}>Max attendees</Text>
+              <Text style={styles.label}>Max attendees*</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.maxAttendees && styles.errorInput]}
                 keyboardType="numeric"
+                placeholderTextColor="#999"
+                placeholder="e.g. 10"
                 value={maxAttendees}
-                onChangeText={setMaxAttendees}
-              />
-              <Text style={styles.label}>Start date</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="DD MMM YYYY"
-                value={startDate}
-                onChangeText={setStartDate}
+                onChangeText={(txt) => {
+                  setMaxAttendees(txt);
+                  if (errors.maxAttendees && txt.trim()) {
+                    setErrors((prev) => ({ ...prev, maxAttendees: false }));
+                  }
+                }}
               />
 
-              <Text style={styles.label}>End date</Text>
+              <Text style={styles.label}>Start date*</Text>
               <TextInput
-                style={styles.input}
-                placeholder="DD MMM YYYY"
+                style={[styles.input, errors.startDate && styles.errorInput]}
+                placeholder="DD MMM YYYY: e.g. 01 Jan 2025"
+                placeholderTextColor="#999"
+                value={startDate}
+                onChangeText={(txt) => {
+                  setStartDate(txt);
+                  if (errors.startDate && txt.trim()) {
+                    setErrors((prev) => ({ ...prev, startDate: false }));
+                  }
+                }}
+              />
+
+              <Text style={styles.label}>End date*</Text>
+              <TextInput
+                style={[styles.input, errors.endDate && styles.errorInput]}
+                placeholder="DD MMM YYYY: e.g. 01 Jan 2025"
+                placeholderTextColor="#999"
                 value={endDate}
-                onChangeText={setEndDate}
+                onChangeText={(txt) => {
+                  setEndDate(txt);
+                  if (errors.endDate && txt.trim()) {
+                    setErrors((prev) => ({ ...prev, endDate: false }));
+                  }
+                }}
               />
             </>
           )}
 
+          {/* Photos (required?) */}
           <Text style={styles.label}>Photos</Text>
           <ImagePickerSection
             images={galleryImages}
-            onImagesChange={setGalleryImages}
+            onImagesChange={handleSetGalleryImages}
           />
-
-          <View style={{ flexDirection: "row", marginTop: 16 }}>
-            <TouchableOpacity
-              style={styles.draftButton}
-              onPress={handleSaveDraft}
-            >
-              <Text>Save as draft</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => handleSave("published")}
-            >
-              <Text style={{ color: "#fff" }}>Save</Text>
-            </TouchableOpacity>
-          </View>
+          {errors.photos && (
+            <Text style={styles.errorText}>
+              At least one photo is required.
+            </Text>
+          )}
         </ScrollView>
 
+        {/* Sticky bottom action bar */}
+        <View style={styles.bottomButtonContainer}>
+          <TouchableOpacity
+            style={styles.draftButton}
+            onPress={handleSaveDraft}
+          >
+            <Text>Save as draft</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => handleSave("published")}
+          >
+            <Text style={{ color: "#fff" }}>Save</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Stop Modal */}
         <AddStopModal
           visible={isStopModalVisible}
           onClose={() => setIsStopModalVisible(false)}
@@ -320,7 +430,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContainer: {
-    paddingBottom: 70,
+    paddingBottom: 150,
     paddingHorizontal: 18,
   },
   headerTitle: {
@@ -334,8 +444,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "flex-start",
-    zIndex: 2,
     backgroundColor: "#f4f3f3",
+    zIndex: 2,
   },
   topButton: {
     zIndex: 2,
@@ -351,7 +461,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
   },
-
   label: {
     fontSize: 15,
     fontWeight: "600",
@@ -370,6 +479,14 @@ const styles = StyleSheet.create({
     height: 80,
     textAlignVertical: "top",
     paddingHorizontal: 8,
+  },
+  errorInput: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 13,
+    marginTop: 2,
   },
   mapContainer: {
     marginTop: 8,
@@ -394,18 +511,30 @@ const styles = StyleSheet.create({
   },
   placeholderStopText: {
     marginTop: 4,
-    color: "#757575",
+    color: "#a4a4a4",
     fontSize: 13,
     textAlign: "center",
     paddingVertical: 16,
     borderWidth: 1,
-    borderColor: "#969696",
+    borderColor: "#e1e1e1",
     borderRadius: 8,
   },
   pricingContainer: {
     marginTop: 16,
   },
 
+  // Sticky bottom button container
+  bottomButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+  },
   draftButton: {
     flex: 1,
     backgroundColor: "#eee",
@@ -413,6 +542,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginRight: 8,
     alignItems: "center",
+    justifyContent: "center",
   },
   saveButton: {
     flex: 1,
@@ -421,14 +551,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginLeft: 8,
     alignItems: "center",
-  },
-
-  navbarWrapper: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 90,
-    backgroundColor: "#fff",
+    justifyContent: "center",
   },
 });

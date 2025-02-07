@@ -1,5 +1,6 @@
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   SafeAreaView,
@@ -8,17 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
-import BottomNavBar from "../components/BottomNavBar";
-import SmallPicTourCard from "../components/SmallPicTourCard";
-import ActiveTourCard from "../components/ActiveTourCard";
-import { pastBookings, activeTour } from "../data/bookings";
-import { tourGuideNavbar } from "../data/navbarOptions";
-import CustomModal from "../components/CustomeModal";
-import QRCodeScanner from "../components/QRCodeScanner";
 import { useQuery } from "@tanstack/react-query";
 import { getOwnedTours } from "../api/tours";
+import ActiveTourCard from "../components/ActiveTourCard";
+import BottomNavBar from "../components/BottomNavBar";
+import CustomModal from "../components/CustomeModal";
+import QRCodeScanner from "../components/QRCodeScanner";
+import SmallPicTourCard from "../components/SmallPicTourCard";
+import { activeTour } from "../data/bookings";
+import { tourGuideNavbar } from "../data/navbarOptions";
 
 const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
@@ -38,7 +38,7 @@ const TourGuideHome: React.FC = () => {
     refetch,
     isFetched,
   } = useQuery({
-    queryKey: "tourGuideTours",
+    queryKey: ["tourGuideTours"],
     queryFn: getOwnedTours,
   });
 
@@ -54,14 +54,24 @@ const TourGuideHome: React.FC = () => {
         <Text style={styles.sectionTitle}>My Tours</Text>
         {isFetching && <Text>Loading...</Text>}
         {!isFetching && isFetched && ownTours?.length === 0 && (
-          <Text>No tours found</Text>
+          <View style={styles.noToursFound}>
+            <Text style={{ color: "#696969", fontSize: 16 }}>
+              No tours found
+            </Text>
+          </View>
         )}
         {!isFetching && isFetched && ownTours && (
           <FlatList
             data={Object.values(ownTours)}
             keyExtractor={(tour) => tour.id}
             renderItem={({ item }) => {
-              return <SmallPicTourCard tour={item} enableButtons={false} />;
+              return (
+                <SmallPicTourCard
+                  key={item.id}
+                  tour={item}
+                  enableButtons={false}
+                />
+              );
             }}
             contentContainerStyle={styles.listContent}
           />
@@ -195,5 +205,12 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     width: 150,
+  },
+  noToursFound: {
+    paddingVertical: 24,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
