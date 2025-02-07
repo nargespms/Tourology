@@ -51,7 +51,6 @@ export default function AddStopModal({
       };
 
   const [formData, setFormData] = useState<StopFormData>(initialForm);
-  console.log("formData", formData);
 
   const [errors, setErrors] = useState({
     name: false,
