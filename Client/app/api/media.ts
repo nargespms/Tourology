@@ -16,6 +16,6 @@ export const getMediaSrc = (media: string) => {
     return media;
   }
 
-  console.log("media", `${BASE_URL}/${media}`);
+  // console.log("media", `${BASE_URL}/${media}`);
   return `${BASE_URL}/${media}`;
 };

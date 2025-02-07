@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import toastConfig from "./app/components/ToasConfig";
 import { LoggedUserProvider } from "./app/contexts/loggedUserData";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -17,10 +18,12 @@ export default function App() {
       <StatusBar />
       <LoggedUserProvider>
         <NavigationContainer>
-          <ThemeProvider value={theme}>
-            <Navigator />
-            <Toast config={toastConfig} />
-          </ThemeProvider>
+          <ActionSheetProvider>
+            <ThemeProvider value={theme}>
+              <Navigator />
+              <Toast config={toastConfig} />
+            </ThemeProvider>
+          </ActionSheetProvider>
         </NavigationContainer>
       </LoggedUserProvider>
     </QueryClientProvider>

@@ -19,10 +19,13 @@ import QRCodeScanner from "../components/QRCodeScanner";
 import SmallPicTourCard from "../components/SmallPicTourCard";
 import { activeTour } from "../data/bookings";
 import { tourGuideNavbar } from "../data/navbarOptions";
+import TourGuideTourList from "../components/TourGuideTourList";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
 const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
   const [isQRModalVisible, setQRModalVisible] = useState(false);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const handleBottomNavChange = (name: string) => {
     if (name === "Explore") {
@@ -30,6 +33,39 @@ const TourGuideHome: React.FC = () => {
     } else if (name === "check-ins") {
       setQRModalVisible(true);
     }
+  };
+  const handlePressOwnTours = (tour) => {
+    const options = ["Activate", "Edit", "Preview", "Delete", "cancel"];
+    const destructiveButtonIndex = 3;
+    const cancelButtonIndex = 4;
+    const title = tour.name;
+
+    showActionSheetWithOptions(
+      {
+        title,
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex,
+      },
+      (selectedIndex: number) => {
+        switch (selectedIndex) {
+          case 0:
+            // activate
+            break;
+
+          case 1:
+            // Edit
+            break;
+
+          case 2:
+            // Preview
+            break;
+          case 3:
+            // Delete
+            break;
+        }
+      }
+    );
   };
 
   const {
@@ -63,13 +99,13 @@ const TourGuideHome: React.FC = () => {
         {!isFetching && isFetched && ownTours && (
           <FlatList
             data={Object.values(ownTours)}
-            keyExtractor={(tour) => tour.id}
+            keyExtractor={(tour) => tour._id}
             renderItem={({ item }) => {
               return (
-                <SmallPicTourCard
-                  key={item.id}
+                <TourGuideTourList
+                  key={item._id}
                   tour={item}
-                  enableButtons={false}
+                  onPress={handlePressOwnTours}
                 />
               );
             }}
