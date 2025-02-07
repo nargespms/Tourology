@@ -11,6 +11,7 @@ import {
 import StopForm, { StopFormData } from "./StopForm";
 import { StopData } from "./StopListSection";
 import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 interface Props {
   visible: boolean;
@@ -50,6 +51,15 @@ export default function AddStopModal({
       };
 
   const [formData, setFormData] = useState<StopFormData>(initialForm);
+  console.log("formData", formData);
+
+  const [errors, setErrors] = useState({
+    name: false,
+    time: false,
+    description: false,
+    location: false,
+    photo: false,
+  });
 
   useEffect(() => {
     if (existingStop) {
@@ -71,11 +81,27 @@ export default function AddStopModal({
   };
 
   const handleAdd = () => {
-    if (!formData.name) {
-      // Simple validation
+    const newErrors = {
+      name: !formData.name.trim(),
+      time: !formData.time.trim(),
+      description: !formData.description.trim(),
+      location: !formData.location.trim(),
+      photo: !formData.photo.trim(),
+    };
+    setErrors(newErrors);
+
+    // If any error is true, stop here and show a Toast
+    if (Object.values(newErrors).some((val) => val === true)) {
+      Toast.show({
+        type: "error",
+        text1: "Please fill in all required fields",
+        visibilityTime: 5000,
+        topOffset: 50,
+      });
       return;
     }
-    // Compose StopData
+
+    // If no errors, proceed
     const newStop: StopData = {
       name: formData.name,
       time: formData.time,
@@ -84,6 +110,8 @@ export default function AddStopModal({
       photo: formData.photo,
       region: formData.region,
     };
+
+    // Clear form
     initialForm = {
       name: "",
       time: "",
@@ -97,6 +125,7 @@ export default function AddStopModal({
         longitudeDelta: 1.5,
       },
     };
+
     onSaveStop(newStop);
     onClose();
   };
@@ -114,26 +143,27 @@ export default function AddStopModal({
             </Text>
           </TouchableOpacity>
         </View>
+        <Toast />
         <ScrollView>
           <View style={styles.modalContainer}>
-            <StopForm formData={formData} onFormChange={setFormData} />
-
-            {/* ACTION BUTTONS */}
-            <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={styles.discardBtn}
-                onPress={handleDiscard}
-              >
-                <Text>Discard</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
-                <Text style={{ color: "#fff" }}>
-                  {existingStop ? "Save" : "Add"}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <StopForm
+              formData={formData}
+              onFormChange={setFormData}
+              errors={errors}
+            />
           </View>
         </ScrollView>
+        {/* ACTION BUTTONS */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.discardBtn} onPress={handleDiscard}>
+            <Text>Discard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
+            <Text style={{ color: "#fff" }}>
+              {existingStop ? "Save" : "Add"}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     </Modal>
   );
@@ -157,7 +187,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 18,
     paddingVertical: 12,
-    zIndex: 2,
+    // zIndex: 1,
     backgroundColor: "#f4f3f3",
   },
   title: {
@@ -170,8 +200,18 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: "row",
-    marginBottom: 40,
+    paddingBottom: 40,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
   },
+  bottomButtonContainer: {},
   discardBtn: {
     flex: 1,
     backgroundColor: "#eee",

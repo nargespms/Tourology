@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,9 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import SingleLocationMap from "./SingleLocationMap";
 
@@ -27,9 +27,16 @@ export interface StopFormData {
 interface Props {
   formData: StopFormData;
   onFormChange: (updated: StopFormData) => void;
+  errors?: {
+    name: boolean;
+    time: boolean;
+    description: boolean;
+    location: boolean;
+    photo: boolean;
+  };
 }
 
-export default function StopForm({ formData, onFormChange }: Props) {
+export default function StopForm({ formData, onFormChange, errors }: Props) {
   const [region, setRegion] = React.useState({
     latitude: 51.1784,
     longitude: -115.5708,
@@ -62,7 +69,7 @@ export default function StopForm({ formData, onFormChange }: Props) {
     };
   }, [formData.location]);
 
-  // update region if region changes
+  // update parent formData if region changes
   useEffect(() => {
     onFormChange({ ...formData, region });
   }, [region]);
@@ -80,10 +87,10 @@ export default function StopForm({ formData, onFormChange }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.label}>Name*</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, errors?.name && styles.errorInput]}
         value={formData.name}
         placeholder="e.g. Lake Louise"
         placeholderTextColor="#999"
@@ -92,7 +99,7 @@ export default function StopForm({ formData, onFormChange }: Props) {
 
       <Text style={styles.label}>Expected time*</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, errors?.time && styles.errorInput]}
         value={formData.time}
         placeholder="e.g. 12:00 AM"
         placeholderTextColor="#999"
@@ -101,7 +108,11 @@ export default function StopForm({ formData, onFormChange }: Props) {
 
       <Text style={styles.label}>Description*</Text>
       <TextInput
-        style={[styles.input, styles.multiLine]}
+        style={[
+          styles.input,
+          styles.multiLine,
+          errors?.description && styles.errorInput,
+        ]}
         multiline
         value={formData.description}
         onChangeText={(val) => onFormChange({ ...formData, description: val })}
@@ -111,7 +122,7 @@ export default function StopForm({ formData, onFormChange }: Props) {
 
       <Text style={styles.label}>Location*</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, errors?.location && styles.errorInput]}
         placeholder="e.g. Lake Louise"
         placeholderTextColor="#999"
         value={formData.location}
@@ -139,14 +150,18 @@ export default function StopForm({ formData, onFormChange }: Props) {
           <Text style={{ fontSize: 20, color: "#999" }}>+</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      {errors?.photo && (
+        <Text style={styles.errorText}>Photo is required.</Text>
+      )}
+    </ScrollView>
   );
 }
 
 // -----------------------------------
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginBottom: 80,
+    paddingBottom: 20,
   },
   label: {
     fontWeight: "600",
@@ -165,15 +180,13 @@ const styles = StyleSheet.create({
     height: 80,
     textAlignVertical: "top",
   },
-  mapContainer: {
-    marginTop: 8,
-    height: 150,
-    borderRadius: 6,
-    overflow: "hidden",
+  errorInput: {
+    borderColor: "red",
   },
-  map: {
-    width: "100%",
-    height: "100%",
+  errorText: {
+    color: "red",
+    marginTop: 4,
+    fontSize: 13,
   },
   photoRow: {
     flexDirection: "row",
