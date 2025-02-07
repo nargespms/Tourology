@@ -3,12 +3,16 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
 export interface StopData {
-  id?: string; // optional
+  id: string; // optional
   name: string;
   time: string;
   description: string;
   location: string;
-  imageUri: string;
+  photo: string;
+  region: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 interface Props {
@@ -26,7 +30,7 @@ export default function StopListSection({
     <View>
       {stops.map((stop, index) => (
         <View style={styles.stopItem} key={index}>
-          <Image source={{ uri: stop.imageUri }} style={styles.stopImage} />
+          <Image source={{ uri: stop.photo }} style={styles.stopImage} />
 
           <View style={{ flex: 1, marginHorizontal: 8 }}>
             <Text style={styles.stopTitle}>{stop.name}</Text>

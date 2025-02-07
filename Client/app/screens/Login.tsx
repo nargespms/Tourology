@@ -79,18 +79,22 @@ const LoginScreen: React.FC = () => {
         topOffset: 50,
       });
 
-      updateData({
+      await updateData({
         id: response.userId,
         firstName: response.firstName,
         lastName: response.lastName,
         role: response.role,
+        email: response.email,
+        token: response.token,
       });
 
-      if (response.role === "traveler") {
-        navigation.navigate("TravelerHome" as never);
-      } else if (response.role === "guide") {
-        navigation.navigate("TourGuideHome" as never);
-      }
+      setTimeout(() => {
+        if (response.role === "traveler") {
+          navigation.navigate("TravelerHome" as never);
+        } else if (response.role === "guide") {
+          navigation.navigate("TourGuideHome" as never);
+        }
+      }, 50);
     } catch (err) {
       setLoginError(true);
       Toast.show({

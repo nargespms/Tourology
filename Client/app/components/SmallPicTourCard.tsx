@@ -1,18 +1,19 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { Booking } from "../data/bookings";
 import Entypo from "@expo/vector-icons/Entypo";
+import { Tour } from "../types/tour";
+import { getMediaSrc } from "../api/media";
 
 interface BookingCardProps {
-  data: Booking;
-  onCheckIn?: (item: Booking) => void;
-  onLeaveFeedback?: (item: Booking) => void;
+  tour: Tour;
+  onCheckIn?: (item: Tour) => void;
+  onLeaveFeedback?: (item: Tour) => void;
   isUpcoming?: boolean;
   enableButtons?: boolean;
 }
 
 const SmallPicTourCard: React.FC<BookingCardProps> = ({
-  data,
+  tour,
   onCheckIn,
   onLeaveFeedback,
   isUpcoming,
@@ -20,18 +21,20 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Image source={data.image} style={styles.bookingImage} />
-
+      <Image
+        source={{ uri: getMediaSrc(tour.photos[0]) }}
+        style={styles.bookingImage}
+      />
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{data.title}</Text>
-        <Text style={styles.location}>{data.location}</Text>
-        <Text style={styles.date}>{data.date}</Text>
+        <Text style={styles.title}>{tour.name}</Text>
+        <Text style={styles.location}>{tour.location}</Text>
+        <Text style={styles.date}>{tour.date}</Text>
 
-        {data.status !== "paid" && data.rating && (
-          <Text style={styles.ratingText}>★ {data.rating.toFixed(1)}</Text>
+        {!tour.paid && tour.rating && (
+          <Text style={styles.ratingText}>★ {tour.rating.toFixed(1)}</Text>
         )}
 
-        {enableButtons && isUpcoming && data.status === "paid" && (
+        {enableButtons && isUpcoming && tour.paid && (
           <View style={styles.paidBadge}>
             <Text style={styles.paidText}>
               <Entypo name="check" size={12} color="green" /> Paid
@@ -42,7 +45,7 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
         {enableButtons && isUpcoming && (
           <TouchableOpacity
             style={styles.checkinButton}
-            onPress={() => onCheckIn && onCheckIn(data)}
+            onPress={() => onCheckIn && onCheckIn(tour)}
           >
             <Text style={styles.checkinButtonText}>Check-in</Text>
           </TouchableOpacity>
@@ -51,7 +54,7 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
         {enableButtons && !isUpcoming && (
           <TouchableOpacity
             style={styles.feedbackButton}
-            onPress={() => onLeaveFeedback && onLeaveFeedback(data)}
+            onPress={() => onLeaveFeedback && onLeaveFeedback(tour)}
           >
             <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
           </TouchableOpacity>

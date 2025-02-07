@@ -17,7 +17,11 @@ export interface StopFormData {
   time: string;
   description: string;
   location: string; // e.g. "Lake Louise, Alberta"
-  imageUri: string; // one photo
+  region?: {
+    latitude: number;
+    longitude: number;
+  };
+  photo: string; // one photo
 }
 
 interface Props {
@@ -58,6 +62,11 @@ export default function StopForm({ formData, onFormChange }: Props) {
     };
   }, [formData.location]);
 
+  // update region if region changes
+  useEffect(() => {
+    onFormChange({ ...formData, region });
+  }, [region]);
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -66,7 +75,7 @@ export default function StopForm({ formData, onFormChange }: Props) {
       quality: 0.7,
     });
     if (!result.canceled && result.assets) {
-      onFormChange({ ...formData, imageUri: result.assets[0].uri });
+      onFormChange({ ...formData, photo: result.assets[0].uri });
     }
   };
 
@@ -108,12 +117,12 @@ export default function StopForm({ formData, onFormChange }: Props) {
 
       <Text style={styles.label}>Photo</Text>
       <View style={styles.photoRow}>
-        {formData.imageUri ? (
+        {formData.photo ? (
           <View style={styles.photoWrapper}>
-            <Image source={{ uri: formData.imageUri }} style={styles.photo} />
+            <Image source={{ uri: formData.photo }} style={styles.photo} />
             <TouchableOpacity
               style={styles.removeBtn}
-              onPress={() => onFormChange({ ...formData, imageUri: "" })}
+              onPress={() => onFormChange({ ...formData, photo: "" })}
             >
               <Text style={{ color: "red" }}>✕</Text>
             </TouchableOpacity>

@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   SafeAreaView,
@@ -17,6 +17,8 @@ import { pastBookings, activeTour } from "../data/bookings";
 import { tourGuideNavbar } from "../data/navbarOptions";
 import CustomModal from "../components/CustomeModal";
 import QRCodeScanner from "../components/QRCodeScanner";
+import { useQuery } from "@tanstack/react-query";
+import { getOwnedTours } from "../api/tours";
 
 const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
@@ -30,6 +32,16 @@ const TourGuideHome: React.FC = () => {
     }
   };
 
+  const {
+    isFetching,
+    data: ownTours,
+    refetch,
+    isFetched,
+  } = useQuery({
+    queryKey: "tourGuideTours",
+    queryFn: getOwnedTours,
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       {activeTour && (
@@ -40,14 +52,20 @@ const TourGuideHome: React.FC = () => {
       )}
       <View style={styles.contentWrapper}>
         <Text style={styles.sectionTitle}>My Tours</Text>
-        <FlatList
-          data={pastBookings}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <SmallPicTourCard data={item} enableButtons={false} />
-          )}
-          contentContainerStyle={styles.listContent}
-        />
+        {isFetching && <Text>Loading...</Text>}
+        {!isFetching && isFetched && ownTours?.length === 0 && (
+          <Text>No tours found</Text>
+        )}
+        {!isFetching && isFetched && ownTours && (
+          <FlatList
+            data={Object.values(ownTours)}
+            keyExtractor={(tour) => tour.id}
+            renderItem={({ item }) => {
+              return <SmallPicTourCard tour={item} enableButtons={false} />;
+            }}
+            contentContainerStyle={styles.listContent}
+          />
+        )}
       </View>
 
       <View style={styles.createTourButtonContainer}>

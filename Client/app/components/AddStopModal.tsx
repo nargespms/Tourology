@@ -32,14 +32,21 @@ export default function AddStopModal({
         time: existingStop.time,
         description: existingStop.description,
         location: existingStop.location,
-        imageUri: existingStop.imageUri,
+        photo: existingStop.photo,
+        region: existingStop.region,
       }
     : {
         name: "",
         time: "12:00 AM",
         description: "",
         location: "",
-        imageUri: "",
+        photo: "",
+        region: {
+          latitude: 51.1784,
+          longitude: -115.5708,
+          latitudeDelta: 1.5,
+          longitudeDelta: 1.5,
+        },
       };
 
   const [formData, setFormData] = useState<StopFormData>(initialForm);
@@ -51,16 +58,11 @@ export default function AddStopModal({
         time: existingStop.time,
         description: existingStop.description,
         location: existingStop.location,
-        imageUri: existingStop.imageUri,
+        photo: existingStop.photo,
+        region: existingStop.region,
       });
     } else {
-      setFormData({
-        name: "",
-        time: "12:00 AM",
-        description: "",
-        location: "",
-        imageUri: "",
-      });
+      setFormData(initialForm);
     }
   }, [existingStop]);
 
@@ -79,7 +81,8 @@ export default function AddStopModal({
       time: formData.time,
       description: formData.description,
       location: formData.location,
-      imageUri: formData.imageUri,
+      photo: formData.photo,
+      region: formData.region,
     };
     onSaveStop(newStop);
     onClose();

@@ -68,7 +68,7 @@ const TravelerBookings: React.FC = () => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <SmallPicTourCard
-              data={item}
+              tour={item}
               isUpcoming={activeTab === "upcoming"}
               onCheckIn={
                 activeTab === "upcoming" ? () => handleCheckIn(item) : undefined

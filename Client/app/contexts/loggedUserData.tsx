@@ -1,6 +1,7 @@
 // this module stores the logged in user data on a context and exposes a hook to access and update it plus the context provider
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { storeUserInfo } from "../utils/userSession";
 
 export interface LoggedUserData {
   id: string;
@@ -9,11 +10,12 @@ export interface LoggedUserData {
   email: string;
   phoneNumber: string;
   role: "guide" | "traveler";
+  token: string;
 }
 
 export interface LoggedUserContextType {
   data: LoggedUserData;
-  updateData: (data: Partial<LoggedUserData>) => void;
+  updateData: (data: Partial<LoggedUserData>) => Promise<void>;
 }
 
 const LoggedUserContext = createContext<LoggedUserContextType>({
@@ -25,7 +27,7 @@ const LoggedUserContext = createContext<LoggedUserContextType>({
     phoneNumber: "",
     role: "traveler",
   },
-  updateData: () => {},
+  updateData: () => Promise.resolve(),
 });
 
 export const LoggedUserProvider: React.FC<{
@@ -40,7 +42,8 @@ export const LoggedUserProvider: React.FC<{
     role: "traveler",
   });
 
-  const updateData = (newData: Partial<LoggedUserData>) => {
+  const updateData = async (newData: Partial<LoggedUserData>) => {
+    await storeUserInfo(newData);
     setData({ ...data, ...newData });
   };
 

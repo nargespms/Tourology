@@ -21,6 +21,11 @@ import ImagePickerSection from "../components/ImagePickerSection";
 import StopListSection, { StopData } from "../components/StopListSection";
 import SingleLocationMap from "../components/SingleLocationMap";
 import PickerButton from "../components/PickerButton";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTour } from "../api/tours";
+import getId from "../utils/getId";
+import { getUserInfo } from "../utils/userSession";
+import uriToFile from "../utils/uriToFile";
 
 export default function CreateTour() {
   const [routeName, setRouteName] = useState("");
@@ -53,6 +58,22 @@ export default function CreateTour() {
   // Add Stop Modal
   const [isStopModalVisible, setIsStopModalVisible] = useState(false);
   const [editingStopIndex, setEditingStopIndex] = useState<number | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: createTour,
+    onSuccess: () => {
+      Alert.alert("Route Saved", "Your new tour route has been saved!");
+      navigation.goBack();
+
+      // invalidate the query to refetch the data
+      queryClient.invalidateQueries("tourGuideTours");
+    },
+    onError: (error) => {
+      Alert.alert("Error", "Failed to save the route. Please try again.");
+    },
+  });
 
   useEffect(() => {
     // On mount, request location permissions (for geocode use)
@@ -106,12 +127,35 @@ export default function CreateTour() {
   };
 
   const handleSaveDraft = () => {
-    Alert.alert("Draft Saved", "Your route draft has been saved locally.");
+    handleSave("draft");
   };
 
-  const handleSave = () => {
-    // Validate & send data to server
-    Alert.alert("Route Saved", "Your new tour route has been saved!");
+  const handleSave = async (state = "published") => {
+    const user = await getUserInfo();
+
+    mutate({
+      name: routeName,
+      state,
+      description: routeDescription,
+      location: locationText,
+      region: region,
+      paid: pricingOption === "Paid",
+      price: pricingOption === "Paid" ? parseFloat(price) : 0,
+      maxAttendees: parseInt(maxAttendees),
+      startDate: startDate,
+      endDate: endDate,
+      stops: stops.reduce((acc, stop, index) => {
+        const id = getId();
+        acc[id] = stop;
+        stop.id = id;
+        return acc;
+      }, {}),
+      photos: galleryImages,
+      host: {
+        id: user.id,
+        name: user.profileName ?? user.firstName + " " + user.lastName,
+      },
+    });
   };
 
   return (
@@ -245,7 +289,10 @@ export default function CreateTour() {
             >
               <Text>Save as draft</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={() => handleSave("published")}
+            >
               <Text style={{ color: "#fff" }}>Save</Text>
             </TouchableOpacity>
           </View>

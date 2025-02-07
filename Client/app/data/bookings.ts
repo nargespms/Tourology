@@ -7,7 +7,6 @@ export type Booking = {
   rating: number;
   status: "paid" | "pending";
   qrCodeValue: string; // Unique QR code for each booking
-
 };
 
 export type ActiveTour = {
@@ -43,7 +42,7 @@ export const pastBookings: Booking[] = [
     rating: 4.2,
     qrCodeValue: "booking-654321",
   },
-{
+  {
     id: "1",
     title: "Lake Louise",
     location: "Southwestern Alberta, Canada",
@@ -55,7 +54,7 @@ export const pastBookings: Booking[] = [
   },
 ];
 
-export const activeTour:  ActiveTour | null = {
+export const activeTour: ActiveTour | null = {
   id: "1",
   title: "Lake Louise",
   location: "Southwestern Alberta, Canada",

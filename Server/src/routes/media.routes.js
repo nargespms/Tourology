@@ -1,15 +1,14 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
 import { upload } from "../middleware/multerConfig.js";
+import mediaController from "../controllers/media.controller.js";
 
 const router = Router();
 
-router.post(
-  "/register",
-  upload.single("profilePicture"),
-  authController.register
+router.get(
+  "/:filename",
+  mediaController.getMedia
 );
 
-router.post("/login", authController.login);
 
 export default router;

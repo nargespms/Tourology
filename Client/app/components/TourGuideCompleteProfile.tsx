@@ -64,17 +64,6 @@ const TourGuideCompleteProfile: React.FC = () => {
   });
 
   const handleSave = () => {
-    // upload data to  server
-    console.log("profilePicUri", profilePicUri);
-
-    const formData = new FormData();
-    formData.append("firstName", data.firstName);
-    formData.append("lastName", data.lastName);
-    formData.append("email", data.email);
-    formData.append("phoneNumber", data.phoneNumber);
-    formData.append("password", data.password);
-    formData.append("profileName", profileName);
-    formData.append("bio", bio);
     // Convert the local `profilePicUri` into a file-like object:
     if (profilePicUri) {
       const uriParts = profilePicUri.split(".");
@@ -85,10 +74,13 @@ const TourGuideCompleteProfile: React.FC = () => {
         type: `image/${fileType}`, // e.g. 'image/jpg', 'image/png'
       };
 
-      formData.append("profilePicture", file);
+      updateData({
+        ...data,
+        ...{
+          profilePicture: file,
+        },
+      });
     }
-
-    updateData({ ...data, ...formData } as Partial<RegistrationData>);
 
     mutate();
   };

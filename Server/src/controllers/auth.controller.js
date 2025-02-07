@@ -1,20 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.model.js";
-import multer from "multer";
-
-// Configure multer for file storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Store files in "uploads" directory
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage });
 
 const register = async (req, res) => {
   try {
@@ -25,7 +11,7 @@ const register = async (req, res) => {
       lastName,
       languages,
       skills,
-      yearsOfExperience,
+      yearsOfExperience = 0,
       phoneNumber,
       role,
       profileName,
@@ -33,11 +19,10 @@ const register = async (req, res) => {
     } = req.body;
 
     let profilePicturePath = "";
-    console.log(req.file);
-    console.log("req", req);
-    // if (req.file) {
-    //   profilePicturePath = req.file.path;
-    // }
+
+    if (req.file) {
+      profilePicturePath = req.file.filename;
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -61,9 +46,9 @@ const register = async (req, res) => {
       profileName,
       profilePicture: profilePicturePath,
       bio,
-      languages: languages?.map((lang) => lang.trim().toLowerCase()),
-      skills: skills?.map((exp) => exp.trim().toLowerCase()),
-      yearsOfExperience,
+      languages: languages?.split(',').map((lang) => lang.trim().toLowerCase()),
+      skills: skills?.split(',').map((exp) => exp.trim().toLowerCase()),
+      yearsOfExperience: parseInt(yearsOfExperience, 10) || 0,
     });
 
     await newUser.save();
@@ -75,7 +60,15 @@ const register = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.json({ token, userId: newUser._id });
+    res.json({
+      token, userId: newUser._id,
+      email: newUser.email,
+      role: newUser.role,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      profileName: newUser.profileName,
+      profilePicture: newUser.profilePicture,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -111,6 +104,9 @@ const login = async (req, res) => {
       role: user.role,
       firstName: user.firstName,
       lastName: user.lastName,
+      email: user.email,
+      profileName: user.profileName,
+      profilePicture: user.profilePicture,
     });
   } catch (err) {
     console.error(err);
