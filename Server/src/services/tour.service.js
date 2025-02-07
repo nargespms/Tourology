@@ -1,9 +1,9 @@
+import { log } from "console";
 import Tour from "../models/Tour.model.js";
 
 class TourService {
   async createTour(userId, tourData) {
     try {
-
       const newTour = new Tour(tourData);
 
       await newTour.save();
@@ -17,13 +17,13 @@ class TourService {
 
   async deleteTour(userId, tourId) {
     try {
-      const tour = await Tour.findOne({ _id: tourId });
+      const tour = await Tour.findById(tourId);
 
       if (!tour) {
         throw new Error("Tour not found");
       }
 
-      if (tour.host.id !== userId) {
+      if (tour.host.id.toString() !== userId.toString()) {
         throw new Error("Unauthorized");
       }
 
@@ -45,9 +45,7 @@ class TourService {
       }
 
       if (tour.host.id !== userId) {
-
         throw new Error("Unauthorized");
-
       }
 
       await Tour.updateOne({ _id: tourId }, { $set: tourData });
@@ -69,7 +67,6 @@ class TourService {
 
       return tour;
     } catch (err) {
-
       console.error(err);
       throw new Error("Unable to get tour");
     }
@@ -83,7 +80,10 @@ class TourService {
         throw new Error("User not found");
       }
 
-      const tours = await Tour.find({ _id: { $in: user.favoriteTours }, status: "published" });
+      const tours = await Tour.find({
+        _id: { $in: user.favoriteTours },
+        status: "published",
+      });
 
       return tours;
     } catch (err) {
@@ -100,7 +100,10 @@ class TourService {
         throw new Error("User not found");
       }
 
-      const tours = await Tour.find({ _id: { $in: user.bookedTours }, status: "published" });
+      const tours = await Tour.find({
+        _id: { $in: user.bookedTours },
+        status: "published",
+      });
 
       return tours;
     } catch (err) {
@@ -150,7 +153,10 @@ class TourService {
         throw new Error("User not found");
       }
 
-      const tours = await Tour.find({ "host.id": { $in: user.followingGuides }, status: "published" });
+      const tours = await Tour.find({
+        "host.id": { $in: user.followingGuides },
+        status: "published",
+      });
 
       return tours;
     } catch (err) {
@@ -158,7 +164,6 @@ class TourService {
       throw new Error("Unable to get followed tour guides tours");
     }
   }
-
 }
 
 const tourService = new TourService();

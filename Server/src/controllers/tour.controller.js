@@ -1,3 +1,4 @@
+import { log } from "console";
 import tourService from "../services/tour.service.js";
 import { parseFiles } from "../utils/parseFiles.js";
 
@@ -8,7 +9,7 @@ const createTour = async (req, res) => {
 
     // add files data to tourData
     if (req.files) {
-      console.log('files', parseFiles(req.files));
+      console.log("files", parseFiles(req.files));
       Object.entries(parseFiles(req.files)).forEach(([key, files]) => {
         if (key === "photos") {
           tourData.photos = files.map((file) => file.filename);
@@ -33,6 +34,7 @@ const deleteTour = async (req, res) => {
     const tourId = req.params.id;
 
     const deletedTour = await tourService.deleteTour(userId, tourId);
+    log("deletedTour inja", deletedTour);
 
     res.json(deletedTour);
   } catch (err) {
@@ -54,14 +56,17 @@ const updateTour = async (req, res) => {
           if (!tourData.photos) {
             tourData.photos = [];
           }
-          tourData.photos = tourData.photos.concat(files.map((file) => file.filename));
+          tourData.photos = tourData.photos.concat(
+            files.map((file) => file.filename)
+          );
         } else {
-
           if (!tourData.stops[key].photo) {
             tourData.stops[key].photo = [];
           }
 
-          tourData.stops[key].photo = tourData.stops[key].photo.concat(files.map((file) => file.filename))
+          tourData.stops[key].photo = tourData.stops[key].photo.concat(
+            files.map((file) => file.filename)
+          );
         }
       });
     }
@@ -86,7 +91,7 @@ const getTour = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getTours = async (req, res) => {
   try {
@@ -97,7 +102,7 @@ const getTours = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getToursByHost = async (req, res) => {
   try {
@@ -109,7 +114,7 @@ const getToursByHost = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getFollowedTourGuidesTours = async (req, res) => {
   try {
@@ -121,7 +126,7 @@ const getFollowedTourGuidesTours = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getFavoriteTours = async (req, res) => {
   try {
@@ -133,7 +138,7 @@ const getFavoriteTours = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getBookedTours = async (req, res) => {
   try {
@@ -145,20 +150,19 @@ const getBookedTours = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getOwnedTours = async (req, res) => {
   try {
     const userId = req.user.id;
     const tours = await tourService.getOwnedTours(userId);
-    console.log('tours', tours);
+    console.log("tours", tours);
     res.json(tours);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
-
+};
 
 export default {
   createTour,
@@ -171,4 +175,4 @@ export default {
   getFavoriteTours,
   getBookedTours,
   getOwnedTours,
-}
+};

@@ -2,6 +2,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 
 import { useQuery } from "@tanstack/react-query";
-import { getOwnedTours } from "../api/tours";
+import { deleteOwnedTour, deleteTour, getOwnedTours } from "../api/tours";
 import ActiveTourCard from "../components/ActiveTourCard";
 import BottomNavBar from "../components/BottomNavBar";
 import CustomModal from "../components/CustomeModal";
@@ -21,6 +22,8 @@ import { activeTour } from "../data/bookings";
 import { tourGuideNavbar } from "../data/navbarOptions";
 import TourGuideTourList from "../components/TourGuideTourList";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 
 const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
@@ -34,6 +37,24 @@ const TourGuideHome: React.FC = () => {
       setQRModalVisible(true);
     }
   };
+
+  const handleDeleteTourAlert = (tourId: string) => {
+    Alert.alert("Delete Tour", "Are you sure you want to delete this tour?", [
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          mutate(tourId);
+          return undefined;
+        },
+      },
+    ]);
+  };
+
   const handlePressOwnTours = (tour) => {
     const options = ["Activate", "Edit", "Preview", "Delete", "cancel"];
     const destructiveButtonIndex = 3;
@@ -61,7 +82,7 @@ const TourGuideHome: React.FC = () => {
             // Preview
             break;
           case 3:
-            // Delete
+            handleDeleteTourAlert(tour._id);
             break;
         }
       }
@@ -76,6 +97,24 @@ const TourGuideHome: React.FC = () => {
   } = useQuery({
     queryKey: ["tourGuideTours"],
     queryFn: getOwnedTours,
+  });
+
+  const { mutate } = useMutation<string, unknown, string>({
+    mutationFn: deleteTour,
+    onSuccess: async () => {
+      Toast.show({
+        type: "success",
+        text1: "Tour successfully deleted",
+        visibilityTime: 5000,
+        topOffset: 50,
+      });
+      await refetch();
+      // If successful, reset or navigate
+      refetch();
+    },
+    onError: () => {
+      // Could handle error toast or something else here
+    },
   });
 
   return (

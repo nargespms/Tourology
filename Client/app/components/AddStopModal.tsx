@@ -12,6 +12,7 @@ import StopForm, { StopFormData } from "./StopForm";
 import { StopData } from "./StopListSection";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
+import CustomModal from "./CustomeModal";
 
 interface Props {
   visible: boolean;
@@ -152,6 +153,7 @@ export default function AddStopModal({
             />
           </View>
         </ScrollView>
+
         {/* ACTION BUTTONS */}
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.discardBtn} onPress={handleDiscard}>

@@ -81,3 +81,18 @@ export const getOwnedTours = async () => {
     throw new Error("Failed to get owned tours");
   }
 };
+
+export const deleteTour = async (id: string) => {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error("Failed to delete tour");
+  }
+};
