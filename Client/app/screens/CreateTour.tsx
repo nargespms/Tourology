@@ -29,11 +29,12 @@ import getId from "../utils/getId";
 import { getUserInfo } from "../utils/userSession";
 
 export default function CreateTour() {
+  const navigation = useNavigation();
+
   const [routeName, setRouteName] = useState("");
   const [routeDescription, setRouteDescription] = useState("");
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [locationText, setLocationText] = useState("");
-  const navigation = useNavigation();
 
   const [isRangeDateEnable, setIsRangeDateEnable] = useState(false);
 
@@ -63,6 +64,7 @@ export default function CreateTour() {
   // Add Stop Modal
   const [isStopModalVisible, setIsStopModalVisible] = useState(false);
   const [editingStopIndex, setEditingStopIndex] = useState<number | null>(null);
+  const [stopModalKey, setStopModalKey] = useState(0);
 
   const queryClient = useQueryClient();
 
@@ -145,6 +147,7 @@ export default function CreateTour() {
       // adding new
       setStops((prev) => [...prev, newStop]);
     }
+    setStopModalKey((prev) => prev + 1);
   };
 
   const handleSaveDraft = () => {
@@ -404,8 +407,12 @@ export default function CreateTour() {
 
         {/* Stop Modal */}
         <AddStopModal
+          key={stopModalKey}
           visible={isStopModalVisible}
-          onClose={() => setIsStopModalVisible(false)}
+          onClose={() => {
+            setIsStopModalVisible(false);
+            setStopModalKey((prev) => prev + 1);
+          }}
           onSaveStop={handleSaveStop}
           existingStop={
             editingStopIndex !== null ? stops[editingStopIndex] : null

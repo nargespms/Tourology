@@ -28,39 +28,45 @@ export default function AddStopModal({
   existingStop,
 }: Props) {
   // If editing, initialize the form data with existing stop
-  let initialForm: StopFormData = existingStop
-    ? {
-        name: existingStop.name,
-        time: existingStop.time,
-        description: existingStop.description,
-        location: existingStop.location,
-        photo: existingStop.photo,
-        region: existingStop.region,
-      }
-    : {
-        name: "",
-        time: "",
-        description: "",
-        location: "",
-        photo: "",
-        region: {
-          latitude: 51.1784,
-          longitude: -115.5708,
-          latitudeDelta: 1.5,
-          longitudeDelta: 1.5,
-        },
-      };
+
+  // let initialForm: StopFormData = existingStop
+  //   ? {
+  //       name: existingStop.name,
+  //       time: existingStop.time,
+  //       description: existingStop.description,
+  //       location: existingStop.location,
+  //       photo: existingStop.photo,
+  //       region: existingStop.region,
+  //     }
+  //   : {
+  //       name: "",
+  //       time: "",
+  //       description: "",
+  //       location: "",
+  //       photo: "",
+  //       region: {
+  //         latitude: 51.1784,
+  //         longitude: -115.5708,
+  //         latitudeDelta: 1.5,
+  //         longitudeDelta: 1.5,
+  //       },
+  //     };
+
+  let initialForm: StopFormData = {
+    name: "",
+    time: "",
+    description: "",
+    location: "",
+    photo: "",
+    region: {
+      latitude: 51.1784,
+      longitude: -115.5708,
+      latitudeDelta: 1.5,
+      longitudeDelta: 1.5,
+    },
+  };
 
   const [formData, setFormData] = useState<StopFormData>(initialForm);
-
-  const [errors, setErrors] = useState({
-    name: false,
-    time: false,
-    description: false,
-    location: false,
-    photo: false,
-  });
-
   useEffect(() => {
     if (existingStop) {
       setFormData({
@@ -75,6 +81,14 @@ export default function AddStopModal({
       setFormData(initialForm);
     }
   }, [existingStop]);
+
+  const [errors, setErrors] = useState({
+    name: false,
+    time: false,
+    description: false,
+    location: false,
+    photo: false,
+  });
 
   const handleDiscard = () => {
     onClose();
@@ -109,21 +123,6 @@ export default function AddStopModal({
       location: formData.location,
       photo: formData.photo,
       region: formData.region,
-    };
-
-    // Clear form
-    initialForm = {
-      name: "",
-      time: "",
-      description: "",
-      location: "",
-      photo: "",
-      region: {
-        latitude: 51.1784,
-        longitude: -115.5708,
-        latitudeDelta: 1.5,
-        longitudeDelta: 1.5,
-      },
     };
 
     onSaveStop(newStop);
