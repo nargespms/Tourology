@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import SingleLocationMap from "./SingleLocationMap";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export interface StopFormData {
   name: string;
@@ -44,6 +45,8 @@ export default function StopForm({ formData, onFormChange, errors }: Props) {
     longitudeDelta: 1.5,
   });
 
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
   // Update region if location text changes
   useEffect(() => {
     let isMounted = true;
@@ -74,6 +77,20 @@ export default function StopForm({ formData, onFormChange, errors }: Props) {
     onFormChange({ ...formData, region });
   }, [region]);
 
+  //
+  const hidePicker = () => {
+    setIsTimePickerVisible(false);
+  };
+
+  const handleConfirm = (dateTime) => {
+    const time = new Date(dateTime).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    onFormChange({ ...formData, time });
+    setIsTimePickerVisible(false);
+  };
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -94,16 +111,26 @@ export default function StopForm({ formData, onFormChange, errors }: Props) {
         value={formData.name}
         placeholder="e.g. Lake Louise"
         placeholderTextColor="#999"
-        onChangeText={(val) => onFormChange({ ...formData, name: val })}
+        onChangeText={(val) => {
+          onFormChange({ ...formData, name: val });
+        }}
       />
 
       <Text style={styles.label}>Expected time*</Text>
-      <TextInput
-        style={[styles.input, errors?.time && styles.errorInput]}
-        value={formData.time}
-        placeholder="e.g. 12:00 AM"
-        placeholderTextColor="#999"
-        onChangeText={(val) => onFormChange({ ...formData, time: val })}
+
+      <View style={[styles.input, errors?.time && styles.errorInput]}>
+        <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
+          {formData.time && <Text>{formData.time}</Text>}
+          {!formData.time && <Text style={{ color: "#999" }}>Set time</Text>}
+        </TouchableOpacity>
+      </View>
+
+      <DateTimePickerModal
+        isVisible={isTimePickerVisible}
+        mode={"time"}
+        onConfirm={(time) => handleConfirm(time)}
+        onCancel={hidePicker}
+        display={"spinner"}
       />
 
       <Text style={styles.label}>Description*</Text>
