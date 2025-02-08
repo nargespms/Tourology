@@ -5,19 +5,18 @@ import LocationSearchInput from "./locationSearchInput";
 
 interface Props {
   onLocationSelect: (
-    latitude: string,
-    longitude: string,
-    latitudeDelta: string,
-    longitudeDelta: string
+    region: {
+      type: "Point";
+      coordinates: [number, number];
+    },
+    displayName: string
   ) => void;
 }
 
 export default function MapWithNominatim<Props>({ onLocationSelect }: Props) {
   const [region, setRegion] = useState({
-    latitude: 51.1784,
-    longitude: -115.5708,
-    latitudeDelta: 1.5,
-    longitudeDelta: 1.5,
+    type: "Point",
+    coordinates: [51.1784, -115.5708],
   });
 
   const handleLocationSelect = (
@@ -28,13 +27,10 @@ export default function MapWithNominatim<Props>({ onLocationSelect }: Props) {
     // Update the map region to the selected place
     setRegion((prev) => ({
       ...prev,
-      latitude: lat,
-      longitude: lon,
-      // Optionally zoom in closer
-      latitudeDelta: 0.05,
-      longitudeDelta: 0.05,
+      type: "Point",
+      coordinates: [lon, lat],
     }));
-    onLocationSelect(region);
+    onLocationSelect(region, displayName);
 
     // If you want to store `displayName` somewhere, do it here
   };

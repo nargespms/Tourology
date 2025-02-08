@@ -3,6 +3,9 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Tour } from "../types/tour";
 import { getMediaSrc } from "../api/media";
+import { formatDate, formatPrice } from "../utils/formats";
+import { useQuery } from "@tanstack/react-query";
+import { getUserHasCheckedIn } from "../api/tours";
 
 interface BookingCardProps {
   tour: Tour;
@@ -19,6 +22,12 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
   isUpcoming,
   enableButtons = true,
 }) => {
+  const { data: isCheckedIn } = useQuery({
+    queryKey: ["userCheckedIn", tour._id],
+    queryFn: () => getUserHasCheckedIn(tour._id),
+    enabled: isUpcoming,
+  });
+
   return (
     <View style={styles.container}>
       <Image
@@ -28,10 +37,12 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
       <View style={styles.detailsContainer}>
         <Text style={styles.title}>{tour.name}</Text>
         <Text style={styles.location}>{tour.location}</Text>
-        <Text style={styles.date}>{tour.date}</Text>
-        <Text>{tour.description}</Text>
+        <Text style={styles.date}>{formatDate(tour.startDate)}</Text>
+        {!enableButtons && tour.paid && (
+          <Text style={styles.price}>{formatPrice(tour.price)}</Text>
+        )}
 
-        {!tour.paid && tour.rating && (
+        {!enableButtons && tour.rating && (
           <Text style={styles.ratingText}>★ {tour.rating.toFixed(1)}</Text>
         )}
 
@@ -50,6 +61,10 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
           >
             <Text style={styles.checkinButtonText}>Check-in</Text>
           </TouchableOpacity>
+        )}
+
+        {isCheckedIn && enableButtons && isUpcoming && (
+          <Text style={styles.checkedInButton}>Checked in!</Text>
         )}
 
         {enableButtons && !isUpcoming && (
@@ -82,8 +97,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   detailsContainer: {
-    alignSelf: "flex-start",
     alignItems: "flex-start",
+    alignContent: "center",
     flex: 1,
     paddingHorizontal: 8,
   },
@@ -93,7 +108,6 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   location: {
-    marginTop: 6,
     fontSize: 13,
     color: "#777",
     marginVertical: 2,
@@ -101,6 +115,12 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: "#444",
+  },
+  price: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#333",
+    marginTop: 7,
   },
   paidBadge: {
     position: "absolute",
@@ -124,6 +144,16 @@ const styles = StyleSheet.create({
     marginTop: 6,
     alignSelf: "flex-start",
   },
+
+  checkedInButton: {
+    backgroundColor: "#D9D9DB",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    marginTop: 6,
+    alignSelf: "flex-start",
+  },
+
   checkinButtonText: {
     color: "#fff",
     fontSize: 14,

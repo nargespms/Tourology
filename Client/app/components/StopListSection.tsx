@@ -10,8 +10,8 @@ export interface StopData {
   location: string;
   photo: string;
   region: {
-    latitude: number;
-    longitude: number;
+    type: "Point";
+    coordinates: [number, number];
   };
 }
 
@@ -42,7 +42,6 @@ export default function StopListSection({
             </Text>
           </View>
 
-          {/* Action buttons */}
           <View style={styles.actions}>
             <TouchableOpacity
               style={[styles.actionBtn, styles.deleteBtn]}

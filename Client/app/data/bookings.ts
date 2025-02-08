@@ -1,14 +1,3 @@
-export type Booking = {
-  id: string;
-  title: string;
-  location: string;
-  date: string;
-  image: any;
-  rating: number;
-  status: "paid" | "pending";
-  qrCodeValue: string; // Unique QR code for each booking
-};
-
 export type ActiveTour = {
   id: string;
   title: string;

@@ -4,29 +4,25 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 type SearchBarProps = {
   placeholder?: string;
+  value?: string;
   onSearch?: (text: string) => void;
-  onClearSearch?: () => void;
-  enableSearchResults?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "Search",
   onSearch,
-  onClearSearch,
-  enableSearchResults,
+  onFocus,
+  onBlur,
+  value: searchText = "",
 }) => {
-  const [searchText, setSearchText] = useState("");
-
   const handleSearch = (text: string) => {
-    setSearchText(text);
-    if (onSearch) {
-      onSearch(text);
-    }
+    onSearch?.(text);
   };
 
   const handleClear = () => {
-    setSearchText("");
-    if (onClearSearch) onClearSearch();
+    onSearch?.("");
   };
 
   return (
@@ -40,9 +36,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
+        onBlur={() => {
+          if (searchText.length === 0) onBlur?.();
+        }}
         placeholderTextColor="#999"
         value={searchText}
-        onFocus={enableSearchResults}
+        onFocus={onFocus}
         onChangeText={handleSearch}
       />
       {searchText.length > 0 && (

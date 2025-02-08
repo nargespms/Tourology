@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import SkeletonPlaceholder from "./SkeletonPlaceholder";
-import { Tour } from "../data/tours";
+import { Tour } from "../types/tour";
+import { getAvatar, getMediaSrc } from "../api/media";
+import { formatPrice } from "../utils/formats";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type TourCardProps = {
   data: Tour;
@@ -9,16 +12,8 @@ type TourCardProps = {
 };
 
 const LargePicTourCard: React.FC<TourCardProps> = ({ data, onPressTour }) => {
-  const {
-    title,
-    location,
-    price,
-    rating,
-    placeImage,
-    userName,
-    userImage,
-    isFree,
-  } = data;
+  const { name, location, paid, price, rating, photos, host, _id } = data;
+
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleImageLoad = () => setImageLoaded(true);
@@ -32,23 +27,27 @@ const LargePicTourCard: React.FC<TourCardProps> = ({ data, onPressTour }) => {
         {!imageLoaded && (
           <SkeletonPlaceholder width="100%" height={160} borderRadius={12} />
         )}
-
         <Image
-          source={placeImage}
+          source={{ uri: getMediaSrc(photos[0]) }}
           style={[styles.placeImage, !imageLoaded && { opacity: 0 }]}
           resizeMode="cover"
           onLoad={handleImageLoad}
         />
 
         <View style={styles.overlayContainer}>
-          {userName && userImage && (
+          {host && host.name && (
             <View style={styles.userOverlay}>
-              <Image source={userImage} style={styles.userAvatar} />
-              <Text style={styles.userName}>{userName}</Text>
+              <Image
+                source={{ uri: getAvatar(host.id) }}
+                style={styles.userAvatar}
+                resizeMode="cover"
+              />
+
+              <Text style={styles.userName}>{host.name}</Text>
             </View>
           )}
 
-          {isFree && (
+          {!paid && (
             <View style={styles.freeBadge}>
               <Text style={styles.freeBadgeText}>FREE</Text>
             </View>
@@ -58,11 +57,13 @@ const LargePicTourCard: React.FC<TourCardProps> = ({ data, onPressTour }) => {
 
       <View style={styles.infoContainer}>
         <View style={styles.infoContainerFirstRow}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.ratingText}>★ {rating.toFixed(1)}</Text>
+          <Text style={styles.title}>{name}</Text>
+          {rating && (
+            <Text style={styles.ratingText}>★ {rating?.toFixed(1)}</Text>
+          )}
         </View>
         <Text style={styles.location}>{location}</Text>
-        <Text style={styles.price}>{price}</Text>
+        <Text style={styles.price}>{formatPrice(price)}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -84,8 +85,7 @@ const styles = StyleSheet.create({
   placeImage: {
     width: "100%",
     height: 160,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderRadius: 12,
   },
   imageWrapper: {
     position: "relative",
@@ -136,7 +136,8 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   infoContainer: {
-    padding: 12,
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   infoContainerFirstRow: {
     flexDirection: "row",

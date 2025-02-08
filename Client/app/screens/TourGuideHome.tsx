@@ -1,6 +1,6 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   listContent: {
-    paddingBottom: 16,
+    paddingBottom: 50,
     flexGrow: 1,
   },
   activeTourSection: {

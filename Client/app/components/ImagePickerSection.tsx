@@ -39,8 +39,6 @@ export default function ImagePickerSection({ images, onImagesChange }: Props) {
           </TouchableOpacity>
         </View>
       ))}
-
-      {/* "Add" tile */}
       <TouchableOpacity style={styles.addTile} onPress={handleAddImage}>
         <Text style={{ fontSize: 24, color: "#999" }}>+</Text>
       </TouchableOpacity>

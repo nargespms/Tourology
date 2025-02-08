@@ -1,6 +1,6 @@
 export type Region = {
-  latitude: number;
-  longitude: number;
+  type: "Point";
+  coordinates: [number, number];
 };
 
 export type Host = {
@@ -13,7 +13,10 @@ export type Review = {
   id: string;
   rating: number;
   description: string;
-  userId: string;
+  user: {
+    id: string;
+    name: string;
+  };
 };
 
 export type Stop = {
@@ -51,4 +54,8 @@ export type Tour = {
   stops: Record<string, Stop>;
   photos?: string[];
   attendees?: Record<string, Attendee>;
+};
+
+export type Booking = Tour & {
+  upcoming: boolean;
 };

@@ -8,21 +8,19 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import useSubmitRegister from "../hooks/useSubmitRegister";
 import { useRegistration } from "../contexts/RegistrationContext";
 
 const RegisterChooseRole: React.FC = () => {
   const navigation = useNavigation();
   const { updateData, data } = useRegistration();
 
-  const { mutate, isPending } = useSubmitRegister((data: any) => {
-    navigation.navigate("TravelerHome" as never);
-  });
-
   const handleSelectRole = (role: "traveler" | "guide") => {
     if (role === "traveler") {
-      mutate();
+      updateData({
+        role: "traveler",
+      });
 
+      navigation.navigate("TourGuideCompleteProfile" as never);
       return;
     } else if (role === "guide") {
       updateData({

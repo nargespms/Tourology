@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { uploadDir } from '../middleware/multerConfig.js';
+import User from '../models/User.model.js';
 
 const getMedia = async (req, res) => {
   try {
@@ -8,7 +9,6 @@ const getMedia = async (req, res) => {
     // read the file from the uploads directory
     const path = uploadDir + "/" + filename;
 
-    console.log('path', path);
     // check if the file exists
     if (!fs.existsSync(path)) {
       return res.status(404).json({ error: "File not found" });
@@ -29,4 +29,23 @@ const getMedia = async (req, res) => {
   }
 }
 
-export default { getMedia };
+const getProfilePicture = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    req.params.filename = user.profilePicture;
+
+    return await getMedia(req, res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+export default { getMedia, getProfilePicture };

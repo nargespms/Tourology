@@ -1,24 +1,45 @@
 import React from "react";
 import { StyleSheet, View, Text, ScrollView, Image } from "react-native";
 import { REVIEWS } from "../data/routeDetailsMock";
+import { Tour } from "../types/tour";
+import { getAvatar } from "../api/media";
+import { formatDate, pluralize } from "../utils/formats";
 
-const TourReviews = () => {
+type TourReviewProps = {
+  tour: Tour;
+};
+
+const TourReviews = (props: TourReviewProps) => {
+  const { tour } = props;
+  const reviews = Object.values(tour.reviews ?? {});
+
+  console.log("reviews", reviews);
+
   return (
     <View style={styles.reviewsContainer}>
-      <Text style={styles.sectionTitle}>★4.8 – 74 reviews</Text>
+      {reviews.length !== 0 && (
+        <Text style={styles.sectionTitle}>
+          ★ {tour.rating} – {pluralize(reviews.length, "review")}
+        </Text>
+      )}
+      {reviews.length === 0 && (
+        <Text style={styles.sectionTitle}>No reviews yet</Text>
+      )}
 
-      {REVIEWS.map((review) => (
-        <View style={styles.reviewCard} key={review.id}>
+      {reviews.map((review) => (
+        <View style={styles.reviewCard} key={review._id}>
           <Text style={styles.reviewRating}>
-            {`★`.repeat(Math.round(review.rating))} {review.date}
+            {`★`.repeat(Math.round(review.rating)) +
+              `☆`.repeat(5 - Math.round(review.rating))}{" "}
+            {formatDate(review.date)}
           </Text>
-          <Text style={styles.reviewText}>{review.text}</Text>
+          <Text style={styles.reviewText}>{review.description}</Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
-              source={require("../../assets/avatar.png")}
+              source={{ uri: getAvatar(review.user.id) }}
               style={styles.avatar}
             />
-            <Text style={styles.reviewAuthor}>{review.author}</Text>
+            <Text style={styles.reviewAuthor}>{review.user.name}</Text>
           </View>
         </View>
       ))}
@@ -53,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   reviewRating: {
-    fontWeight: "600",
+    fontWeight: "400",
     marginBottom: 4,
   },
   reviewText: {

@@ -1,3 +1,4 @@
+import { getCurrentPositionAsync } from "expo-location";
 import toFormData from "../utils/toFormData";
 import uriToFile from "../utils/uriToFile";
 import { getUserInfo } from "../utils/userSession";
@@ -5,8 +6,12 @@ import { API_URL } from "./config";
 
 const BASE_URL = `${API_URL}/api/tours`;
 
-export const getTours = async () => {
-  const response = await fetch(`${BASE_URL}`);
+export const getTours = async (filter: "" | "followed" | "free" = "") => {
+  const response = await fetch(`${BASE_URL}/${filter}`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
 
   if (response.ok) {
     return response.json();
@@ -22,6 +27,46 @@ export const getTour = async (id: string) => {
     return response.json();
   } else {
     throw new Error("Failed to get tour");
+  }
+};
+
+export const searchTours = async (query: string) => {
+  const response = await fetch(`${BASE_URL}/search?q=${query}`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error("Failed to search tours");
+  }
+
+  return response.json();
+};
+
+export const nearbyTours = async () => {
+  // get user location
+  const location = await getCurrentPositionAsync();
+
+  const {
+    coords: { latitude: lat, longitude: lng },
+  } = location;
+
+  const response = await fetch(
+    `${BASE_URL}/nearby?lat=${lat}&lng=${lng}&length=20000`,
+    {
+      headers: {
+        authorization: `Bearer ${(await getUserInfo()).token}`,
+      },
+    }
+  );
+
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error("Failed to get nearby tours");
   }
 };
 
@@ -41,7 +86,6 @@ export const createTour = async (data: Record<string, any>) => {
 
   if (cloneData.stops) {
     Object.entries(cloneData.stops).forEach(([key, value]) => {
-      console.log("value", value, key);
       if (value.photo) {
         formData.append(`files[${key}][]`, uriToFile(value.photo));
         delete cloneData.stops[key].photo;
@@ -73,13 +117,133 @@ export const getOwnedTours = async () => {
     },
   });
 
-  console.log("response", await getUserInfo());
-
   if (response.ok) {
     return response.json();
   } else {
     throw new Error("Failed to get owned tours");
   }
+};
+
+export const getIsFavorite = async (id: string) => {
+  const response = await fetch(`${BASE_URL}/${id}/favorite`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error("Failed to get favorite status");
+  }
+};
+
+export const toggleFavorite = async (id: string, unfavorite: boolean) => {
+  const response = await fetch(
+    `${BASE_URL}/${id}/favorite?unfavorite=${unfavorite ? "1" : "0"}`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${(await getUserInfo()).token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to toggle favorite");
+  }
+};
+
+export const bookATour = async (id: string) => {
+  const response = await fetch(`${BASE_URL}/${id}/book`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to book a tour");
+  }
+
+  return response.json();
+};
+
+export const isTourBooked = async (id: string) => {
+  const response = await fetch(`${BASE_URL}/${id}/booked`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to check if booked");
+  }
+
+  return response.json();
+};
+
+export const userBookedTours = async () => {
+  const response = await fetch(`${BASE_URL}/user/booked`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get user booked tours");
+  }
+
+  return response.json();
+};
+
+export const upsertFeedback = async (
+  tourId: string,
+  feedback: string,
+  rating: number
+) => {
+  const response = await fetch(`${BASE_URL}/${tourId}/feedback`, {
+    method: "POST",
+    body: toFormData({ feedback, rating }),
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to upsert feedback");
+  }
+
+  return response.json();
+};
+
+export const getFeedback = async (tourId: string) => {
+  const response = await fetch(`${BASE_URL}/${tourId}/feedback`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get feedback");
+  }
+
+  return response.json();
+};
+
+export const getUserHasCheckedIn = async (tourId: string) => {
+  const response = await fetch(`${BASE_URL}/user/checked-in/${tourId}`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get user check-in status");
+  }
+
+  return response.json();
 };
 
 export const deleteTour = async (id: string) => {

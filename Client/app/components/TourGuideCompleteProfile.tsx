@@ -59,8 +59,12 @@ const TourGuideCompleteProfile: React.FC = () => {
     setProfilePicUri("");
   };
 
-  const { mutate, isPending } = useSubmitRegister((data: any) => {
-    navigation.navigate("TourGuideHome" as never);
+  const { mutate, isPending } = useSubmitRegister(() => {
+    if (data.role === "guide") {
+      navigation.navigate("TourGuideHome" as never);
+    } else {
+      navigation.navigate("TravelerHome" as never);
+    }
   });
 
   const handleSave = () => {

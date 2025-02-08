@@ -8,15 +8,20 @@ import {
   View,
 } from "react-native";
 import PagerView from "react-native-pager-view";
-import { MOCK_IMAGES } from "../data/routeDetailsMock";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Tour } from "../types/tour";
+import { getMediaSrc } from "../api/media";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getIsFavorite, toggleFavorite } from "../api/tours";
 
 interface RouteDetailsGalleryProps {
   onGoBackTap: () => void;
+  tour: Tour;
 }
 
 const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
   onGoBackTap,
+  tour,
 }) => {
   const [activePage, setActivePage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -25,10 +30,20 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
     setActivePage(e.nativeEvent.position);
   };
 
-  const handleFavorite = () => {
-    setIsFavorite((prev) => !prev);
-    Alert.alert("Favorite", "Tour added to favorites!");
-  };
+  const { isFetching, data } = useQuery({
+    queryKey: ["favorite", tour._id],
+    queryFn: () => getIsFavorite(tour._id),
+    onSuccess: (data) => {
+      setIsFavorite(data);
+    },
+  });
+
+  const { mutate: fave } = useMutation({
+    mutationFn: () => toggleFavorite(tour._id, !isFavorite),
+    onSuccess: () => {
+      setIsFavorite(!isFavorite);
+    },
+  });
 
   return (
     <View style={styles.galleryContainer}>
@@ -37,9 +52,12 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
         initialPage={0}
         onPageSelected={handlePageSelected}
       >
-        {MOCK_IMAGES.map((img, index) => (
+        {tour.photos.map((img, index) => (
           <View style={styles.imageSlide} key={index}>
-            <Image source={img} style={styles.galleryImage} />
+            <Image
+              source={{ uri: getMediaSrc(img) }}
+              style={styles.galleryImage}
+            />
           </View>
         ))}
       </PagerView>
@@ -55,10 +73,10 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
 
       <TouchableOpacity
         style={[styles.topButton, styles.favoriteButton]}
-        onPress={handleFavorite}
+        onPress={fave}
       >
         <Text style={styles.topButtonText}>
-          {isFavorite ? (
+          {!isFavorite ? (
             <MaterialIcons name="favorite-outline" size={16} />
           ) : (
             <MaterialIcons name="favorite" size={16} />
@@ -66,7 +84,7 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
         </Text>
       </TouchableOpacity>
       <View style={styles.paginationContainer}>
-        {MOCK_IMAGES.map((_, i) => {
+        {tour.photos?.map((_, i) => {
           return (
             <View
               key={i}

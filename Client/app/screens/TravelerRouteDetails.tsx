@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import PagerView from "react-native-pager-view";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   MOCK_IMAGES,
   REVIEWS,
@@ -27,15 +27,39 @@ import RouteDetailsGallery from "../components/RouteDetailGallery";
 import TourHost from "../components/TourHost";
 import TourStops from "../components/TourStops";
 import TourReviews from "../components/TourReviews";
+import { formatDate, formatPrice, pluralize } from "../utils/formats";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { bookATour, isTourBooked } from "../api/tours";
 
 const { width } = Dimensions.get("window");
 
 export default function TravelerRouteDetails() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { tour } = route.params;
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-
+  const [isBooked, setIsBooked] = useState(false);
   const [reviewsPositionY, setReviewsPositionY] = useState(0);
+
+  const { mutate: book } = useMutation({
+    mutationFn: () => bookATour(tour._id),
+    onSuccess: () => {
+      Alert.alert("Success", "Tour booked successfully");
+      setIsBooked(true);
+    },
+  });
+
+  const { data } = useQuery({
+    queryKey: ["isBooked", tour._id],
+    queryFn: () => isTourBooked(tour._id),
+  });
+
+  useEffect(() => {
+    if (data) {
+      setIsBooked(true);
+    }
+  }, [data]);
 
   const handleReviewsLayout = (e: NativeSyntheticEvent<LayoutChangeEvent>) => {
     const { y } = e.nativeEvent.layout;
@@ -49,52 +73,70 @@ export default function TravelerRouteDetails() {
     });
   };
 
+  const reviewsLength = Object.keys(tour.reviews || {}).length;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 50 }}
         ref={scrollViewRef}
       >
-        <RouteDetailsGallery onGoBackTap={() => navigation.goBack()} />
+        <RouteDetailsGallery
+          tour={tour}
+          onGoBackTap={() => navigation.goBack()}
+        />
 
         <View style={styles.infoContainer}>
-          <Text style={styles.title}>Lake Louise</Text>
-          <Text style={styles.subTitle}>Southwestern Alberta, Canada</Text>
+          <Text style={styles.title}>{tour.name}</Text>
+          <Text style={styles.subTitle}>{tour.location}</Text>
           <View style={{ flexDirection: "row" }}>
-            <Text style={[styles.ratingReviews, { paddingRight: 8 }]}>
-              ★4.8
-            </Text>
-            <TouchableOpacity onPress={scrollToReviews}>
-              <Text style={styles.infoReviews}>74 reviews</Text>
+            {tour.rating && (
+              <Text style={[styles.ratingReviews, { paddingRight: 8 }]}>
+                ★{tour.rating}
+              </Text>
+            )}
+            <TouchableOpacity
+              onPress={reviewsLength > 0 ? scrollToReviews : undefined}
+            >
+              {reviewsLength > 0 && (
+                <Text style={styles.infoReviews}>
+                  {pluralize(reviewsLength, "review")}
+                </Text>
+              )}
+              {reviewsLength === 0 && <Text>No reviews</Text>}
             </TouchableOpacity>
           </View>
-          <Text style={styles.description}>
-            Lake Louise, in Banff National Park, is a stunning turquoise lake
-            surrounded by mountains...
-          </Text>
+          <Text style={styles.description}>{tour.description}</Text>
         </View>
 
-        <TourHost tourGuide={{ name: "John Doe", experience: 5 }} />
+        <TourHost {...tour.host} />
 
         <Text style={styles.sectionTitle}>Tour details</Text>
 
-        <TourStops />
+        <TourStops tour={tour} />
+
         <View onLayout={handleReviewsLayout}>
-          <TourReviews />
+          <TourReviews tour={tour} />
         </View>
       </ScrollView>
 
       <View style={styles.stickyFooter}>
         <View style={{ flexDirection: "column", paddingLeft: 10 }}>
-          <Text style={styles.priceText}>299 CAD</Text>
-          <Text style={styles.tourDate}>Tour date 12 Jun</Text>
+          <Text style={styles.priceText}>
+            {tour.paid ? formatPrice(tour.price) : "Free"}
+          </Text>
+          <Text style={styles.tourDate}>{formatDate(tour.startDate)}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.bookButton}
-          onPress={() => Alert.alert("Book", "Proceed to booking!")}
-        >
-          <Text style={styles.bookButtonText}>Book</Text>
-        </TouchableOpacity>
+        {tour.paid && !isBooked && (
+          <TouchableOpacity style={styles.bookButton} onPress={book}>
+            <Text style={styles.bookButtonText}>Book</Text>
+          </TouchableOpacity>
+        )}
+        {tour.paid && isBooked && (
+          <TouchableOpacity style={styles.bookedButton} disabled>
+            <Text style={styles.bookButtonText}>Booked</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -178,6 +220,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 36,
     paddingVertical: 12,
     borderRadius: 6,
+  },
+  bookedButton: {
+    marginLeft: "auto",
+    paddingHorizontal: 36,
+    paddingVertical: 12,
+    borderRadius: 6,
+    backgroundColor: "#ccc",
   },
   bookButtonText: {
     color: "#fff",

@@ -9,10 +9,8 @@ import MapView, { Marker } from "react-native-maps";
 
 interface SingleLocationMapProps {
   region: {
-    latitude: number;
-    longitude: number;
-    latitudeDelta: number;
-    longitudeDelta: number;
+    type: "Point";
+    coordinates: [number, number];
   };
 }
 
@@ -28,12 +26,26 @@ const SingleLocationMap: React.FC<SingleLocationMapProps> = ({ region }) => {
         <View style={styles.mapContainer}>
           <MapView
             style={styles.map}
-            region={region}
+            region={
+              {
+                latitude: region.coordinates[1],
+                longitude: region.coordinates[0],
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.1,
+              } as any
+            }
             scrollEnabled={mapInteractionEnabled}
             zoomEnabled={mapInteractionEnabled}
             rotateEnabled={mapInteractionEnabled}
           >
-            <Marker coordinate={region} />
+            <Marker
+              coordinate={
+                {
+                  latitude: region.coordinates[1],
+                  longitude: region.coordinates[0],
+                } as any
+              }
+            />
           </MapView>
         </View>
       </TouchableWithoutFeedback>

@@ -8,10 +8,15 @@ const tourSchema = new Schema({
   location: { type: String, required: true },
   region: {
     type: {
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true },
+      type: String,
+      enum: ["Point"],
+      required: true,
+      default: "Point"
     },
-    required: true
+    coordinates: {
+      type: [Number],
+      required: true,
+    }
   },
   paid: { type: Boolean, required: true },
   price: { type: Number, required: false },
@@ -34,7 +39,10 @@ const tourSchema = new Schema({
       id: { type: String, required: true },
       rating: { type: Number, required: true },
       description: { type: String, required: true },
-      userId: { type: Types.ObjectId, required: true },
+      user: {
+        id: { type: Types.ObjectId, required: true },
+        name: { type: String, required: true },
+      }
     },
     required: false,
   },
@@ -47,10 +55,15 @@ const tourSchema = new Schema({
       location: { type: String, required: true },
       region: {
         type: {
-          latitude: { type: Number, required: true },
-          longitude: { type: Number, required: true },
+          type: String,
+          enum: ["Point"],
+          required: true,
+          default: "Point"
         },
-        required: true
+        "coordinates": {
+          type: [Number],
+          "required": true
+        },
       },
       time: { type: String, required: false },
       photo: { type: String, required: false },
@@ -63,11 +76,24 @@ const tourSchema = new Schema({
     of: {
       id: { type: Types.ObjectId, required: true },
       name: { type: String, required: true },
-      phone: { type: String, required: false },
+      phoneNumber: { type: String, required: false },
       checkedIn: { type: Boolean, required: true },
     },
     required: false,
-  },
+  }
+}, {
+  autoIndex: true,
 });
+
+// Text index for name and description
+tourSchema.index({
+  name: "text",
+  description: "text"
+});
+
+// Separate 2dsphere index for geospatial queries on region
+tourSchema.index({ region: "2dsphere" });
+
+
 const Tour = mongoose.model("Tour", tourSchema);
 export default Tour;

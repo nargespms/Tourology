@@ -10,5 +10,9 @@ router.get(
   mediaController.getMedia
 );
 
+router.get(
+  "/avatar/:userId",
+  mediaController.getProfilePicture
+);
 
 export default router;

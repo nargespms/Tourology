@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,15 +7,44 @@ import {
   StyleSheet,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getFeedback, upsertFeedback } from "../api/tours";
 
 type FeedbackFormProps = {
+  tourId: string;
   onSubmit: (rating: number, feedback: string) => void;
   onClose: () => void;
 };
 
-const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, onClose }) => {
+const FeedbackForm: React.FC<FeedbackFormProps> = ({
+  onSubmit,
+  onClose,
+  tourId,
+}) => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
+
+  const { isFetching, data: feedbackObj } = useQuery({
+    queryKey: ["tour", tourId.toString()],
+    queryFn: () => getFeedback(tourId),
+  });
+
+  useEffect(() => {
+    if (feedbackObj) {
+      setRating(feedbackObj.rating);
+      setFeedback(feedbackObj.description);
+    }
+  }, [feedbackObj]);
+
+  const { mutate: submit, isPending } = useMutation({
+    mutationKey: "upsertFeedback",
+    mutationFn: () => upsertFeedback(tourId, feedback, rating),
+  });
+
+  const doSubmit = () => {
+    submit();
+    onSubmit(rating, feedback);
+  };
 
   return (
     <View style={styles.feedbackWrapper}>
@@ -50,10 +79,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, onClose }) => {
         onChangeText={setFeedback}
       />
 
-      <TouchableOpacity
-        style={styles.submitButton}
-        onPress={() => onSubmit(rating, feedback)}
-      >
+      <TouchableOpacity style={styles.submitButton} onPress={doSubmit}>
         <Text style={styles.submitText}>Submit</Text>
       </TouchableOpacity>
     </View>

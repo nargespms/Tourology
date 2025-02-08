@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,42 +7,69 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import { getAvatar } from "../api/media";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getTourGuideInfo, followTourGuide } from "../api/users";
+import { pluralize } from "../utils/formats";
 
 interface TourHostProps {
-  tourGuide: {
-    name: string;
-    experience?: number;
-    avatar?: string;
-  };
+  name: string;
+  id: string;
 }
 
-const TourHost: React.FC<TourHostProps> = ({ tourGuide }) => {
+const TourHost: React.FC<TourHostProps> = (tourGuide) => {
   const [isFollowing, setIsFollowing] = React.useState(false);
 
+  const { isFetching, data: complementaryTourGuide } = useQuery({
+    queryKey: ["tourGuide", tourGuide.id],
+    queryFn: () => getTourGuideInfo(tourGuide.id),
+  });
+
+  useEffect(() => {
+    if (complementaryTourGuide) {
+      setIsFollowing(complementaryTourGuide.followed);
+    }
+  }, [complementaryTourGuide]);
+
+  const { mutate } = useMutation({
+    mutationFn: () => followTourGuide(tourGuide.id, isFollowing),
+    onSuccess: () => {
+      Alert.alert(
+        `You are now ${!isFollowing ? "following" : "unfollowing"} ${
+          tourGuide.name
+        }`
+      );
+
+      setIsFollowing(!isFollowing);
+    },
+  });
+
   const handleFollow = () => {
-    setIsFollowing((prev) => !prev);
-    Alert.alert("Follow", "You are now following this guide!");
+    mutate();
   };
 
   return (
     <View style={styles.guideContainer}>
-      <Image
-        source={require("../../assets/avatar.png")}
-        style={styles.avatar}
-      />
+      <Image source={{ uri: getAvatar(tourGuide.id) }} style={styles.avatar} />
       <View style={{ flex: 1 }}>
         <Text style={styles.guideName}>Hosted by {tourGuide.name}</Text>
-        <Text style={styles.experience}>
-          {tourGuide.experience}years of experience
-        </Text>
-      </View>
-      <TouchableOpacity style={styles.followButton} onPress={handleFollow}>
-        {isFollowing ? (
-          <Text style={styles.followButtonText}>Follow</Text>
-        ) : (
-          <Text style={styles.followButtonText}>Following</Text>
+        {isFetching && <Text style={styles.experience}>...</Text>}
+        {complementaryTourGuide && (
+          <Text style={styles.experience}>
+            {pluralize(complementaryTourGuide.yearsOfExperience || 1, "year")}{" "}
+            of experience
+          </Text>
         )}
-      </TouchableOpacity>
+      </View>
+      {complementaryTourGuide && (
+        <TouchableOpacity style={styles.followButton} onPress={handleFollow}>
+          {!isFollowing ? (
+            <Text style={styles.followButtonText}>Follow</Text>
+          ) : (
+            <Text style={styles.followButtonText}>Following</Text>
+          )}
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

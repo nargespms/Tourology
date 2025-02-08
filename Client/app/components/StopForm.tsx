@@ -19,8 +19,8 @@ export interface StopFormData {
   description: string;
   location: string;
   region?: {
-    latitude: number;
-    longitude: number;
+    type: "Point";
+    coordinates: [number, number];
   };
   photo: string; // one photo
 }
@@ -39,10 +39,8 @@ interface Props {
 
 export default function StopForm({ formData, onFormChange, errors }: Props) {
   const [region, setRegion] = React.useState({
-    latitude: 51.1784,
-    longitude: -115.5708,
-    latitudeDelta: 1.5,
-    longitudeDelta: 1.5,
+    type: "Point",
+    coordinates: [51.1784, -115.5708],
   });
 
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
@@ -56,10 +54,8 @@ export default function StopForm({ formData, onFormChange, errors }: Props) {
           const geoResult = await Location.geocodeAsync(formData.location);
           if (geoResult.length > 0 && isMounted) {
             setRegion({
-              latitude: geoResult[0].latitude ?? region.latitude,
-              longitude: geoResult[0].longitude ?? region.longitude,
-              latitudeDelta: 1,
-              longitudeDelta: 1,
+              type: "Point",
+              coordinates: [geoResult[0].longitude, geoResult[0].latitude],
             });
           }
         }
@@ -156,7 +152,6 @@ export default function StopForm({ formData, onFormChange, errors }: Props) {
         onChangeText={(val) => onFormChange({ ...formData, location: val })}
       />
 
-      {/* MAP PREVIEW */}
       <SingleLocationMap region={region} />
 
       <Text style={styles.label}>Photo*</Text>

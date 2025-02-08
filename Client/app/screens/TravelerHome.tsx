@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   StyleSheet,
   View,
+  Text,
 } from "react-native";
 import * as Location from "expo-location";
 
@@ -18,21 +19,26 @@ import SearchResults from "../components/TravelerSearchResult";
 import LargePicTourCard from "../components/LargePicTourCard";
 import { travelerNavbar } from "../data/navbarOptions";
 import { Tour, followingData, forYouData, freeData } from "../data/tours";
+import { useQuery } from "@tanstack/react-query";
+import { getTours, searchTours } from "../api/tours";
 
 const TABS = [
-  { label: "For you", value: "forYou" },
-  { label: "Following", value: "following" },
+  { label: "For you", value: "" },
+  { label: "Following", value: "followed" },
   { label: "Free", value: "free" },
 ];
 
 const TravelerHome: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("forYou");
+  const [activeTab, setActiveTab] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchResults, setSearchResults] = useState<Tour[]>([]);
-  const [locationResults, setLocationResults] = useState<Tour[]>([]);
 
   const navigation = useNavigation();
+
+  const { isFetching, data } = useQuery({
+    queryKey: ["tours", activeTab],
+    queryFn: () => getTours(activeTab),
+  });
 
   const handleBottomNavChange = (name: string) => {
     if (name === "Bookings") {
@@ -40,43 +46,9 @@ const TravelerHome: React.FC = () => {
     }
   };
 
-  const fetchNearbyTours = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("Location permission denied");
-      return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    console.log("User Location:", location.coords);
-
-    setLocationResults([
-      {
-        id: "5",
-        title: "Niagara Falls",
-        location: "Ontario, Canada",
-        price: "350 CAD",
-        rating: 4.9,
-        placeImage: require("../../assets/tour-temp3.png"),
-        userName: "Emily Carter",
-        userImage: require("../../assets/avatar.png"),
-        isFree: false,
-      },
-    ]);
-  };
-
   const handleSearch = (query: string) => {
     setSearchValue(query);
     setIsSearchOpen(query.length > 0);
-
-    if (query.length > 0) {
-      const filteredResults = forYouData.filter((tour) =>
-        tour.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setSearchResults(filteredResults);
-    } else {
-      setSearchResults([]);
-    }
   };
 
   return (
@@ -87,48 +59,60 @@ const TravelerHome: React.FC = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <SearchBar
+            value={searchValue}
+            onFocus={() => setIsSearchOpen(true)}
             placeholder="Start your search"
             onSearch={handleSearch}
-            onClearSearch={() => setIsSearchOpen(false)}
-            enableSearchResults={() => setIsSearchOpen(true)}
           />
-          <View>
+          <View style={{ flex: 1 }}>
             <CustomTabs
               tabs={TABS}
               activeTab={activeTab}
               onTabPress={setActiveTab}
             />
 
-            <FlatList
-              data={
-                activeTab === "forYou"
-                  ? forYouData
-                  : activeTab === "following"
-                  ? followingData
-                  : activeTab === "free"
-                  ? freeData
-                  : []
-              }
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <LargePicTourCard
-                  data={item}
-                  onPressTour={() =>
-                    navigation.navigate("TravelerRouteDetails" as never)
-                  }
-                />
-              )}
-              contentContainerStyle={[
-                styles.listContent,
-                { paddingBottom: 190 },
-              ]}
-            />
-            {/* Search Results Overlay */}
+            {isFetching && (
+              <Text style={{ alignSelf: "center", padding: 10 }}>
+                Loading...
+              </Text>
+            )}
+            {!isFetching && data && data.length === 0 && (
+              <Text style={{ alignSelf: "center", padding: 10 }}>
+                No tours available
+              </Text>
+            )}
+            {!isFetching && data && (
+              <FlatList
+                data={data}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <LargePicTourCard
+                    data={item}
+                    key={item.id}
+                    onPressTour={() =>
+                      navigation.navigate({
+                        name: "TravelerRouteDetails",
+                        params: { tour: item },
+                      })
+                    }
+                  />
+                )}
+                contentContainerStyle={[
+                  styles.listContent,
+                  { paddingBottom: 190 },
+                ]}
+              />
+            )}
             {isSearchOpen && (
               <SearchResults
                 searchQuery={searchValue}
-                results={[...searchResults, ...locationResults]}
-                onFetchNearbyTours={fetchNearbyTours}
+                onClose={() => {
+                  setIsSearchOpen(false);
+                  setSearchValue("");
+                }}
+                clearSearch={() => {
+                  setSearchValue("");
+                }}
               />
             )}
           </View>

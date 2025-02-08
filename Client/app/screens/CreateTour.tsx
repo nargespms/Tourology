@@ -23,7 +23,6 @@ import AddStopModal from "../components/AddStopModal";
 import CustomModal from "../components/CustomeModal";
 import ImagePickerSection from "../components/ImagePickerSection";
 import PickerButton from "../components/PickerButton";
-import SingleLocationMap from "../components/SingleLocationMap";
 import StopListSection, { StopData } from "../components/StopListSection";
 import getId from "../utils/getId";
 import { getUserInfo } from "../utils/userSession";
@@ -41,10 +40,8 @@ export default function CreateTour() {
 
   // Map region state
   const [region, setRegion] = useState({
-    latitude: 51.1784,
-    longitude: -115.5708,
-    latitudeDelta: 1.5,
-    longitudeDelta: 1.5,
+    type: "Point",
+    coordinates: [-115.5708, 51.1784],
   });
 
   // Pricing
@@ -106,10 +103,8 @@ export default function CreateTour() {
       const geoResult = await Location.geocodeAsync(text);
       if (geoResult.length > 0) {
         setRegion({
-          latitude: geoResult[0].latitude || region.latitude,
-          longitude: geoResult[0].longitude || region.longitude,
-          latitudeDelta: 1,
-          longitudeDelta: 1,
+          type: "Point",
+          coordinates: [geoResult[0].longitude, geoResult[0].latitude],
         });
       }
     } catch (error) {
@@ -177,6 +172,7 @@ export default function CreateTour() {
     }
 
     setErrors(newErrors);
+    console.log(newErrors);
 
     // If any error is true, stop here
     if (Object.values(newErrors).some((val) => val === true)) {
@@ -216,8 +212,15 @@ export default function CreateTour() {
     });
   };
 
-  const handleMapRegion = (region) => {
-    console.log(region);
+  const handleMapRegion = (
+    region: {
+      type: "Point";
+      coordinates: [number, number];
+    },
+    displayName: string
+  ) => {
+    setRegion(region);
+    setLocationText(displayName);
   };
 
   return (
@@ -292,7 +295,6 @@ export default function CreateTour() {
           {/* <SingleLocationMap region={region} /> */}
           <MapWithNominatim onLocationSelect={handleMapRegion} />
 
-          {/* Stops Section */}
           <Text style={[styles.label, { marginTop: 20 }]}>Stops</Text>
           <StopListSection
             stops={stops}
@@ -320,7 +322,6 @@ export default function CreateTour() {
             <Text style={styles.addStopBtnText}> Add stop</Text>
           </TouchableOpacity>
 
-          {/* Pricing Options */}
           <View style={styles.pricingContainer}>
             <Text style={styles.label}>Pricing option</Text>
 

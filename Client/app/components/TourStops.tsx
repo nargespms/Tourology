@@ -10,12 +10,22 @@ import {
 import MapView, { Marker, Polyline } from "react-native-maps";
 
 import { ROUTE_COORDS, STOPS } from "../data/routeDetailsMock";
+import { Tour } from "../types/tour";
+import { getMediaSrc } from "../api/media";
 
-const TourStops = () => {
+type TourStopsProps = {
+  tour: Tour;
+};
+
+const TourStops = (props: TourStopsProps) => {
+  const { tour } = props;
+
   const [mapInteractionEnabled, setMapInteractionEnabled] = useState(false);
   const handleMarkerPress = (stop: any) => {
-    Alert.alert(stop.title, stop.description);
+    Alert.alert(stop.name, stop.description);
   };
+
+  const stopsArray = Object.values(tour.stops);
 
   return (
     <View style={styles.container}>
@@ -24,24 +34,30 @@ const TourStops = () => {
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: 51.1784,
-              longitude: -115.5708,
               latitudeDelta: 1.5,
               longitudeDelta: 1.5,
+              longitude: tour.region.coordinates[0],
+              latitude: tour.region.coordinates[1],
             }}
             scrollEnabled={mapInteractionEnabled}
             zoomEnabled={mapInteractionEnabled}
             rotateEnabled={mapInteractionEnabled}
           >
             <Polyline
-              coordinates={ROUTE_COORDS}
+              coordinates={stopsArray.map((stop) => ({
+                latitude: stop.region.coordinates[1],
+                longitude: stop.region.coordinates[0],
+              }))}
               strokeColor="#007AFF"
               strokeWidth={3}
             />
-            {STOPS.map((stop) => (
+            {stopsArray.map((stop) => (
               <Marker
                 key={stop.id}
-                coordinate={stop.coordinate}
+                coordinate={{
+                  latitude: stop.region.coordinates[1],
+                  longitude: stop.region.coordinates[0],
+                }}
                 onPress={() => handleMarkerPress(stop)}
               />
             ))}
@@ -49,17 +65,20 @@ const TourStops = () => {
         </View>
       </TouchableWithoutFeedback>
 
-      {STOPS.map((stop) => (
+      {stopsArray.map((stop, index) => (
         <View style={styles.stopItem} key={stop.id}>
           <View>
             <Text style={styles.stopTitle}>
-              {stop.id}. {stop.title}
+              {index + 1}. {stop.name}
             </Text>
             <Text style={styles.stopTime}>{stop.time}</Text>
             <Text style={styles.stopDescription}>{stop.description}</Text>
           </View>
           <View>
-            <Image source={stop.image} style={styles.stopImage} />
+            <Image
+              source={{ uri: getMediaSrc(stop.photo) }}
+              style={styles.stopImage}
+            />
           </View>
         </View>
       ))}
