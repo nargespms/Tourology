@@ -15,23 +15,27 @@ import {
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import Toast from "react-native-toast-message";
+import DateTimePicker, { DateType } from "react-native-ui-datepicker";
 import { createTour } from "../api/tours";
 import AddStopModal from "../components/AddStopModal";
+import CustomModal from "../components/CustomeModal";
 import ImagePickerSection from "../components/ImagePickerSection";
 import PickerButton from "../components/PickerButton";
 import SingleLocationMap from "../components/SingleLocationMap";
 import StopListSection, { StopData } from "../components/StopListSection";
 import getId from "../utils/getId";
 import { getUserInfo } from "../utils/userSession";
-import Toast from "react-native-toast-message";
 
 export default function CreateTour() {
   const [routeName, setRouteName] = useState("");
   const [routeDescription, setRouteDescription] = useState("");
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [locationText, setLocationText] = useState("");
-
   const navigation = useNavigation();
+
+  const [isRangeDateEnable, setIsRangeDateEnable] = useState(false);
 
   // Map region state
   const [region, setRegion] = useState({
@@ -49,7 +53,10 @@ export default function CreateTour() {
   // Dates
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
+  const [range, setRange] = React.useState<{
+    startDate: DateType;
+    endDate: DateType;
+  }>({ startDate: undefined, endDate: undefined });
   // Stops
   const [stops, setStops] = useState<StopData[]>([]);
 
@@ -332,7 +339,6 @@ export default function CreateTour() {
                   }
                 }}
               />
-
               <Text style={styles.label}>Max attendees*</Text>
               <TextInput
                 style={[styles.input, errors.maxAttendees && styles.errorInput]}
@@ -348,37 +354,26 @@ export default function CreateTour() {
                 }}
               />
 
-              <Text style={styles.label}>Start date*</Text>
-              <TextInput
-                style={[styles.input, errors.startDate && styles.errorInput]}
-                placeholder="DD MMM YYYY: e.g. 01 Jan 2025"
-                placeholderTextColor="#999"
-                value={startDate}
-                onChangeText={(txt) => {
-                  setStartDate(txt);
-                  if (errors.startDate && txt.trim()) {
-                    setErrors((prev) => ({ ...prev, startDate: false }));
-                  }
-                }}
-              />
+              <Text style={styles.label}>Start and end dates*</Text>
 
-              <Text style={styles.label}>End date*</Text>
-              <TextInput
-                style={[styles.input, errors.endDate && styles.errorInput]}
-                placeholder="DD MMM YYYY: e.g. 01 Jan 2025"
-                placeholderTextColor="#999"
-                value={endDate}
-                onChangeText={(txt) => {
-                  setEndDate(txt);
-                  if (errors.endDate && txt.trim()) {
-                    setErrors((prev) => ({ ...prev, endDate: false }));
-                  }
-                }}
-              />
+              <View
+                style={[styles.input, errors.startDate && styles.errorInput]}
+              >
+                <TouchableOpacity onPress={() => setIsRangeDateEnable(true)}>
+                  {startDate && endDate && (
+                    <Text>
+                      {startDate} - {endDate}
+                    </Text>
+                  )}
+                  {!startDate && !endDate && (
+                    <Text style={{ color: "#999" }}>Set date range</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
             </>
           )}
 
-          {/* Photos (required?) */}
+          {/* Photos (required) */}
           <Text style={styles.label}>Photos</Text>
           <ImagePickerSection
             images={galleryImages}
@@ -416,6 +411,69 @@ export default function CreateTour() {
             editingStopIndex !== null ? stops[editingStopIndex] : null
           }
         />
+
+        {/* range timePicker */}
+        <CustomModal
+          visible={isRangeDateEnable}
+          onClose={() => setIsRangeDateEnable(false)}
+        >
+          <View>
+            <DateTimePicker
+              mode="range"
+              selectedItemColor={"#000000"}
+              startDate={range.startDate}
+              endDate={range.endDate}
+              onChange={(params) => {
+                setRange(params);
+                if (errors.startDate && params.startDate) {
+                  setErrors((prev) => ({ ...prev, startDate: false }));
+                }
+              }}
+            />
+            <View>
+              <Text style={{ paddingBottom: 8 }}>
+                <Text style={{ fontWeight: 700 }}>Start date: </Text>
+                {dayjs(range.startDate).locale("en").format("MMM DD, YYYY")}
+              </Text>
+              <Text style={{ paddingVertical: 8 }}>
+                <Text style={{ fontWeight: 700 }}>End date: </Text>
+                {dayjs(range.endDate).locale("en").format("MMM DD, YYYY")}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "#fff",
+                padding: 16,
+              }}
+            >
+              <TouchableOpacity
+                style={styles.draftButton}
+                onPress={() => {
+                  setIsRangeDateEnable(false);
+                  setRange({ startDate: undefined, endDate: undefined });
+                }}
+              >
+                <Text>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={() => {
+                  setIsRangeDateEnable(false);
+                  setStartDate(
+                    dayjs(range.startDate).locale("en").format("MMM DD, YYYY")
+                  );
+                  setEndDate(
+                    dayjs(range.endDate).locale("en").format("MMM DD, YYYY")
+                  );
+                }}
+              >
+                <Text style={{ color: "#fff" }}>Set</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </CustomModal>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

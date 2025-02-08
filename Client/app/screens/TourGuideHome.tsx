@@ -11,19 +11,17 @@ import {
   View,
 } from "react-native";
 
-import { useQuery } from "@tanstack/react-query";
-import { deleteOwnedTour, deleteTour, getOwnedTours } from "../api/tours";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
+import { deleteTour, getOwnedTours } from "../api/tours";
 import ActiveTourCard from "../components/ActiveTourCard";
 import BottomNavBar from "../components/BottomNavBar";
 import CustomModal from "../components/CustomeModal";
 import QRCodeScanner from "../components/QRCodeScanner";
-import SmallPicTourCard from "../components/SmallPicTourCard";
+import TourGuideTourList from "../components/TourGuideTourList";
 import { activeTour } from "../data/bookings";
 import { tourGuideNavbar } from "../data/navbarOptions";
-import TourGuideTourList from "../components/TourGuideTourList";
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
 
 const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
