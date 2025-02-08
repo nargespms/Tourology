@@ -27,6 +27,7 @@ import SingleLocationMap from "../components/SingleLocationMap";
 import StopListSection, { StopData } from "../components/StopListSection";
 import getId from "../utils/getId";
 import { getUserInfo } from "../utils/userSession";
+import MapWithNominatim from "../components/MapWithNominatim";
 
 export default function CreateTour() {
   const navigation = useNavigation();
@@ -215,6 +216,10 @@ export default function CreateTour() {
     });
   };
 
+  const handleMapRegion = (region) => {
+    console.log(region);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -269,7 +274,7 @@ export default function CreateTour() {
           />
 
           <Text style={styles.label}>City/ Province/ State*</Text>
-          <TextInput
+          {/* <TextInput
             style={[styles.input, errors.locationText && styles.errorInput]}
             placeholder="e.g. Banff, Alberta, Florida"
             placeholderTextColor="#999"
@@ -281,10 +286,11 @@ export default function CreateTour() {
               }
               handleLocationChange(txt);
             }}
-          />
+          /> */}
 
           {/* Map (updates when location changes) */}
-          <SingleLocationMap region={region} />
+          {/* <SingleLocationMap region={region} /> */}
+          <MapWithNominatim onLocationSelect={handleMapRegion} />
 
           {/* Stops Section */}
           <Text style={[styles.label, { marginTop: 20 }]}>Stops</Text>
