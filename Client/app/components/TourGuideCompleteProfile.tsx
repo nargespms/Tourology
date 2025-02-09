@@ -1,25 +1,23 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import useSubmitRegister from "../hooks/useSubmitRegister";
+import React, { useState } from "react";
 import {
-  RegistrationData,
-  useRegistration,
-} from "../contexts/RegistrationContext";
-import { Ionicons } from "@expo/vector-icons";
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Toast from "react-native-toast-message";
+import { useRegistration } from "../contexts/RegistrationContext";
+import useSubmitRegister from "../hooks/useSubmitRegister";
 
 const TourGuideCompleteProfile: React.FC = () => {
   const navigation = useNavigation();
@@ -65,6 +63,13 @@ const TourGuideCompleteProfile: React.FC = () => {
     } else {
       navigation.navigate("TravelerHome" as never);
     }
+
+    Toast.show({
+      type: "success",
+      text1: "Thank you! Profile completed.",
+      text2: "Enjoy your experience!",
+      topOffset: 50,
+    });
   });
 
   const handleSave = () => {

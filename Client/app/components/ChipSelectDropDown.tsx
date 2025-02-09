@@ -93,6 +93,7 @@ const ChipSelectDropDown: React.FC<ChipSelectDropDownProps> = ({
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
+                  key={item}
                   style={styles.modalItem}
                   onPress={() => handleSelect(item)}
                 >

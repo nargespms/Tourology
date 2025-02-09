@@ -97,21 +97,22 @@ export default function CreateTour() {
     })();
   }, []);
 
-  const handleLocationChange = async (text: string) => {
-    setLocationText(text);
-    try {
-      const geoResult = await Location.geocodeAsync(text);
-      if (geoResult.length > 0) {
-        setRegion({
-          type: "Point",
-          coordinates: [geoResult[0].longitude, geoResult[0].latitude],
-        });
-      }
-    } catch (error) {
-      console.log("Geocode error:", error);
-      // fallback: do nothing
-    }
-  };
+  // const handleLocationChange = async (text: string) => {
+  //   setLocationText(text);
+  //   setErrors((prev) => ({ ...prev, locationText: false }));
+  //   try {
+  //     const geoResult = await Location.geocodeAsync(text);
+  //     if (geoResult.length > 0) {
+  //       setRegion({
+  //         type: "Point",
+  //         coordinates: [geoResult[0].longitude, geoResult[0].latitude],
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.log("Geocode error:", error);
+  //     // fallback: do nothing
+  //   }
+  // };
 
   const handleAddStopPress = () => {
     setEditingStopIndex(null); // new stop
@@ -151,8 +152,6 @@ export default function CreateTour() {
   };
 
   const handleSave = async (state = "published") => {
-    console.log("Saving tour with state:", state);
-
     // error object for validations
     const newErrors = {
       routeName: !routeName.trim(),
@@ -165,6 +164,7 @@ export default function CreateTour() {
       photos: galleryImages.length === 0,
     };
 
+    setErrors(newErrors);
     // If pricing is Paid, validate required fields too
     if (pricingOption === "Paid") {
       newErrors.price = !price.trim();
@@ -183,7 +183,6 @@ export default function CreateTour() {
       });
       return;
     }
-    console.log(newErrors);
 
     // passing all validations
     const user = await getUserInfo();
@@ -221,6 +220,7 @@ export default function CreateTour() {
   ) => {
     setRegion(region);
     setLocationText(displayName);
+    setErrors((prev) => ({ ...prev, locationText: false }));
   };
 
   return (
@@ -293,7 +293,11 @@ export default function CreateTour() {
 
           {/* Map (updates when location changes) */}
           {/* <SingleLocationMap region={region} /> */}
-          <MapWithNominatim onLocationSelect={handleMapRegion} />
+
+          <MapWithNominatim
+            onLocationSelect={handleMapRegion}
+            error={errors.locationText}
+          />
 
           <Text style={[styles.label, { marginTop: 20 }]}>Stops</Text>
           <StopListSection

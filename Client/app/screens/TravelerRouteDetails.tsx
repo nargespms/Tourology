@@ -108,25 +108,26 @@ export default function TravelerRouteDetails() {
           <TourReviews tour={tour} />
         </View>
       </ScrollView>
-
-      <View style={styles.stickyFooter}>
-        <View style={{ flexDirection: "column", paddingLeft: 10 }}>
-          <Text style={styles.priceText}>
-            {tour.paid ? formatPrice(tour.price) : "Free"}
-          </Text>
-          <Text style={styles.tourDate}>{formatDate(tour.startDate)}</Text>
+      {tour.paid && (
+        <View style={styles.stickyFooter}>
+          <View style={{ flexDirection: "column", paddingLeft: 10 }}>
+            <Text style={styles.priceText}>
+              {tour.paid ? formatPrice(tour.price) : "Free"}
+            </Text>
+            <Text style={styles.tourDate}>{formatDate(tour.startDate)}</Text>
+          </View>
+          {tour.state === "published" && tour.paid && !isBooked && (
+            <TouchableOpacity style={styles.bookButton} onPress={book}>
+              <Text style={styles.bookButtonText}>Book</Text>
+            </TouchableOpacity>
+          )}
+          {tour.state === "published" && tour.paid && isBooked && (
+            <TouchableOpacity style={styles.bookedButton} disabled>
+              <Text style={styles.bookButtonText}>Booked</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        {tour.state === "published" && tour.paid && !isBooked && (
-          <TouchableOpacity style={styles.bookButton} onPress={book}>
-            <Text style={styles.bookButtonText}>Book</Text>
-          </TouchableOpacity>
-        )}
-        {tour.state === "published" && tour.paid && isBooked && (
-          <TouchableOpacity style={styles.bookedButton} disabled>
-            <Text style={styles.bookButtonText}>Booked</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      )}
     </SafeAreaView>
   );
 }

@@ -46,9 +46,7 @@ class TourService {
       }
 
       if (tour.host.id !== userId) {
-
         throw new Error("Unauthorized");
-
       }
 
       await Tour.updateOne({ _id: tourId }, { $set: tourData });
@@ -81,9 +79,9 @@ class TourService {
         state: "published",
         $or: [
           { name: { $regex: query, $options: "i" } },
-          { description: { $regex: query, $options: "i" } }
-        ]
-      }).sort({ startDate: -1 });
+          { description: { $regex: query, $options: "i" } },
+        ],
+      }).sort({ createdAt: -1 });
 
       return tours;
     } catch (err) {
@@ -100,12 +98,12 @@ class TourService {
           $near: {
             $geometry: {
               type: "Point",
-              coordinates: [parseFloat(lng), parseFloat(lat)]
+              coordinates: [parseFloat(lng), parseFloat(lat)],
             },
-            $maxDistance: parseInt(distance, 10)
-          }
-        }
-      }).sort({ startDate: -1 });
+            $maxDistance: parseInt(distance, 10),
+          },
+        },
+      }).sort({ createdAt: -1 });
 
       return tours;
     } catch (err) {
@@ -122,7 +120,10 @@ class TourService {
         throw new Error("User not found");
       }
 
-      const tours = await Tour.find({ _id: { $in: user.favoriteTours }, state: "published" });
+      const tours = await Tour.find({
+        _id: { $in: user.favoriteTours },
+        state: "published",
+      });
 
       return tours;
     } catch (err) {
@@ -139,13 +140,17 @@ class TourService {
         throw new Error("User not found");
       }
 
-      const tours = await Tour.find({ _id: { $in: user.bookedTours } }).sort({ startDate: -1 }).lean()
+      const tours = await Tour.find({ _id: { $in: user.bookedTours } })
+        .sort({ createdAt: -1 })
+        .lean();
 
       const now = new Date();
 
       tours.forEach((tour) => {
         const tourDate = new Date(tour.startDate);
-        tour.upcoming = tourDate >= now && (tour.state === "active" || tour.state === "published");
+        tour.upcoming =
+          tourDate >= now &&
+          (tour.state === "active" || tour.state === "published");
       });
 
       return tours;
@@ -157,7 +162,9 @@ class TourService {
 
   async getHostTours(userId) {
     try {
-      const tours = await Tour.find({ "host.id": userId }).sort({ startDate: -1 }).lean();
+      const tours = await Tour.find({ "host.id": userId })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return tours;
     } catch (err) {
@@ -168,7 +175,9 @@ class TourService {
 
   async getTours() {
     try {
-      const tours = await Tour.find({ state: "published" }).sort({ startDate: -1 }).lean();
+      const tours = await Tour.find({ state: "published" })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return tours;
     } catch (err) {
@@ -179,10 +188,11 @@ class TourService {
 
   async getFreeTours() {
     try {
-      const tours = await Tour.find({ state: "published", paid: false }).sort({ startDate: -1 }).lean();;
+      const tours = await Tour.find({ state: "published", paid: false })
+        .sort({ createdAt: -1 })
+        .lean();
       return tours;
     } catch (err) {
-
       console.error(err);
       throw new Error("Unable to get free tours");
     }
@@ -190,7 +200,9 @@ class TourService {
 
   async getOwnedTours(userId) {
     try {
-      const tours = await Tour.find({ "host.id": userId }).sort({ startDate: -1 }).lean();;
+      const tours = await Tour.find({ "host.id": userId })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return tours;
     } catch (err) {
@@ -207,9 +219,13 @@ class TourService {
         throw new Error("User not found");
       }
 
-      console.log(user, 'user.followingGuides', user.followingGuides);
+      console.log(user, "user.followingGuides", user.followingGuides);
 
-      const tours = await Tour.find({ "host.id": { $in: user.followingGuides } }).sort({ startDate: -1 }).lean();;
+      const tours = await Tour.find({
+        "host.id": { $in: user.followingGuides },
+      })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return tours;
     } catch (err) {
@@ -233,7 +249,9 @@ class TourService {
       }
 
       if (unfavorite) {
-        user.favoriteTours = user.favoriteTours.filter((id) => id.toString() !== tourId);
+        user.favoriteTours = user.favoriteTours.filter(
+          (id) => id.toString() !== tourId
+        );
       } else {
         user.favoriteTours.push(tourId);
       }
@@ -241,7 +259,6 @@ class TourService {
       await user.save();
 
       return { success: true };
-
     } catch (err) {
       console.error(err);
       throw new Error("Unable to favorite tour");
@@ -293,13 +310,12 @@ class TourService {
 
       tour.markModified("attendees");
 
-      console.log('tour.attendees', tour.attendees, user);
+      console.log("tour.attendees", tour.attendees, user);
 
       await user.save();
       await tour.save();
 
       return { success: true };
-
     } catch (err) {
       console.error(err);
       throw new Error("Unable to book a tour");
@@ -349,7 +365,7 @@ class TourService {
         user: {
           id: user._id,
           name: `${user.firstName} ${user.lastName}`,
-        }
+        },
       });
 
       tour.markModified("reviews");
@@ -368,7 +384,6 @@ class TourService {
       await tour.save();
 
       return { success: true };
-
     } catch (err) {
       console.error(err);
       throw new Error("Unable to upsert feedback");
@@ -425,15 +440,21 @@ class TourService {
         throw new Error("Unauthorized");
       }
 
-      if (state === 'active') {
+      if (state === "active") {
         // check if the user has any other active tours
-        const activeTours = await Tour.find({ "host.id": userId, state: "active" });
+        const activeTours = await Tour.find({
+          "host.id": userId,
+          state: "active",
+        });
 
         if (activeTours.length > 0) {
-          return { success: false, message: "You can only have one active tour at a time" };
+          return {
+            success: false,
+            message: "You can only have one active tour at a time",
+          };
         }
       }
-      console.log('state', state);
+      console.log("state", state);
       tour.state = state;
 
       await tour.save();
@@ -447,7 +468,6 @@ class TourService {
 
   async getActiveTour(userId) {
     try {
-
       const tour = await Tour.findOne({ "host.id": userId, state: "active" });
 
       return tour;

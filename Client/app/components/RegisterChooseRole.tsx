@@ -37,7 +37,6 @@ const RegisterChooseRole: React.FC = () => {
         source={require("../../assets/choose-role.png")}
         resizeMode="cover"
       />
-
       <View style={styles.bodyContainer}>
         <Text style={styles.title}>Welcome {data.firstName}!</Text>
         <Text style={styles.subtitle}>Are you a traveler or a tour guide?</Text>
@@ -54,7 +53,7 @@ const RegisterChooseRole: React.FC = () => {
             />
             <Text style={styles.roleText}>Traveler</Text>
           </TouchableOpacity>
-           
+
           <TouchableOpacity
             style={styles.roleCard}
             onPress={() => handleSelectRole("guide")}

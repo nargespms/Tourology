@@ -130,28 +130,29 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               No tours available.
             </Text>
           )}
-
-          {!!result?.length && !isLoading && (
-            <FlatList
-              data={result}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  key={item._id}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    Keyboard.dismiss();
-                    nav(item);
-                  }}
-                >
-                  <SmallPicTourCard tour={item} enableButtons={false} />
-                </TouchableOpacity>
-              )}
-              contentContainerStyle={[
-                { paddingBottom: 190, gap: 15, padding: 15 },
-              ]}
-            />
-          )}
+          <View>
+            {!!result?.length && !isLoading && (
+              <FlatList
+                data={result}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      Keyboard.dismiss();
+                      nav(item);
+                    }}
+                  >
+                    <SmallPicTourCard tour={item} enableButtons={false} />
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={[
+                  { paddingBottom: 190, gap: 15, padding: 15 },
+                ]}
+              />
+            )}
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

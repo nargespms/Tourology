@@ -107,7 +107,7 @@ const TourGuideActiveTour: React.FC = () => {
           data={getFilteredData()}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.personRow}>
+            <View style={styles.personRow} key={item.id}>
               <Image
                 source={{ uri: getAvatar(item.id) }}
                 style={styles.avatar}

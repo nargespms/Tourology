@@ -11,9 +11,13 @@ interface Props {
     },
     displayName: string
   ) => void;
+  error?: boolean;
 }
 
-export default function MapWithNominatim<Props>({ onLocationSelect }: Props) {
+export default function MapWithNominatim<Props>({
+  onLocationSelect,
+  error,
+}: Props) {
   const [region, setRegion] = useState({
     type: "Point",
     coordinates: [51.1784, -115.5708],
@@ -37,7 +41,10 @@ export default function MapWithNominatim<Props>({ onLocationSelect }: Props) {
 
   return (
     <View style={styles.container}>
-      <LocationSearchInput onLocationSelect={handleLocationSelect} />
+      <LocationSearchInput
+        onLocationSelect={handleLocationSelect}
+        error={error}
+      />
       <SingleLocationMap region={region} />
     </View>
   );

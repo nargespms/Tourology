@@ -18,9 +18,13 @@ interface NominatimPlace {
 
 interface Props {
   onLocationSelect: (lat: number, lon: number, displayName: string) => void;
+  error?: boolean;
 }
 
-export default function LocationSearchInput({ onLocationSelect }: Props) {
+export default function LocationSearchInput({
+  onLocationSelect,
+  error,
+}: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<NominatimPlace[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,10 +78,12 @@ export default function LocationSearchInput({ onLocationSelect }: Props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, error && styles.errorInput]}>
+        <Text>{error}</Text>
         <TextInput
           style={styles.input}
           placeholder="Search city..."
+          placeholderTextColor={"#999"}
           value={query}
           onChangeText={setQuery}
         />
@@ -92,10 +98,11 @@ export default function LocationSearchInput({ onLocationSelect }: Props) {
         {results.length > 0 && (
           <FlatList
             data={results}
+            scrollEnabled={false} // for preventing error inside scrollview
             keyExtractor={(item, index) => index.toString()}
             style={styles.list}
             renderItem={({ item }) => (
-              <View>
+              <View key={item.display_name}>
                 <TouchableOpacity
                   key={item.display_name}
                   onPress={() => handleSelect(item)}
@@ -150,5 +157,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#333",
+  },
+  errorInput: {
+    borderColor: "red",
   },
 });

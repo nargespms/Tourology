@@ -89,7 +89,7 @@ const TravelerBookings: React.FC = () => {
         {isLoading && <Text>Loading...</Text>}
         {isError && <Text>Failed to load bookings</Text>}
 
-        {bookingsList.length === 0 && (
+        {!isLoading && bookingsList.length === 0 && (
           <Text style={{ textAlign: "center", marginTop: 20 }}>
             No {activeTab === "upcoming" ? "upcoming" : "previous"} bookings
           </Text>
