@@ -10,6 +10,10 @@ router.get("/user/checked-in/:id", requireAuth, tourController.userHasCheckedIn)
 router.get('/search', tourController.searchTours);
 router.get('/nearby', tourController.searchNearbyTours);
 
+router.post('/:id/check-in', requireAuth, upload.none(), tourController.checkInUser);
+router.post('/:id/change-state', requireAuth, upload.none(), tourController.changeTourState);
+router.get('/active', requireAuth, tourController.getActiveTour);
+
 router.get('/owned', requireAuth, tourController.getOwnedTours);
 router.get('/followed', requireAuth, tourController.getFollowedTourGuidesTours);
 router.get('/free', requireAuth, tourController.getFreeTours);

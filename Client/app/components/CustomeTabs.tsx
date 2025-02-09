@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    paddingHorizontal: 16,
-    marginTop: 16,
+    marginTop: 20,
+    marginBottom: 10,
   },
   tabButton: {
     marginRight: 24,

@@ -139,13 +139,13 @@ class TourService {
         throw new Error("User not found");
       }
 
-      const tours = await Tour.find({ _id: { $in: user.bookedTours }, state: "published" }).sort({ startDate: -1 }).lean()
+      const tours = await Tour.find({ _id: { $in: user.bookedTours } }).sort({ startDate: -1 }).lean()
 
       const now = new Date();
 
       tours.forEach((tour) => {
         const tourDate = new Date(tour.startDate);
-        tour.upcoming = tourDate >= now;
+        tour.upcoming = tourDate >= now && (tour.state === "active" || tour.state === "published");
       });
 
       return tours;
@@ -410,6 +410,78 @@ class TourService {
     } catch (err) {
       console.error(err);
       throw new Error("Unable to get user has checked in");
+    }
+  }
+
+  async changeTourState(userId, tourId, state) {
+    try {
+      const tour = await Tour.findById(tourId);
+
+      if (!tour) {
+        throw new Error("Tour not found");
+      }
+
+      if (tour.host.id.toString() !== userId.toString()) {
+        throw new Error("Unauthorized");
+      }
+
+      if (state === 'active') {
+        // check if the user has any other active tours
+        const activeTours = await Tour.find({ "host.id": userId, state: "active" });
+
+        if (activeTours.length > 0) {
+          return { success: false, message: "You can only have one active tour at a time" };
+        }
+      }
+      console.log('state', state);
+      tour.state = state;
+
+      await tour.save();
+
+      return { success: true };
+    } catch (err) {
+      console.error(err);
+      throw new Error("Unable to change tour state");
+    }
+  }
+
+  async getActiveTour(userId) {
+    try {
+
+      const tour = await Tour.findOne({ "host.id": userId, state: "active" });
+
+      return tour;
+    } catch (err) {
+      console.error(err);
+      throw new Error("Unable to get active tour");
+    }
+  }
+
+  async checkInUser(userId, tourId) {
+    try {
+      const tour = await Tour.findById(tourId);
+
+      if (!tour) {
+        throw new Error("Tour not found");
+      }
+
+      if (!tour.attendees?.has(userId.toString())) {
+        throw new Error("User not found in attendees");
+      }
+
+      tour.attendees.get(userId.toString()).checkedIn = true;
+      tour.attendees.get(userId.toString()).checkedInDate = new Date();
+
+      tour.markModified("attendees");
+
+      await tour.save();
+
+      const attendeeData = tour.attendees.get(userId.toString());
+
+      return { success: true, attendee: attendeeData };
+    } catch (err) {
+      console.error(err);
+      throw new Error("Unable to check in user");
     }
   }
 }

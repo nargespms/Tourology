@@ -1,13 +1,14 @@
 import fs from 'fs';
 import { uploadDir } from '../middleware/multerConfig.js';
 import User from '../models/User.model.js';
+import { resolve } from 'path';
 
 const getMedia = async (req, res) => {
   try {
     const filename = req.params.filename;
 
     // read the file from the uploads directory
-    const path = uploadDir + "/" + filename;
+    const path = resolve(uploadDir, filename);
 
     // check if the file exists
     if (!fs.existsSync(path)) {
@@ -40,6 +41,10 @@ const getProfilePicture = async (req, res) => {
     }
 
     req.params.filename = user.profilePicture;
+
+    if (!fs.existsSync(resolve(uploadDir, user.profilePicture))) {
+      req.params.filename = "../src/assets/avatar.jpg";
+    }
 
     return await getMedia(req, res);
   } catch (err) {

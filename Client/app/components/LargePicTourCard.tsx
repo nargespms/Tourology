@@ -4,7 +4,6 @@ import SkeletonPlaceholder from "./SkeletonPlaceholder";
 import { Tour } from "../types/tour";
 import { getAvatar, getMediaSrc } from "../api/media";
 import { formatPrice } from "../utils/formats";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type TourCardProps = {
   data: Tour;
@@ -42,7 +41,6 @@ const LargePicTourCard: React.FC<TourCardProps> = ({ data, onPressTour }) => {
                 style={styles.userAvatar}
                 resizeMode="cover"
               />
-
               <Text style={styles.userName}>{host.name}</Text>
             </View>
           )}
@@ -63,7 +61,7 @@ const LargePicTourCard: React.FC<TourCardProps> = ({ data, onPressTour }) => {
           )}
         </View>
         <Text style={styles.location}>{location}</Text>
-        <Text style={styles.price}>{formatPrice(price)}</Text>
+        {paid && <Text style={styles.price}>{formatPrice(price)}</Text>}
       </View>
     </TouchableOpacity>
   );

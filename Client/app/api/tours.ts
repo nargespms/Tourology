@@ -260,3 +260,49 @@ export const deleteTour = async (id: string) => {
     throw new Error("Failed to delete tour");
   }
 };
+
+export const checkIn = async (tourId: string, userId: string) => {
+  const response = await fetch(`${BASE_URL}/${tourId}/check-in`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+    body: toFormData({ userId }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to check in");
+  }
+
+  return response.json();
+};
+
+export const changeTourState = async (tourId: string, state: string) => {
+  const response = await fetch(`${BASE_URL}/${tourId}/change-state`, {
+    method: "POST",
+    body: toFormData({ state }),
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to change tour state");
+  }
+
+  return response.json();
+};
+
+export const getActiveTour = async (tourId) => {
+  const response = await fetch(`${BASE_URL}/active`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get active tour");
+  }
+
+  return response.json();
+};

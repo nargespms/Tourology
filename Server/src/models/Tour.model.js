@@ -78,6 +78,7 @@ const tourSchema = new Schema({
       name: { type: String, required: true },
       phoneNumber: { type: String, required: false },
       checkedIn: { type: Boolean, required: true },
+      checkedInDate: { type: Date, required: false },
     },
     required: false,
   }

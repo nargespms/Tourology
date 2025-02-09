@@ -54,7 +54,7 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
           </View>
         )}
 
-        {enableButtons && isUpcoming && (
+        {enableButtons && isUpcoming && !isCheckedIn && (
           <TouchableOpacity
             style={styles.checkinButton}
             onPress={() => onCheckIn && onCheckIn(tour)}

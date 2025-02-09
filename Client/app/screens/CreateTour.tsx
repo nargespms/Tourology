@@ -50,8 +50,8 @@ export default function CreateTour() {
   const [maxAttendees, setMaxAttendees] = useState("");
 
   // Dates
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<DateType>();
+  const [endDate, setEndDate] = useState<DateType>();
   const [range, setRange] = React.useState<{
     startDate: DateType;
     endDate: DateType;
@@ -151,6 +151,8 @@ export default function CreateTour() {
   };
 
   const handleSave = async (state = "published") => {
+    console.log("Saving tour with state:", state);
+
     // error object for validations
     const newErrors = {
       routeName: !routeName.trim(),
@@ -167,12 +169,9 @@ export default function CreateTour() {
     if (pricingOption === "Paid") {
       newErrors.price = !price.trim();
       newErrors.maxAttendees = !maxAttendees.trim();
-      newErrors.startDate = !startDate.trim();
-      newErrors.endDate = !endDate.trim();
+      newErrors.startDate = !startDate;
+      newErrors.endDate = !endDate;
     }
-
-    setErrors(newErrors);
-    console.log(newErrors);
 
     // If any error is true, stop here
     if (Object.values(newErrors).some((val) => val === true)) {
@@ -184,6 +183,7 @@ export default function CreateTour() {
       });
       return;
     }
+    console.log(newErrors);
 
     // passing all validations
     const user = await getUserInfo();
@@ -372,7 +372,8 @@ export default function CreateTour() {
                 <TouchableOpacity onPress={() => setIsRangeDateEnable(true)}>
                   {startDate && endDate && (
                     <Text>
-                      {startDate} - {endDate}
+                      {dayjs(startDate).locale("en").format("MMM DD, YYYY")} -
+                      {dayjs(endDate).locale("en").format("MMM DD, YYYY")}
                     </Text>
                   )}
                   {!startDate && !endDate && (
@@ -439,6 +440,8 @@ export default function CreateTour() {
               endDate={range.endDate}
               onChange={(params) => {
                 setRange(params);
+                setStartDate(params.startDate);
+                setEndDate(params.endDate);
                 if (errors.startDate && params.startDate) {
                   setErrors((prev) => ({ ...prev, startDate: false }));
                 }
@@ -475,12 +478,8 @@ export default function CreateTour() {
                 style={styles.saveButton}
                 onPress={() => {
                   setIsRangeDateEnable(false);
-                  setStartDate(
-                    dayjs(range.startDate).locale("en").format("MMM DD, YYYY")
-                  );
-                  setEndDate(
-                    dayjs(range.endDate).locale("en").format("MMM DD, YYYY")
-                  );
+                  setStartDate(range.startDate);
+                  setEndDate(range.endDate);
                 }}
               >
                 <Text style={{ color: "#fff" }}>Set</Text>

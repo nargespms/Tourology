@@ -100,20 +100,29 @@ const TravelerBookings: React.FC = () => {
             data={bookingsList}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <SmallPicTourCard
-                tour={item}
-                isUpcoming={activeTab === "upcoming"}
-                onCheckIn={
-                  activeTab === "upcoming"
-                    ? () => handleCheckIn(item)
-                    : undefined
-                }
-                onLeaveFeedback={
-                  activeTab === "previous"
-                    ? () => handleLeaveFeedback(item)
-                    : undefined
-                }
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("TravelerRouteDetails", {
+                    tour: item,
+                  });
+                }}
+                key={item._id}
+              >
+                <SmallPicTourCard
+                  tour={item}
+                  isUpcoming={activeTab === "upcoming"}
+                  onCheckIn={
+                    activeTab === "upcoming"
+                      ? () => handleCheckIn(item)
+                      : undefined
+                  }
+                  onLeaveFeedback={
+                    activeTab === "previous"
+                      ? () => handleLeaveFeedback(item)
+                      : undefined
+                  }
+                />
+              </TouchableOpacity>
             )}
           />
         )}

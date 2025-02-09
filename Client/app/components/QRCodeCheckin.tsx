@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { getUserHasCheckedIn } from "../api/tours";
+import { getUserInfo } from "../utils/userSession";
 
 interface QRCodeCheckinProps {
   tourId: string;
@@ -24,6 +25,14 @@ const QRCodeCheckin: React.FC<QRCodeCheckinProps> = ({
     queryKey: ["userCheckedIn", tourId],
     queryFn: () => getUserHasCheckedIn(tourId),
   });
+
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      setUserId((await getUserInfo()).id);
+    })();
+  }, []);
 
   useEffect(() => {
     // retry the query every 2 seconds
@@ -48,7 +57,7 @@ const QRCodeCheckin: React.FC<QRCodeCheckinProps> = ({
         Ask your tour guide to scan the QR code to check you in.
       </Text>
       <View style={styles.qrCodeContainer}>
-        <QRCode value={tourId} size={270} />
+        {userId && <QRCode value={tourId + "," + userId} size={270} />}
       </View>
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <Text style={styles.closeButtonText}>Close</Text>

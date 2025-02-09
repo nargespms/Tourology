@@ -307,6 +307,47 @@ const userHasCheckedIn = async (req, res) => {
   }
 }
 
+const changeTourState = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const tourId = req.params.id;
+    const state = req.body.state;
+
+    const result = await tourService.changeTourState(userId, tourId, state);
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+const getActiveTour = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const tour = await tourService.getActiveTour(userId);
+
+    res.json(tour);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+const checkInUser = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const tourId = req.params.id;
+
+    const result = await tourService.checkInUser(userId, tourId);
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
 export default {
   createTour,
   deleteTour,
@@ -328,5 +369,8 @@ export default {
   getFeedback,
   userHasCheckedIn,
   getFreeTours,
-  searchNearbyTours
+  searchNearbyTours,
+  changeTourState,
+  getActiveTour,
+  checkInUser
 }

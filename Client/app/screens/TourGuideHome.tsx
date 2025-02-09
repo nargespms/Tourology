@@ -14,14 +14,25 @@ import {
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import { deleteTour, getOwnedTours } from "../api/tours";
+import {
+  changeTourState,
+  deleteTour,
+  getActiveTour,
+  getOwnedTours,
+} from "../api/tours";
 import ActiveTourCard from "../components/ActiveTourCard";
 import BottomNavBar from "../components/BottomNavBar";
 import CustomModal from "../components/CustomeModal";
 import QRCodeScanner from "../components/QRCodeScanner";
 import TourGuideTourList from "../components/TourGuideTourList";
-import { activeTour } from "../data/bookings";
 import { tourGuideNavbar } from "../data/navbarOptions";
+import CustomTabs from "../components/CustomeTabs";
+
+const Tabs = [
+  { label: "Planned", value: "published" },
+  { label: "Draft", value: "draft" },
+  { label: "Ended", value: "ended" },
+];
 
 const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
@@ -70,6 +81,7 @@ const TourGuideHome: React.FC = () => {
         switch (selectedIndex) {
           case 0:
             // activate
+            activateTour(tour._id);
             break;
 
           case 1:
@@ -78,6 +90,7 @@ const TourGuideHome: React.FC = () => {
 
           case 2:
             // Preview
+            navigation.navigate("TravelerRouteDetails", { tour });
             break;
           case 3:
             handleDeleteTourAlert(tour._id);
@@ -89,12 +102,45 @@ const TourGuideHome: React.FC = () => {
 
   const {
     isFetching,
-    data: ownTours,
+    data: ownToursList,
     refetch,
     isFetched,
   } = useQuery({
     queryKey: ["tourGuideTours"],
     queryFn: getOwnedTours,
+  });
+
+  const [activeTab, setActiveTab] = useState("published");
+
+  const ownTours = ownToursList?.filter((tour) => tour.state === activeTab);
+
+  const { data: activeTour, refetch: refetchActiveTour } = useQuery({
+    queryKey: ["activeTour"],
+    queryFn: getActiveTour,
+  });
+
+  const { mutate: activateTour } = useMutation({
+    mutationFn: (tourId) => changeTourState(tourId, "active"),
+    onSuccess: async (res) => {
+      if (!res.success) {
+        Toast.show({
+          type: "error",
+          text1: res.message,
+          text2: "End the current active tour and try again.",
+          visibilityTime: 7000,
+          topOffset: 50,
+        });
+        return;
+      }
+      Toast.show({
+        type: "success",
+        text1: "Tour successfully activated",
+        visibilityTime: 5000,
+        topOffset: 50,
+      });
+      await refetchActiveTour();
+      await refetch();
+    },
   });
 
   const { mutate } = useMutation<string, unknown, string>({
@@ -123,7 +169,13 @@ const TourGuideHome: React.FC = () => {
           <ActiveTourCard tour={activeTour} />
         </View>
       )}
+
       <View style={styles.contentWrapper}>
+        <CustomTabs
+          tabs={Tabs}
+          activeTab={activeTab}
+          onTabPress={(val) => setActiveTab(val)}
+        />
         <Text style={styles.sectionTitle}>My Tours</Text>
         {isFetching && <Text>Loading...</Text>}
         {!isFetching && isFetched && ownTours?.length === 0 && (

@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     flex: 1,
+    paddingHorizontal: 16,
   },
   listContent: {
-    paddingHorizontal: 16,
     paddingVertical: 16,
     flexGrow: 1,
   },

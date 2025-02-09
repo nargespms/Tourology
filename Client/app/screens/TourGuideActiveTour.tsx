@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -8,6 +8,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -19,6 +20,10 @@ import BottomNavBar from "../components/BottomNavBar";
 import { tourGuideNavbar } from "../data/navbarOptions";
 import CustomModal from "../components/CustomeModal";
 import QRCodeScanner from "../components/QRCodeScanner";
+import { getAvatar } from "../api/media";
+import { formatDate } from "../utils/formats";
+import { useQuery } from "@tanstack/react-query";
+import { getTour } from "../api/tours";
 
 const TABS = [
   { label: "All", value: "all" },
@@ -30,6 +35,16 @@ const TourGuideActiveTour: React.FC = () => {
   const [isQRModalVisible, setQRModalVisible] = useState(false);
 
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const {
+    tour: { _id },
+  } = route.params;
+
+  const { data: tour, isFetching } = useQuery({
+    queryKey: ["activeTour", _id],
+    queryFn: () => getTour(_id),
+  });
 
   const handleCheckIn = (id: string) => {
     console.log("Check-in user:", id);
@@ -51,17 +66,34 @@ const TourGuideActiveTour: React.FC = () => {
 
   const getFilteredData = () => {
     if (activeTab === "all") {
-      return [...checkedInUsers, ...awaitingUsers];
+      return attendees;
     }
-    return awaitingUsers;
+
+    if (activeTab === "awaiting") {
+      return attendees.filter((user) => !user.checkedIn);
+    }
+
+    return [];
   };
+
+  if (isFetching) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <ActivityIndicator size="large" color="#000" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const attendees = tour?.attendees ? Object.values(tour.attendees) : [];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contentWrapper}>
         <Text style={styles.title}>Active Tour</Text>
         <View style={styles.activeTourInfoContainer}>
-          <ActiveTourCard tour={activeTour} detailsButton={false} />
+          <ActiveTourCard tour={tour} detailsButton={false} completeButton />
         </View>
 
         <Text style={styles.peopleTitle}>People</Text>
@@ -76,18 +108,21 @@ const TourGuideActiveTour: React.FC = () => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.personRow}>
-              <Image source={item.avatar} style={styles.avatar} />
+              <Image
+                source={{ uri: getAvatar(item.id) }}
+                style={styles.avatar}
+              />
               <View style={styles.personDetails}>
                 <Text style={styles.personName}>{item.name}</Text>
                 <Text style={styles.statusText}>
                   {item.checkedIn
-                    ? `Checked-in ${item.timeAgo}`
+                    ? `Checked-in ${formatDate(item.checkedInDate)}`
                     : "Hasn't checked in"}
                 </Text>
               </View>
               <TouchableOpacity
                 style={styles.callButton}
-                onPress={() => handleCall(item.phone)}
+                onPress={() => handleCall(item.phoneNumber)}
               >
                 <Ionicons name="call-outline" size={16} color="#333" />
                 <Text style={styles.callText}>Call</Text>

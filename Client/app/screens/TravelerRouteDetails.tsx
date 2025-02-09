@@ -1,35 +1,24 @@
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  TouchableOpacity,
   Alert,
-  SafeAreaView,
+  Dimensions,
   LayoutChangeEvent,
   NativeSyntheticEvent,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import PagerView from "react-native-pager-view";
-import MapView, { Marker, Polyline } from "react-native-maps";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import {
-  MOCK_IMAGES,
-  REVIEWS,
-  ROUTE_COORDS,
-  STOPS,
-} from "../data/routeDetailsMock";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { bookATour, isTourBooked } from "../api/tours";
 import RouteDetailsGallery from "../components/RouteDetailGallery";
 import TourHost from "../components/TourHost";
-import TourStops from "../components/TourStops";
 import TourReviews from "../components/TourReviews";
+import TourStops from "../components/TourStops";
 import { formatDate, formatPrice, pluralize } from "../utils/formats";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { bookATour, isTourBooked } from "../api/tours";
 
 const { width } = Dimensions.get("window");
 
@@ -127,12 +116,12 @@ export default function TravelerRouteDetails() {
           </Text>
           <Text style={styles.tourDate}>{formatDate(tour.startDate)}</Text>
         </View>
-        {tour.paid && !isBooked && (
+        {tour.state === "published" && tour.paid && !isBooked && (
           <TouchableOpacity style={styles.bookButton} onPress={book}>
             <Text style={styles.bookButtonText}>Book</Text>
           </TouchableOpacity>
         )}
-        {tour.paid && isBooked && (
+        {tour.state === "published" && tour.paid && isBooked && (
           <TouchableOpacity style={styles.bookedButton} disabled>
             <Text style={styles.bookButtonText}>Booked</Text>
           </TouchableOpacity>

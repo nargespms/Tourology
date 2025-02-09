@@ -1,15 +1,18 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Camera, CameraView, useCameraPermissions } from "expo-camera";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
+import { checkIn } from "../api/tours";
 
 interface QRCodeScannerProps {
   onScanSuccess: (scannedData: string) => void;
 }
 
 const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScanSuccess }) => {
-  const [isScanning, setIsScanning] = useState(true);
+  const isScanning = useRef(true);
   const [permission, requestPermission] = useCameraPermissions();
   const isPermissionGranted = Boolean(permission?.granted);
+  const queyClient = useQueryClient();
 
   useEffect(() => {
     (async () => {
@@ -17,9 +20,19 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScanSuccess }) => {
     })();
   }, []);
 
+  const { mutate: doCheckIn, isPending } = useMutation({
+    mutationFn: (data) => checkIn(data.tourId, data.userId),
+    onSuccess: ({ attendee }) => {
+      onScanSuccess(attendee);
+      Alert.alert("Check-in Success", `${attendee.name} has checked in now!`);
+      queyClient.invalidateQueries("activeTour");
+    },
+  });
+
   if (!permission) {
     return <Text style={styles.infoText}>Requesting Camera Permission...</Text>;
   }
+
   if (isPermissionGranted === false) {
     return <Text style={styles.infoText}>Camera Access Denied</Text>;
   }
@@ -30,18 +43,18 @@ const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ onScanSuccess }) => {
         style={StyleSheet.absoluteFillObject}
         facing="back"
         onBarcodeScanned={({ data }) => {
-          if (isScanning) {
-            setIsScanning(false); // Prevent multiple scans
-            onScanSuccess(data);
-            Alert.alert("QR Code Scanned", `Scanned Data: ${data}`, [
-              { text: "OK", onPress: () => setIsScanning(true) },
-            ]);
+          if (isScanning.current && !isPending) {
+            isScanning.current = false;
+            const [tourId, userId] = data.split(",");
+            doCheckIn({ tourId, userId });
           }
         }}
       />
 
       <View style={styles.scanFrame} />
       <Text style={styles.scanText}>Align QR Code inside the frame</Text>
+
+      {isPending && <Text style={styles.infoText}>Checking in...</Text>}
     </View>
   );
 };

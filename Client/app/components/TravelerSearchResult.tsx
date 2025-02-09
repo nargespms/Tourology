@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
   },
 
   searchResultContainer: {
-    paddingHorizontal: 16,
     height: "100%",
   },
 
