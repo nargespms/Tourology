@@ -112,7 +112,6 @@ const getTour = async (req, res) => {
     const tourId = req.params.id;
 
     const tour = await tourService.getTour(tourId);
-    console.log("tour", tour);
 
     res.json(tour);
   } catch (err) {
