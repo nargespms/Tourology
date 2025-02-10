@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 
-import { ROUTE_COORDS, STOPS } from "../data/routeDetailsMock";
 import { Tour } from "../types/tour";
 import { getMediaSrc } from "../api/media";
 
@@ -19,8 +18,8 @@ type TourStopsProps = {
 
 const TourStops = (props: TourStopsProps) => {
   const { tour } = props;
-
   const [mapInteractionEnabled, setMapInteractionEnabled] = useState(false);
+
   const handleMarkerPress = (stop: any) => {
     Alert.alert(stop.name, stop.description);
   };
@@ -29,41 +28,51 @@ const TourStops = (props: TourStopsProps) => {
 
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => setMapInteractionEnabled(true)}>
-        <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitudeDelta: 0.2,
-              longitudeDelta: 0.2,
-              longitude: stopsArray[0].region.coordinates[0],
-              latitude: stopsArray[0].region.coordinates[1],
-            }}
-            scrollEnabled={mapInteractionEnabled}
-            zoomEnabled={mapInteractionEnabled}
-            rotateEnabled={mapInteractionEnabled}
-          >
-            <Polyline
-              coordinates={stopsArray.map((stop) => ({
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+            longitude: stopsArray[0].region.coordinates[0],
+            latitude: stopsArray[0].region.coordinates[1],
+          }}
+          scrollEnabled={mapInteractionEnabled}
+          zoomEnabled={mapInteractionEnabled}
+          rotateEnabled={mapInteractionEnabled}
+        >
+          <Polyline
+            coordinates={stopsArray.map((stop) => ({
+              latitude: stop.region.coordinates[1],
+              longitude: stop.region.coordinates[0],
+            }))}
+            strokeColor="#007AFF"
+            strokeWidth={3}
+          />
+          {stopsArray.map((stop) => (
+            <Marker
+              key={stop.id}
+              coordinate={{
                 latitude: stop.region.coordinates[1],
                 longitude: stop.region.coordinates[0],
-              }))}
-              strokeColor="#007AFF"
-              strokeWidth={3}
+              }}
+              onPress={() => handleMarkerPress(stop)}
             />
-            {stopsArray.map((stop) => (
-              <Marker
-                key={stop.id}
-                coordinate={{
-                  latitude: stop.region.coordinates[1],
-                  longitude: stop.region.coordinates[0],
-                }}
-                onPress={() => handleMarkerPress(stop)}
-              />
-            ))}
-          </MapView>
-        </View>
-      </TouchableWithoutFeedback>
+          ))}
+        </MapView>
+        {/* Overlay for enabling map interactions */}
+        {!mapInteractionEnabled && (
+          <TouchableWithoutFeedback
+            onPress={() => setMapInteractionEnabled(true)}
+          >
+            <View style={styles.mapOverlay}>
+              <Text style={styles.mapOverlayText}>
+                Tap to interact with map
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+      </View>
 
       {stopsArray.map((stop, index) => (
         <View style={styles.stopItem} key={stop.id}>
@@ -92,19 +101,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   mapContainer: {
     width: "95%",
     height: 200,
     margin: "auto",
+    position: "relative", // Needed to position the overlay absolutely within this container
   },
   map: {
     flex: 1,
     borderRadius: 8,
     marginBottom: 25,
+  },
+  mapOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 24,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  mapOverlayText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    paddingHorizontal: 10,
   },
   stopItem: {
     paddingHorizontal: 18,
