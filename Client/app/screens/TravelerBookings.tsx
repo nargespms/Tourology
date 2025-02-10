@@ -98,7 +98,7 @@ const TravelerBookings: React.FC = () => {
         {bookingsList.length > 0 && (
           <FlatList
             data={bookingsList}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {

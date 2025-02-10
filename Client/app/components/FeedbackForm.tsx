@@ -29,12 +29,12 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
     queryFn: () => getFeedback(tourId),
   });
 
-  useEffect(() => {
-    if (feedbackObj) {
-      setRating(feedbackObj.rating);
-      setFeedback(feedbackObj.description);
-    }
-  }, [feedbackObj]);
+  // useEffect(() => {
+  //   if (feedbackObj) {
+  //     setRating(feedbackObj.rating);
+  //     setFeedback(feedbackObj.description);
+  //   }
+  // }, [feedbackObj]);
 
   const { mutate: submit, isPending } = useMutation({
     mutationKey: "upsertFeedback",
@@ -44,6 +44,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
   const doSubmit = () => {
     submit();
     onSubmit(rating, feedback);
+    setRating(0);
+    setFeedback("");
   };
 
   return (
@@ -78,7 +80,6 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
         value={feedback}
         onChangeText={setFeedback}
       />
-
       <TouchableOpacity style={styles.submitButton} onPress={doSubmit}>
         <Text style={styles.submitText}>Submit</Text>
       </TouchableOpacity>

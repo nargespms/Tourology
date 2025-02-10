@@ -84,11 +84,11 @@ const TravelerHome: React.FC = () => {
             {!isFetching && data && (
               <FlatList
                 data={data}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                   <LargePicTourCard
                     data={item}
-                    key={item.name}
+                    key={item._id}
                     onPressTour={() =>
                       navigation.navigate({
                         name: "TravelerRouteDetails",
