@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Linking,
+  Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -61,7 +63,16 @@ const TourGuideActiveTour: React.FC = () => {
   };
 
   const handleCall = (phoneNumber: string) => {
-    console.log("Calling:", phoneNumber);
+    const url = `tel:${phoneNumber}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          Alert.alert("Error", "Your device does not support phone calls");
+        }
+      })
+      .catch((err) => console.error("Error opening dialer", err));
   };
 
   const getFilteredData = () => {
@@ -102,6 +113,14 @@ const TourGuideActiveTour: React.FC = () => {
           activeTab={activeTab}
           onTabPress={setActiveTab}
         />
+
+        {!isFetching && getFilteredData().length === 0 && (
+          <View style={styles.noToursFound}>
+            <Text style={{ color: "#696969", fontSize: 16 }}>
+              No attendees found
+            </Text>
+          </View>
+        )}
 
         <FlatList
           data={getFilteredData()}
@@ -287,5 +306,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  noToursFound: {
+    paddingVertical: 24,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -88,7 +88,7 @@ const TravelerHome: React.FC = () => {
                 renderItem={({ item }) => (
                   <LargePicTourCard
                     data={item}
-                    key={item.id}
+                    key={item.name}
                     onPressTour={() =>
                       navigation.navigate({
                         name: "TravelerRouteDetails",

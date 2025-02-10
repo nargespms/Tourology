@@ -65,7 +65,7 @@ class TourService {
       if (!tour) {
         throw new Error("Tour not found");
       }
-
+      console.log("service tour", tour);
       return tour;
     } catch (err) {
       console.error(err);

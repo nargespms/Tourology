@@ -18,7 +18,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({
     <View style={styles.container}>
       {items.map((item) => (
         <TouchableOpacity
-          key={item.id}
+          key={item.label}
           style={styles.tabButton}
           onPress={() => onTabPress(item.label)}
         >

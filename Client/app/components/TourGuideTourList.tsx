@@ -30,7 +30,7 @@ const TourGuideTourList: React.FC<TourGuideTourListProps> = ({
         <View style={styles.detailsContainer}>
           <Text style={styles.title}>{tour.name}</Text>
           <Text style={styles.location}>{tour.location}</Text>
-          <Text>{tour.description}</Text>
+          <Text numberOfLines={2}>{tour.description}</Text>
 
           {!tour.paid && tour.rating && (
             <Text style={styles.ratingText}>★ {tour.rating.toFixed(1)}</Text>

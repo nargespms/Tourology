@@ -11,6 +11,8 @@ type TourReviewProps = {
 
 const TourReviews = (props: TourReviewProps) => {
   const { tour } = props;
+  console.log("tour", tour.reviews);
+
   const reviews = Object.values(tour.reviews ?? {});
 
   console.log("reviews", reviews);

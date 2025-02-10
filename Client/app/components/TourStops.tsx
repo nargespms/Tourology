@@ -34,10 +34,10 @@ const TourStops = (props: TourStopsProps) => {
           <MapView
             style={styles.map}
             initialRegion={{
-              latitudeDelta: 0.3,
-              longitudeDelta: 0.3,
-              longitude: tour.region.coordinates[0],
-              latitude: tour.region.coordinates[1],
+              latitudeDelta: 0.2,
+              longitudeDelta: 0.2,
+              longitude: stopsArray[0].region.coordinates[0],
+              latitude: stopsArray[0].region.coordinates[1],
             }}
             scrollEnabled={mapInteractionEnabled}
             zoomEnabled={mapInteractionEnabled}
@@ -67,7 +67,7 @@ const TourStops = (props: TourStopsProps) => {
 
       {stopsArray.map((stop, index) => (
         <View style={styles.stopItem} key={stop.id}>
-          <View style={{ width: "80%" }}>
+          <View style={{ width: "78%", paddingRight: 12 }}>
             <Text style={styles.stopTitle}>
               {index + 1}. {stop.name}
             </Text>

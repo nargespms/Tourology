@@ -137,7 +137,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    key={item._id}
+                    key={item.id}
                     onPress={(e) => {
                       e.stopPropagation();
                       Keyboard.dismiss();
