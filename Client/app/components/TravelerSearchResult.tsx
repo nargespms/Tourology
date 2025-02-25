@@ -134,10 +134,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             {!!result?.length && !isLoading && (
               <FlatList
                 data={result}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    key={item.id}
+                    key={item._id}
                     onPress={(e) => {
                       e.stopPropagation();
                       Keyboard.dismiss();
