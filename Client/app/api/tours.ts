@@ -123,6 +123,20 @@ export const getOwnedTours = async () => {
     throw new Error("Failed to get owned tours");
   }
 };
+export const getHostTours = async (id: string) => {
+  const response = await fetch(`${BASE_URL}/host/${id}`, {
+    headers: {
+      authorization: `Bearer ${(await getUserInfo()).token}`,
+    },
+  });
+
+  if (response.ok) {
+    // console.log(await response.json());
+    return response.json();
+  } else {
+    throw new Error("Failed to get host tours");
+  }
+};
 
 export const getIsFavorite = async (id: string) => {
   const response = await fetch(`${BASE_URL}/${id}/favorite`, {

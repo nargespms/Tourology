@@ -15,6 +15,7 @@ class UsersService {
       }
 
       return {
+        id: tourGuide._id,
         firstName: tourGuide.firstName,
         lastName: tourGuide.lastName,
         profileName: tourGuide.profileName,
@@ -26,7 +27,6 @@ class UsersService {
         numberOfFollowers: tourGuide.numberOfFollowers,
         followed: user.followingGuides.includes(tourGuideId),
       };
-
     } catch (err) {
       console.error(err);
       return { error: "Server error" };
@@ -47,7 +47,9 @@ class UsersService {
       }
 
       if (unfollow) {
-        user.followingGuides = user.followingGuides.filter((id) => id.toString() !== tourGuideId);
+        user.followingGuides = user.followingGuides.filter(
+          (id) => id.toString() !== tourGuideId
+        );
         tourGuide.numberOfFollowers--;
       } else {
         user.followingGuides.push(tourGuideId);
@@ -63,10 +65,7 @@ class UsersService {
       return { error: "Server error" };
     }
   }
-
 }
-
-
 
 const usersService = new UsersService();
 export default usersService;

@@ -78,11 +78,13 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
       </View>
 
       <View style={styles.participantContainer}>
-        <Ionicons name="people-outline" size={18} color="#333" />
         {tour.attendees && (
-          <Text style={styles.participantText}>
-            {Object.values(tour.attendees).length}
-          </Text>
+          <>
+            <Ionicons name="people-outline" size={18} color="#333" />
+            <Text style={styles.participantText}>
+              {Object.values(tour.attendees).length}
+            </Text>
+          </>
         )}
       </View>
     </View>

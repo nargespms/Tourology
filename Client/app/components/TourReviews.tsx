@@ -11,17 +11,15 @@ type TourReviewProps = {
 
 const TourReviews = (props: TourReviewProps) => {
   const { tour } = props;
-  console.log("tour", tour.reviews);
 
   const reviews = Object.values(tour.reviews ?? {});
-
-  console.log("reviews", reviews);
 
   return (
     <View style={styles.reviewsContainer}>
       {reviews.length !== 0 && (
         <Text style={styles.sectionTitle}>
-          ★ {tour.rating} – {pluralize(reviews.length, "review")}
+          ★ {tour.rating?.toPrecision(2)} –{" "}
+          {pluralize(reviews.length, "review")}
         </Text>
       )}
       {reviews.length === 0 && (

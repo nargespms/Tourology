@@ -32,7 +32,7 @@ export default function TravelerRouteDetails() {
   const [reviewsPositionY, setReviewsPositionY] = useState(0);
 
   const { mutate: book } = useMutation({
-    mutationFn: () => bookATour(tour._id),
+    mutationFn: () => bookATour(tour?._id),
     onSuccess: () => {
       Alert.alert("Success", "Tour booked successfully");
       setIsBooked(true);
@@ -40,8 +40,8 @@ export default function TravelerRouteDetails() {
   });
 
   const { data } = useQuery({
-    queryKey: ["isBooked", tour._id],
-    queryFn: () => isTourBooked(tour._id),
+    queryKey: ["isBooked", tour?._id || tour?.id],
+    queryFn: () => isTourBooked(tour?._id),
   });
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function TravelerRouteDetails() {
     });
   };
 
-  const reviewsLength = Object.keys(tour.reviews || {}).length;
+  const reviewsLength = Object.keys(tour?.reviews || {}).length;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -76,12 +76,12 @@ export default function TravelerRouteDetails() {
         />
 
         <View style={styles.infoContainer}>
-          <Text style={styles.title}>{tour.name}</Text>
-          <Text style={styles.subTitle}>{tour.location}</Text>
+          <Text style={styles.title}>{tour?.name}</Text>
+          <Text style={styles.subTitle}>{tour?.location}</Text>
           <View style={{ flexDirection: "row" }}>
-            {tour.rating && (
+            {tour?.rating && (
               <Text style={[styles.ratingReviews, { paddingRight: 8 }]}>
-                ★{tour.rating}
+                ★{tour?.rating.toPrecision(2)}
               </Text>
             )}
             <TouchableOpacity
@@ -95,10 +95,10 @@ export default function TravelerRouteDetails() {
               {reviewsLength === 0 && <Text>No reviews</Text>}
             </TouchableOpacity>
           </View>
-          <Text style={styles.description}>{tour.description}</Text>
+          <Text style={styles.description}>{tour?.description}</Text>
         </View>
 
-        <TourHost {...tour.host} />
+        <TourHost {...tour?.host} />
 
         <Text style={styles.sectionTitle}>Tour details</Text>
 
@@ -108,20 +108,20 @@ export default function TravelerRouteDetails() {
           <TourReviews tour={tour} />
         </View>
       </ScrollView>
-      {tour.paid && (
+      {tour?.paid && (
         <View style={styles.stickyFooter}>
           <View style={{ flexDirection: "column", paddingLeft: 10 }}>
             <Text style={styles.priceText}>
-              {tour.paid ? formatPrice(tour.price) : "Free"}
+              {tour?.paid ? formatPrice(tour?.price) : "Free"}
             </Text>
-            <Text style={styles.tourDate}>{formatDate(tour.startDate)}</Text>
+            <Text style={styles.tourDate}>{formatDate(tour?.startDate)}</Text>
           </View>
-          {tour.state === "published" && tour.paid && !isBooked && (
+          {tour?.state === "published" && tour?.paid && !isBooked && (
             <TouchableOpacity style={styles.bookButton} onPress={book}>
               <Text style={styles.bookButtonText}>Book</Text>
             </TouchableOpacity>
           )}
-          {tour.state === "published" && tour.paid && isBooked && (
+          {tour?.state === "published" && tour?.paid && isBooked && (
             <TouchableOpacity style={styles.bookedButton} disabled>
               <Text style={styles.bookButtonText}>Booked</Text>
             </TouchableOpacity>

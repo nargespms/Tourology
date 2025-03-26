@@ -11,6 +11,7 @@ import TravelerSearchResults from "@/app/components/TravelerSearchResult";
 import TourGuideActiveTour from "@/app/screens/TourGuideActiveTour";
 import TravelerRouteDetails from "@/app/screens/TravelerRouteDetails";
 import CreateTour from "@/app/screens/CreateTour";
+import TourGuideProfile from "@/app/screens/TourGuideProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +72,11 @@ const Navigator = () => {
       <Stack.Screen
         name="CreateTour"
         component={CreateTour}
+        options={{ headerShown: false, gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name="TourGuideProfile"
+        component={TourGuideProfile}
         options={{ headerShown: false, gestureEnabled: true }}
       />
     </Stack.Navigator>

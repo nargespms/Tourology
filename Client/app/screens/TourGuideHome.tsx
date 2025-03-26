@@ -27,6 +27,7 @@ import QRCodeScanner from "../components/QRCodeScanner";
 import TourGuideTourList from "../components/TourGuideTourList";
 import { tourGuideNavbar } from "../data/navbarOptions";
 import CustomTabs from "../components/CustomeTabs";
+import { useLoggedUser } from "../contexts/loggedUserData";
 
 const Tabs = [
   { label: "Planned", value: "published" },
@@ -38,10 +39,13 @@ const TourGuideHome: React.FC = () => {
   const navigation = useNavigation();
   const [isQRModalVisible, setQRModalVisible] = useState(false);
   const { showActionSheetWithOptions } = useActionSheet();
+  const { data: complementaryTourGuide } = useLoggedUser();
 
   const handleBottomNavChange = (name: string) => {
-    if (name === "Explore") {
-      // navigation.navigate("TravelerBookings" as never);
+    if (name === "Profile") {
+      navigation.navigate("TourGuideProfile" as never, {
+        complementaryTourGuide,
+      });
     } else if (name === "check-ins") {
       setQRModalVisible(true);
     }

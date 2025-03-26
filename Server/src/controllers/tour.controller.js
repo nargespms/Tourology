@@ -135,7 +135,6 @@ const getToursByHost = async (req, res) => {
   try {
     const hostId = req.params.id;
     const tours = await tourService.getHostTours(hostId);
-
     res.json(tours);
   } catch (err) {
     console.error(err);

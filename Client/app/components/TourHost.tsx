@@ -11,6 +11,7 @@ import { getAvatar } from "../api/media";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getTourGuideInfo, followTourGuide } from "../api/users";
 import { pluralize } from "../utils/formats";
+import { useNavigation } from "@react-navigation/native";
 
 interface TourHostProps {
   name: string;
@@ -19,6 +20,7 @@ interface TourHostProps {
 
 const TourHost: React.FC<TourHostProps> = (tourGuide) => {
   const [isFollowing, setIsFollowing] = React.useState(false);
+  const navigation = useNavigation();
 
   const { isFetching, data: complementaryTourGuide } = useQuery({
     queryKey: ["tourGuide", tourGuide.id],
@@ -48,19 +50,33 @@ const TourHost: React.FC<TourHostProps> = (tourGuide) => {
     mutate();
   };
 
+  const handleProfileView = () => {
+    navigation.navigate("TourGuideProfile" as never, {
+      complementaryTourGuide,
+    });
+  };
+
   return (
     <View style={styles.guideContainer}>
-      <Image source={{ uri: getAvatar(tourGuide.id) }} style={styles.avatar} />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.guideName}>Hosted by {tourGuide.name}</Text>
-        {isFetching && <Text style={styles.experience}>...</Text>}
-        {complementaryTourGuide && (
-          <Text style={styles.experience}>
-            {pluralize(complementaryTourGuide.yearsOfExperience || 1, "year")}{" "}
-            of experience
-          </Text>
-        )}
-      </View>
+      <TouchableOpacity
+        onPress={handleProfileView}
+        style={{ display: "flex", flexDirection: "row", flexShrink: 1 }}
+      >
+        <Image
+          source={{ uri: getAvatar(tourGuide.id) }}
+          style={styles.avatar}
+        />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.guideName}>Hosted by {tourGuide.name}</Text>
+          {isFetching && <Text style={styles.experience}>...</Text>}
+          {complementaryTourGuide && (
+            <Text style={styles.experience}>
+              {pluralize(complementaryTourGuide.yearsOfExperience || 1, "year")}{" "}
+              of experience
+            </Text>
+          )}
+        </View>
+      </TouchableOpacity>
       {complementaryTourGuide && (
         <TouchableOpacity style={styles.followButton} onPress={handleFollow}>
           {!isFollowing ? (
