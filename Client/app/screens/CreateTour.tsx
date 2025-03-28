@@ -277,22 +277,6 @@ export default function CreateTour() {
           />
 
           <Text style={styles.label}>City/ Province/ State*</Text>
-          {/* <TextInput
-            style={[styles.input, errors.locationText && styles.errorInput]}
-            placeholder="e.g. Banff, Alberta, Florida"
-            placeholderTextColor="#999"
-            value={locationText}
-            onChangeText={(txt) => {
-              setLocationText(txt);
-              if (errors.locationText && txt.trim()) {
-                setErrors((prev) => ({ ...prev, locationText: false }));
-              }
-              handleLocationChange(txt);
-            }}
-          /> */}
-
-          {/* Map (updates when location changes) */}
-          {/* <SingleLocationMap region={region} /> */}
 
           <MapWithNominatim
             onLocationSelect={handleMapRegion}

@@ -5,15 +5,17 @@ type PickerButtonProps = {
   options: string[];
   activeOption: string;
   onSelect: (option: string) => void;
+  customStyle?: any;
 };
 
 const PickerButton: React.FC<PickerButtonProps> = ({
   options,
   activeOption,
   onSelect,
+  customStyle,
 }) => {
   return (
-    <View>
+    <View style={customStyle && customStyle}>
       <TouchableOpacity>
         <View style={styles.pickerRow}>
           {options.map((option) => (

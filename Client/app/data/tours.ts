@@ -114,3 +114,10 @@ export const awaitingUsers = [
     phone: "+1 555-7890",
   },
 ];
+
+export const tourCategories = [
+  "Historical Tours",
+  "Adventure",
+  "Culinary",
+  "Cultural",
+];

@@ -105,7 +105,7 @@ const TourGuideProfile: React.FC = () => {
       tour.state === "active" ||
       tour.state === "ended"
   );
-  const totalReviews = ownTours.reduce((total, tour) => {
+  const totalReviews = ownTours?.reduce((total, tour) => {
     const reviews = tour.reviews || {};
     const count = Object.keys(reviews).length;
     return total + count;
@@ -248,15 +248,20 @@ const TourGuideProfile: React.FC = () => {
                       },
                     ]}
                   >
-                    <Text
-                      style={{
-                        alignItems: "center",
-                        fontSize: 18,
-                        fontWeight: "600",
-                      }}
-                    >
-                      Average Rating
-                    </Text>
+                    <View>
+                      <Text
+                        style={{
+                          alignItems: "center",
+                          fontSize: 18,
+                          fontWeight: "600",
+                        }}
+                      >
+                        Average Rating
+                      </Text>
+                      <Text style={{ fontSize: 12, color: "#656565" }}>
+                        Based on {totalReviews} reviews.
+                      </Text>
+                    </View>
                     <View
                       style={{
                         display: "flex",
@@ -270,11 +275,6 @@ const TourGuideProfile: React.FC = () => {
                           `☆`.repeat(5 - Math.round(averageRating))}{" "}
                       </Text>
                     </View>
-                  </View>
-                  <View>
-                    <Text style={{ fontSize: 12, color: "#656565" }}>
-                      Based on {totalReviews} reviews.
-                    </Text>
                   </View>
                 </View>
               )}
@@ -561,14 +561,14 @@ const styles = StyleSheet.create({
   },
 
   averageNumber: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#222",
     paddingRight: 8,
   },
 
   starRating: {
-    fontSize: 18,
+    fontSize: 20,
     color: "#f7b500",
     fontWeight: "600",
     letterSpacing: 2,

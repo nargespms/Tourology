@@ -19,6 +19,10 @@ import { nearbyTours, searchTours } from "../api/tours";
 import SmallPicTourCard from "./SmallPicTourCard";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
+import { AntDesign } from "@expo/vector-icons";
+import CustomModal from "./CustomeModal";
+import AdvancedSearchOptions, { Filter } from "./AdvancedSearchOptions";
+import FilterTags from "./FilterTags";
 
 interface SearchResultsProps {
   searchQuery: string;
@@ -32,6 +36,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   clearSearch,
 }) => {
   const queryClient = useQueryClient();
+
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
 
   const {
     isFetching,
@@ -97,25 +104,68 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       >
         <View style={styles.searchResultContainer}>
-          <TouchableOpacity
-            style={styles.nearbyOption}
-            onPress={(e) => {
-              e.stopPropagation();
-              Keyboard.dismiss();
-              fetchNearbyTours();
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderBottomWidth: 1,
+              borderBottomColor: "#f1f1f1",
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingHorizontal: 10,
+            <TouchableOpacity
+              style={styles.nearbyOption}
+              onPress={(e) => {
+                e.stopPropagation();
+                Keyboard.dismiss();
+                fetchNearbyTours();
               }}
             >
-              <Ionicons name="location-outline" size={18} color="#007AFF" />
-              <Text style={styles.nearbyText}>Search for nearby tours</Text>
-            </View>
-          </TouchableOpacity>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 10,
+                }}
+              >
+                <Ionicons name="location-outline" size={18} color="#007AFF" />
+                <Text style={styles.nearbyText}>Search for nearby tours</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation();
+                Keyboard.dismiss();
+                setIsFilterModalVisible(true);
+              }}
+            >
+              <View
+                style={{
+                  paddingHorizontal: 10,
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <AntDesign name="filter" size={18} color="#007AFF" />
+                <Text style={styles.nearbyText}>Filter</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Filter Tags */}
+          {activeFilter && (
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation();
+                Keyboard.dismiss();
+                setIsFilterModalVisible(true);
+              }}
+              style={{ borderBottomWidth: 1, borderBottomColor: "#f1f1f1" }}
+            >
+              <FilterTags filter={activeFilter} />
+            </TouchableOpacity>
+          )}
 
           {isLoading && (
             <ActivityIndicator
@@ -155,6 +205,25 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           </View>
         </View>
       </TouchableWithoutFeedback>
+
+      <CustomModal
+        visible={isFilterModalVisible}
+        onClose={() => {
+          setIsFilterModalVisible(false);
+        }}
+      >
+        <AdvancedSearchOptions
+          activeFilter={activeFilter}
+          onSubmit={(filter) => {
+            console.log(filter);
+            setActiveFilter(filter);
+            setIsFilterModalVisible(false);
+          }}
+          onClose={() => {
+            setIsFilterModalVisible(false);
+          }}
+        />
+      </CustomModal>
     </SafeAreaView>
   );
 };
@@ -177,8 +246,7 @@ const styles = StyleSheet.create({
   nearbyOption: {
     flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f1f1",
+
     paddingVertical: 20,
   },
 
