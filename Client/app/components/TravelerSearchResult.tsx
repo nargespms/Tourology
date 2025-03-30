@@ -1,28 +1,25 @@
+import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
   ActivityIndicator,
-  StyleSheet,
-  SafeAreaView,
-  TouchableWithoutFeedback,
+  FlatList,
   Keyboard,
-  ScrollView,
-  Alert,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import LargePicTourCard, { Tour } from "./LargePicTourCard";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { nearbyTours, searchTours } from "../api/tours";
-import SmallPicTourCard from "./SmallPicTourCard";
-import { useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
-import { AntDesign } from "@expo/vector-icons";
-import CustomModal from "./CustomeModal";
 import AdvancedSearchOptions, { Filter } from "./AdvancedSearchOptions";
+import CustomModal from "./CustomeModal";
 import FilterTags from "./FilterTags";
+import { Tour } from "./LargePicTourCard";
+import SmallPicTourCard from "./SmallPicTourCard";
 
 interface SearchResultsProps {
   searchQuery: string;

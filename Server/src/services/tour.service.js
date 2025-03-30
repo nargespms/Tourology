@@ -169,7 +169,7 @@ class TourService {
 
         const hostData = hostMap.get(String(tour.host?.id));
         if (hostData) {
-          tour.host.phone = hostData.phone;
+          tour.host.phone = hostData.phoneNumber;
         }
       });
 

@@ -32,6 +32,7 @@ interface Participant {
   phoneNumber: string;
   distance: string;
   location: Location;
+  checkedIn: boolean;
 }
 
 interface Guide {
@@ -66,17 +67,18 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
     Linking.openURL(`tel:${phone}`);
   };
 
-  const participantArray = Object.values(participants || {}).map(
-    (p, index) => ({
+  const participantArray = Object.values(participants || {})
+    .filter((p) => p.checkedIn === true)
+    .map((p, index) => ({
       id: p.id,
       _id: p._id,
       name: p.name,
       phone: p.phoneNumber,
       avatar: getAvatar(p.id),
+      checkedIn: p.checkIn,
       distance: "200m", // placeholder
       location: participantLocs[index], // match location by index temporarily
-    })
-  );
+    }));
 
   // Render item for participants list
   const renderParticipantItem = useCallback(
