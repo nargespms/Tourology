@@ -10,22 +10,26 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import toastConfig from "./app/components/ToasConfig";
 import { LoggedUserProvider } from "./app/contexts/loggedUserData";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 const queryClient = new QueryClient();
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar />
-      <LoggedUserProvider>
-        <NavigationContainer>
-          <ActionSheetProvider>
-            <ThemeProvider value={theme}>
-              <Navigator />
-              <Toast config={toastConfig} />
-            </ThemeProvider>
-          </ActionSheetProvider>
-        </NavigationContainer>
-      </LoggedUserProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <LoggedUserProvider>
+          <NavigationContainer>
+            <ActionSheetProvider>
+              <ThemeProvider value={theme}>
+                <Navigator />
+                <Toast config={toastConfig} />
+              </ThemeProvider>
+            </ActionSheetProvider>
+          </NavigationContainer>
+        </LoggedUserProvider>
+      </GestureHandlerRootView>
     </QueryClientProvider>
   );
 }

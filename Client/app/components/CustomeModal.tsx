@@ -23,8 +23,6 @@ const CustomModal: React.FC<CustomModalProps> = ({
   children,
   customStyle,
 }) => {
-  console.log(CustomModal);
-
   return (
     <Modal visible={visible} transparent animationType="slide">
       <TouchableOpacity

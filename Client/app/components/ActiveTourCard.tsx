@@ -1,22 +1,19 @@
+import { useNavigation } from "@react-navigation/native";
+import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
   Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { ActiveTour } from "../data/bookings";
-import { useNavigation } from "@react-navigation/native";
-import { formatDate } from "../utils/formats";
 import { getMediaSrc } from "../api/media";
-import { useMutation } from "@tanstack/react-query";
 import { changeTourState } from "../api/tours";
+import { formatDate } from "../utils/formats";
 import CustomModal from "./CustomeModal";
-import TrackingMap from "./ TrackingMap";
-import { useLoggedUser } from "../contexts/loggedUserData";
 import TrackingScreen from "./TrackingScreen";
 
 // For testing, static coordinate data:
@@ -152,11 +149,6 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
             }}
             participants={tour.attendees}
           />
-          {/* <TrackingMap
-            guideLocation={guideLoc}
-            participantLocations={participantLocs}
-            tourGuideId={tour?.host.id}
-          /> */}
         </View>
       </CustomModal>
     </View>

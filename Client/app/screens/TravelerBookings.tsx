@@ -91,7 +91,6 @@ const TravelerBookings: React.FC = () => {
   };
 
   const handleTrackTour = (tour: Booking) => {
-    console.log("Track tour", tour.host);
     setTrackingTour(tour);
     setIsTrackingEnabled(true);
   };
@@ -219,7 +218,7 @@ const TravelerBookings: React.FC = () => {
               <Ionicons name="close" size={24} color="black" />
             </TouchableOpacity>
           </View>
-          <View style={{ height: 700 }}>
+          <View style={{ height: 700, flex: 1 }}>
             <TrackingScreen
               isGuide={false}
               guide={{
@@ -237,13 +236,6 @@ const TravelerBookings: React.FC = () => {
               }}
               participants={[]}
             />
-
-            {/* <TrackingMap
-              tourGuideId={trackingTour?.host.id}
-              travelerId={travelerData.id}
-              guideLocation={guideLoc}
-              travelerLocation={travelerLoc}
-            /> */}
           </View>
         </CustomModal>
       </View>
