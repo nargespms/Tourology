@@ -145,11 +145,32 @@ class TourService {
 
       const now = new Date();
 
+      // Extract host IDs
+      const hostIds = [...new Set(tours.map((tour) => tour.host?.id))];
+
+      // Fetch host data
+      const hosts = await User.find({ _id: { $in: hostIds } })
+        .select("_id  phoneNumber")
+        .lean();
+
+      const hostMap = new Map();
+      hosts.forEach((host) => {
+        hostMap.set(String(host._id), {
+          phone: host.phoneNumber,
+        });
+      });
+
+      // Inject phone + mark upcoming
       tours.forEach((tour) => {
         const tourDate = new Date(tour.startDate);
         tour.upcoming =
           tourDate >= now &&
           (tour.state === "active" || tour.state === "published");
+
+        const hostData = hostMap.get(String(tour.host?.id));
+        if (hostData) {
+          tour.host.phone = hostData.phone;
+        }
       });
 
       return tours;

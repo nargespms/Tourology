@@ -11,7 +11,9 @@ interface BookingCardProps {
   tour: Tour;
   onCheckIn?: (item: Tour) => void;
   onLeaveFeedback?: (item: Tour) => void;
+  onTrack?: (item: Tour) => void;
   isUpcoming?: boolean;
+  isOngoing?: boolean;
   enableButtons?: boolean;
 }
 
@@ -19,7 +21,9 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
   tour,
   onCheckIn,
   onLeaveFeedback,
+  onTrack,
   isUpcoming,
+  isOngoing,
   enableButtons = true,
 }) => {
   const { data: isCheckedIn } = useQuery({
@@ -67,12 +71,21 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
           <Text style={styles.checkedInButton}>Checked in!</Text>
         )}
 
-        {enableButtons && !isUpcoming && (
+        {enableButtons && !isUpcoming && !isOngoing && (
           <TouchableOpacity
             style={styles.feedbackButton}
             onPress={() => onLeaveFeedback && onLeaveFeedback(tour)}
           >
             <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
+          </TouchableOpacity>
+        )}
+
+        {enableButtons && isOngoing && (
+          <TouchableOpacity
+            style={styles.trackButton}
+            onPress={() => onTrack && onTrack(tour)}
+          >
+            <Text style={styles.trackButtonText}>Tracking My Tour</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -180,5 +193,20 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
     top: 0,
+  },
+  trackButton: {
+    borderWidth: 1,
+    borderColor: "#046304",
+    backgroundColor: "#04630421",
+    paddingVertical: 8,
+    borderRadius: 6,
+    marginTop: 6,
+    alignSelf: "flex-start",
+    paddingHorizontal: 16,
+  },
+  trackButtonText: {
+    color: "#2E8B57",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

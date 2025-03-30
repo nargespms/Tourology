@@ -6,6 +6,7 @@ export type Region = {
 export type Host = {
   id: string;
   name: string;
+  profilePicture?: string;
 };
 
 export type Review = {

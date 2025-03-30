@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -14,19 +14,42 @@ import { formatDate } from "../utils/formats";
 import { getMediaSrc } from "../api/media";
 import { useMutation } from "@tanstack/react-query";
 import { changeTourState } from "../api/tours";
+import CustomModal from "./CustomeModal";
+import TrackingMap from "./ TrackingMap";
+import { useLoggedUser } from "../contexts/loggedUserData";
+import TrackingScreen from "./TrackingScreen";
+
+// For testing, static coordinate data:
+const guideLoc = {
+  latitude: 37.78825,
+  longitude: -122.4324,
+};
+
+const participantLocs = [
+  { latitude: 37.78945, longitude: -122.4203 },
+  { latitude: 37.78765, longitude: -122.4399 },
+];
+
+const travelerLoc = {
+  latitude: 37.78875,
+  longitude: -122.4344,
+};
 
 interface ActiveTourProps {
   tour: Tour;
   detailsButton?: boolean;
   completeButton?: boolean;
+  trackButton?: boolean;
 }
 
 const ActiveTourCard: React.FC<ActiveTourProps> = ({
   tour,
   detailsButton = true,
   completeButton = false,
+  trackButton = false,
 }) => {
   const navigation = useNavigation();
+  const [isTrackingEnabled, setIsTrackingEnabled] = useState(false);
 
   const { mutate: endTourMutation } = useMutation({
     mutationFn: () => changeTourState(tour._id, "ended"),
@@ -51,6 +74,11 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
     ]);
   };
 
+  const trackAttendees = () => {
+    console.log("Track attendees");
+    setIsTrackingEnabled(true);
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -62,19 +90,30 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
         <Text style={styles.title}>{tour.name}</Text>
         <Text style={styles.location}>{tour.location}</Text>
         <Text style={styles.startTime}>{formatDate(tour.startDate)}</Text>
-        {detailsButton && (
-          <TouchableOpacity
-            style={styles.detailsButton}
-            onPress={() => navigation.navigate("ActiveTour", { tour })}
-          >
-            <Text style={styles.detailsButtonText}>Details</Text>
-          </TouchableOpacity>
-        )}
-        {completeButton && (
-          <TouchableOpacity style={styles.completeButton} onPress={endTour}>
-            <Text style={styles.completeButtonText}>End</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.activeTourButtonsRow}>
+          {detailsButton && (
+            <TouchableOpacity
+              style={styles.detailsButton}
+              onPress={() => navigation.navigate("ActiveTour", { tour })}
+            >
+              <Text style={styles.detailsButtonText}>Details</Text>
+            </TouchableOpacity>
+          )}
+          {completeButton && (
+            <TouchableOpacity style={styles.completeButton} onPress={endTour}>
+              <Text style={styles.completeButtonText}>End</Text>
+            </TouchableOpacity>
+          )}
+
+          {trackButton && (
+            <TouchableOpacity
+              style={styles.trackAttendees}
+              onPress={trackAttendees}
+            >
+              <Text style={styles.trackAttendeesText}>Track attendees</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <View style={styles.participantContainer}>
@@ -87,6 +126,39 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
           </>
         )}
       </View>
+
+      <CustomModal
+        visible={isTrackingEnabled}
+        onClose={() => setIsTrackingEnabled(false)}
+        customStyle={{ padding: 1 }}
+      >
+        <View style={styles.headerTitle}>
+          <Text style={styles.trackingTitle}>Tracking My Tour</Text>
+          <TouchableOpacity
+            onPress={() => setIsTrackingEnabled(false)}
+            style={styles.closeButton}
+          >
+            <Ionicons name="close" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View style={{ height: 700, flex: 1 }}>
+          <TrackingScreen
+            isGuide={true}
+            guide={{
+              id: tour.host.id,
+              name: tour.host.name,
+              phone: tour.host.phone,
+              location: guideLoc,
+            }}
+            participants={tour.attendees}
+          />
+          {/* <TrackingMap
+            guideLocation={guideLoc}
+            participantLocations={participantLocs}
+            tourGuideId={tour?.host.id}
+          /> */}
+        </View>
+      </CustomModal>
     </View>
   );
 };
@@ -164,5 +236,43 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 5,
     color: "#333",
+  },
+  activeTourButtonsRow: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  trackAttendees: {
+    borderWidth: 1,
+    borderColor: "#046304",
+    backgroundColor: "#04630421",
+    paddingVertical: 5,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    marginTop: 6,
+    alignSelf: "flex-start",
+  },
+  trackAttendeesText: {
+    color: "#2E8B57",
+    fontWeight: "bold",
+  },
+
+  headerTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 18,
+  },
+  trackingTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    position: "absolute",
+    right: 10,
   },
 });

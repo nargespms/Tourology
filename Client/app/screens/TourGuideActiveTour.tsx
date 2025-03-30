@@ -104,7 +104,12 @@ const TourGuideActiveTour: React.FC = () => {
       <View style={styles.contentWrapper}>
         <Text style={styles.title}>Active Tour</Text>
         <View style={styles.activeTourInfoContainer}>
-          <ActiveTourCard tour={tour} detailsButton={false} completeButton />
+          <ActiveTourCard
+            tour={tour}
+            detailsButton={false}
+            completeButton
+            trackButton
+          />
         </View>
 
         <Text style={styles.peopleTitle}>People</Text>

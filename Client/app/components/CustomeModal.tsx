@@ -14,13 +14,17 @@ type CustomModalProps = {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  customStyle?: any;
 };
 
 const CustomModal: React.FC<CustomModalProps> = ({
   visible,
   onClose,
   children,
+  customStyle,
 }) => {
+  console.log(CustomModal);
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <TouchableOpacity
@@ -32,8 +36,12 @@ const CustomModal: React.FC<CustomModalProps> = ({
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardAvoid}
         >
-          <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
+          <TouchableOpacity
+            activeOpacity={1}
+            style={[styles.modalContent, customStyle && customStyle]}
+          >
             <ScrollView
+              nestedScrollEnabled={true}
               contentContainerStyle={styles.scrollContainer}
               keyboardShouldPersistTaps="handled"
             >

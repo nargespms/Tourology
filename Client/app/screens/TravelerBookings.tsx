@@ -20,16 +20,41 @@ import { userBookedTours } from "../api/tours";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Booking } from "../types/tour";
 import QRCodeCheckin from "../components/QRCodeCheckin";
+import { Ionicons } from "@expo/vector-icons";
+import TrackingMap from "../components/ TrackingMap";
+import { useLoggedUser } from "../contexts/loggedUserData";
+import TrackingScreen from "../components/TrackingScreen";
+
+// For testing, static coordinate data:
+const guideLoc = {
+  latitude: 37.78825,
+  longitude: -122.4324,
+};
+
+const participantLocs = [
+  { latitude: 37.78945, longitude: -122.4203 },
+  { latitude: 37.78765, longitude: -122.4399 },
+];
+
+const travelerLoc = {
+  latitude: 37.78875,
+  longitude: -122.4344,
+};
 
 const Tabs = [
   { label: "Upcoming", value: "upcoming" },
   { label: "Previous", value: "previous" },
+  { label: "Ongoing", value: "ongoing" },
 ];
 
 const TravelerBookings: React.FC = () => {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [modalType, setModalType] = useState<"qr" | "feedback" | null>(null);
+  const [isTrackingEnabled, setIsTrackingEnabled] = useState(false);
+  const [trackingTour, setTrackingTour] = useState<Booking | null>(null);
+
+  const { data: travelerData } = useLoggedUser();
 
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -43,9 +68,12 @@ const TravelerBookings: React.FC = () => {
     queryFn: userBookedTours,
   });
 
-  const bookingsList = (bookings?.filter(
-    (booking) => booking?.upcoming === (activeTab === "upcoming")
-  ) ?? []) as Booking[];
+  const bookingsList = (bookings?.filter((booking) => {
+    if (activeTab === "upcoming") return booking?.upcoming;
+    if (activeTab === "previous") return !booking?.upcoming;
+    if (activeTab === "ongoing") return booking?.state === "active";
+    return false;
+  }) ?? []) as Booking[];
 
   const handleCheckIn = (booking: Booking) => {
     setSelectedBooking(booking);
@@ -60,6 +88,12 @@ const TravelerBookings: React.FC = () => {
   const handleFeedbackSubmit = (rating: number, feedback: string) => {
     setSelectedBooking(null);
     setModalType(null);
+  };
+
+  const handleTrackTour = (tour: Booking) => {
+    console.log("Track tour", tour.host);
+    setTrackingTour(tour);
+    setIsTrackingEnabled(true);
   };
   const handleChangeBottomNav = (name: string) => {
     if (name === "Home") {
@@ -91,7 +125,13 @@ const TravelerBookings: React.FC = () => {
 
         {!isLoading && bookingsList.length === 0 && (
           <Text style={{ textAlign: "center", marginTop: 20 }}>
-            No {activeTab === "upcoming" ? "upcoming" : "previous"} bookings
+            No {""}
+            {activeTab === "upcoming"
+              ? "upcoming"
+              : "previous"
+              ? "previous"
+              : "ongoing"}
+            {""} bookings
           </Text>
         )}
 
@@ -111,6 +151,7 @@ const TravelerBookings: React.FC = () => {
                 <SmallPicTourCard
                   tour={item}
                   isUpcoming={activeTab === "upcoming"}
+                  isOngoing={activeTab === "ongoing"}
                   onCheckIn={
                     activeTab === "upcoming"
                       ? () => handleCheckIn(item)
@@ -119,6 +160,11 @@ const TravelerBookings: React.FC = () => {
                   onLeaveFeedback={
                     activeTab === "previous"
                       ? () => handleLeaveFeedback(item)
+                      : undefined
+                  }
+                  onTrack={
+                    activeTab === "ongoing"
+                      ? () => handleTrackTour(item)
                       : undefined
                   }
                 />
@@ -157,6 +203,48 @@ const TravelerBookings: React.FC = () => {
               />
             </View>
           )}
+        </CustomModal>
+
+        <CustomModal
+          visible={isTrackingEnabled}
+          onClose={() => setIsTrackingEnabled(false)}
+          customStyle={{ padding: 1 }}
+        >
+          <View style={styles.headerTitle}>
+            <Text style={styles.trackingTitle}>Tracking My Tour</Text>
+            <TouchableOpacity
+              onPress={() => setIsTrackingEnabled(false)}
+              style={styles.trackingCloseButton}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View style={{ height: 700 }}>
+            <TrackingScreen
+              isGuide={false}
+              guide={{
+                id: trackingTour?.host.id,
+                name: trackingTour?.host.name,
+                phone: trackingTour?.host.phone,
+                location: guideLoc,
+              }}
+              traveler={{
+                id: travelerData.id,
+                name: travelerData.name,
+                phone: travelerData.phone,
+                distance: "500m", // static distance for testing
+                location: travelerLoc,
+              }}
+              participants={[]}
+            />
+
+            {/* <TrackingMap
+              tourGuideId={trackingTour?.host.id}
+              travelerId={travelerData.id}
+              guideLocation={guideLoc}
+              travelerLocation={travelerLoc}
+            /> */}
+          </View>
         </CustomModal>
       </View>
 
@@ -215,5 +303,22 @@ const styles = StyleSheet.create({
   },
   feedbackContainer: {
     minHeight: "60%",
+  },
+
+  headerTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 18,
+  },
+  trackingTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  trackingCloseButton: {
+    position: "absolute",
+    right: 10,
   },
 });
