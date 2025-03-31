@@ -25,12 +25,25 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({
           <Ionicons
             name={item.icon}
             size={24}
-            color={currentTab === item.label ? "#4285F4" : "#777"}
+            color={
+              currentTab === item.label
+                ? "#4285F4"
+                : !item.enable
+                ? "#bebebe"
+                : "#777"
+            }
           />
           <Text
             style={[
               styles.label,
-              { color: currentTab === item.label ? "#4285F4" : "#777" },
+              {
+                color:
+                  currentTab === item.label
+                    ? "#4285F4"
+                    : !item.enable
+                    ? "#bebebe"
+                    : "#777",
+              },
             ]}
           >
             {item.label}

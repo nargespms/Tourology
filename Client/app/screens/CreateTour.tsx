@@ -435,8 +435,8 @@ export default function CreateTour() {
                 }
               }}
             />
-            <View>
-              <Text style={{ paddingBottom: 8 }}>
+            <View style={{ marginTop: 16 }}>
+              <Text style={{ paddingBottom: 4 }}>
                 <Text style={{ fontWeight: 700 }}>Start date: </Text>
                 {dayjs(range.startDate).locale("en").format("MMM DD, YYYY")}
               </Text>

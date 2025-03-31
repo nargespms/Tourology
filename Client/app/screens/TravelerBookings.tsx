@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -24,6 +25,7 @@ import { Ionicons } from "@expo/vector-icons";
 import TrackingMap from "../components/ TrackingMap";
 import { useLoggedUser } from "../contexts/loggedUserData";
 import TrackingScreen from "../components/TrackingScreen";
+import { getUserLocation } from "../utils/UserLocation";
 
 // For testing, static coordinate data:
 const guideLoc = {
@@ -68,6 +70,8 @@ const TravelerBookings: React.FC = () => {
     queryFn: userBookedTours,
   });
 
+  // console.log("Bookings:", bookings);
+
   const bookingsList = (bookings?.filter((booking) => {
     if (activeTab === "upcoming") return booking?.upcoming;
     if (activeTab === "previous") return !booking?.upcoming;
@@ -75,7 +79,18 @@ const TravelerBookings: React.FC = () => {
     return false;
   }) ?? []) as Booking[];
 
-  const handleCheckIn = (booking: Booking) => {
+  const fetchLocation = async () => {
+    const userLoc = await getUserLocation();
+
+    if (userLoc) {
+      console.log("User location:", userLoc);
+    } else {
+      console.log("Location unavailable", userLoc);
+    }
+  };
+  fetchLocation();
+
+  const handleCheckIn = async (booking: Booking) => {
     setSelectedBooking(booking);
     setModalType("qr");
   };
@@ -99,13 +114,31 @@ const TravelerBookings: React.FC = () => {
       navigation.navigate("TravelerHome" as never);
     } else if (name === "Bookings") {
       navigation.navigate("TravelerBookings" as never);
+    } else if (name === "Favorites") {
+      Alert.alert("Coming soon", "This feature is not available yet.");
+    } else if (name === "Profile") {
+      Alert.alert("Coming soon", "This feature is not available yet.");
     }
   };
 
-  const onCheckinSuccess = () => {
+  const onCheckinSuccess = async () => {
     queryClient.invalidateQueries(["userCheckedIn", selectedBooking?._id]);
     setSelectedBooking(null);
     setModalType(null);
+
+    const location = fetchLocation();
+    console.log("Location fetched", location);
+
+    if (!location) {
+      Alert.alert(
+        "Access Location Recommended",
+        "To ensure your tour guide can assist you in case you get lost, please enable location access.\n You can go to Settings > Privacy > Location Services > Expo > Location -> While Using the App"
+      );
+
+      // handle sending location to server
+    } else {
+      console.log("Location fetched", location);
+    }
   };
 
   return (

@@ -48,6 +48,8 @@ const TourGuideHome: React.FC = () => {
       });
     } else if (name === "check-ins") {
       setQRModalVisible(true);
+    } else if (name === "Explore") {
+      Alert.alert("Coming soon", "This feature is not available yet.");
     }
   };
 
@@ -69,9 +71,9 @@ const TourGuideHome: React.FC = () => {
   };
 
   const handlePressOwnTours = (tour) => {
-    const options = ["Activate", "Edit", "Preview", "Delete", "cancel"];
-    const destructiveButtonIndex = 3;
-    const cancelButtonIndex = 4;
+    const options = ["Activate", "Preview", "Delete", "Cancel"];
+    const destructiveButtonIndex = 2;
+    const cancelButtonIndex = 3;
     const title = tour.name;
 
     showActionSheetWithOptions(
@@ -89,14 +91,10 @@ const TourGuideHome: React.FC = () => {
             break;
 
           case 1:
-            // Edit
-            break;
-
-          case 2:
             // Preview
             navigation.navigate("TravelerRouteDetails", { tour });
             break;
-          case 3:
+          case 2:
             handleDeleteTourAlert(tour._id);
             break;
         }

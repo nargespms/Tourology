@@ -9,6 +9,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Alert,
 } from "react-native";
 import * as Location from "expo-location";
 
@@ -43,6 +44,10 @@ const TravelerHome: React.FC = () => {
   const handleBottomNavChange = (name: string) => {
     if (name === "Bookings") {
       navigation.navigate("TravelerBookings" as never);
+    } else if (name === "Favorites") {
+      Alert.alert("Coming soon", "This feature is not available yet.");
+    } else if (name === "Profile") {
+      Alert.alert("Coming soon", "This feature is not available yet.");
     }
   };
 

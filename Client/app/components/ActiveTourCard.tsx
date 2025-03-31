@@ -15,6 +15,7 @@ import { changeTourState } from "../api/tours";
 import { formatDate } from "../utils/formats";
 import CustomModal from "./CustomeModal";
 import TrackingScreen from "./TrackingScreen";
+import { getUserLocation } from "../utils/UserLocation";
 
 // For testing, static coordinate data:
 const guideLoc = {
@@ -55,6 +56,17 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
       navigation.navigate("TourGuideHome");
     },
   });
+
+  const fetchLocation = async () => {
+    const userLoc = await getUserLocation();
+
+    if (userLoc) {
+      console.log("Guide location:", userLoc);
+    } else {
+      console.log("Location unavailable");
+    }
+  };
+  fetchLocation();
 
   const endTour = () => {
     Alert.alert("End tour", "Are you sure you want to end this tour?", [
@@ -182,6 +194,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginBottom: 4,
+    paddingVertical: 6,
+    paddingRight: 12,
   },
   startTime: {
     fontSize: 14,

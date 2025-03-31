@@ -57,7 +57,7 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
 }) => {
   // Bottom sheet reference and configurations
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
+  const snapPoints = useMemo(() => ["35%", "50%", "90%"], []);
 
   const handleSheetChange = useCallback((index: number) => {
     console.log("handleSheetChange", index);
@@ -75,7 +75,7 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
       name: p.name,
       phone: p.phoneNumber,
       avatar: getAvatar(p.id),
-      checkedIn: p.checkIn,
+      checkedIn: p.checkedIn,
       distance: "200m", // placeholder
       location: participantLocs[index], // match location by index temporarily
     }));
@@ -121,15 +121,23 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
           onChange={handleSheetChange}
           handleIndicatorStyle={styles.indicator}
         >
-          <View style={styles.sheetContentContainer}>
+          <View style={[styles.sheetContentContainer]}>
             {isGuide && (
               <>
                 <Text style={styles.sheetTitle}>Participants</Text>
+
                 <BottomSheetFlatList
                   data={participantArray}
                   keyExtractor={(item) => item._id}
                   renderItem={renderParticipantItem}
                   contentContainerStyle={styles.listContainer}
+                  ListEmptyComponent={
+                    <View>
+                      <Text style={styles.emptyParticipants}>
+                        No participants
+                      </Text>
+                    </View>
+                  }
                 />
               </>
             )}
@@ -173,6 +181,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#CCCCCC",
     width: 40,
     height: 5,
+  },
+  emptyParticipants: {
+    fontSize: 18,
+    color: "#777",
+    textAlign: "center",
+    marginVertical: 20,
   },
   travelerSheet: {
     position: "absolute",

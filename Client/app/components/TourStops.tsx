@@ -46,7 +46,7 @@ const TourStops = (props: TourStopsProps) => {
               latitude: stop.region.coordinates[1],
               longitude: stop.region.coordinates[0],
             }))}
-            strokeColor="#007AFF"
+            strokeColor="#fd6a6a"
             strokeWidth={3}
           />
           {stopsArray.map((stop) => (

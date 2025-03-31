@@ -52,6 +52,8 @@ const TourGuideProfile: React.FC = () => {
       navigation.navigate("TravelerHome" as never);
     } else if (name === "Bookings") {
       navigation.navigate("TravelerBookings" as never);
+    } else if (name === "Explore") {
+      Alert.alert("Coming soon", "This feature is not available yet.");
     }
   };
 

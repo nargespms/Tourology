@@ -41,7 +41,10 @@ const SmallPicTourCard: React.FC<BookingCardProps> = ({
       <View style={styles.detailsContainer}>
         <Text style={styles.title}>{tour.name}</Text>
         <Text style={styles.location}>{tour.location}</Text>
-        <Text style={styles.date}>{formatDate(tour.startDate)}</Text>
+        {tour?.startDate && (
+          <Text style={styles.date}>{formatDate(tour?.startDate)}</Text>
+        )}
+
         {!enableButtons && tour.paid && (
           <Text style={styles.price}>{formatPrice(tour.price)}</Text>
         )}
@@ -124,6 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#777",
     marginVertical: 2,
+    paddingRight: 40,
   },
   date: {
     fontSize: 14,

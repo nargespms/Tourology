@@ -37,6 +37,21 @@ const TourGuideSkillSet: React.FC = () => {
   /**
    * Validates that at least one language is selected.
    */
+
+  const handleYearsChange = (text: string) => {
+    const onlyDigits = text.replace(/[^0-9]/g, "");
+
+    // Convert to number (or 0 if empty), and cap at 50
+    const number = parseInt(onlyDigits, 10);
+    if (!isNaN(number)) {
+      const cappedValue = Math.min(number, 50);
+      setYearsOfExperience(String(cappedValue));
+    } else {
+      // If empty, reset
+      setYearsOfExperience("");
+    }
+  };
+
   const validateInputs = (): boolean => {
     let isValid = true;
 
@@ -122,7 +137,7 @@ const TourGuideSkillSet: React.FC = () => {
               placeholderTextColor="#999"
               keyboardType="numeric"
               value={yearsOfExperience}
-              onChangeText={setYearsOfExperience}
+              onChangeText={handleYearsChange}
             />
 
             <TouchableOpacity
