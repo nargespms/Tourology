@@ -6,7 +6,9 @@ import { API_URL } from "./config";
 
 const BASE_URL = `${API_URL}/api/tours`;
 
-export const getTours = async (filter: "" | "followed" | "free" = "") => {
+export const getTours = async (
+  filter: "" | "followed" | "free" = "" | "favorite"
+) => {
   const response = await fetch(`${BASE_URL}/${filter}`, {
     headers: {
       authorization: `Bearer ${(await getUserInfo()).token}`,

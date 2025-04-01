@@ -113,9 +113,13 @@ const TourGuideProfile: React.FC = () => {
     return total + count;
   }, 0);
 
-  const averageRating = ownTours
-    ?.reduce((acc, tour) => acc + (tour?.rating ? tour.rating : 0), 0)
-    .toPrecision(2);
+  const ratedTours =
+    ownTours?.filter(
+      (tour) => typeof tour.rating === "number" && tour.rating > 0
+    ) || [];
+  const totalRating = ratedTours.reduce((sum, tour) => sum + tour.rating, 0);
+  const averageRating =
+    ratedTours.length > 0 ? totalRating / ratedTours.length : 0.0;
 
   if (isFetching) {
     return <Text>Loading...</Text>;
@@ -271,7 +275,9 @@ const TourGuideProfile: React.FC = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Text style={styles.averageNumber}>{averageRating}</Text>
+                      <Text style={styles.averageNumber}>
+                        {averageRating.toFixed(1)}
+                      </Text>
                       <Text style={styles.starRating}>
                         {`★`.repeat(Math.round(averageRating)) +
                           `☆`.repeat(5 - Math.round(averageRating))}{" "}

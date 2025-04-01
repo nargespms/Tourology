@@ -13,6 +13,7 @@ import { Tour } from "../types/tour";
 import { getMediaSrc } from "../api/media";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getIsFavorite, toggleFavorite } from "../api/tours";
+import { useLoggedUser } from "../contexts/loggedUserData";
 
 interface RouteDetailsGalleryProps {
   onGoBackTap: () => void;
@@ -25,6 +26,8 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
 }) => {
   const [activePage, setActivePage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const { data: LoggedInUser } = useLoggedUser();
 
   const handlePageSelected = (e: any) => {
     setActivePage(e.nativeEvent.position);
@@ -70,19 +73,20 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
           <Ionicons name="arrow-back" size={18} />
         </Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.topButton, styles.favoriteButton]}
-        onPress={fave}
-      >
-        <Text style={styles.topButtonText}>
-          {!isFavorite ? (
-            <MaterialIcons name="favorite-outline" size={16} />
-          ) : (
-            <MaterialIcons name="favorite" size={16} />
-          )}
-        </Text>
-      </TouchableOpacity>
+      {LoggedInUser.role === "traveler" && (
+        <TouchableOpacity
+          style={[styles.topButton, styles.favoriteButton]}
+          onPress={fave}
+        >
+          <Text style={styles.topButtonText}>
+            {!isFavorite ? (
+              <MaterialIcons name="favorite-outline" size={16} />
+            ) : (
+              <MaterialIcons name="favorite" size={16} />
+            )}
+          </Text>
+        </TouchableOpacity>
+      )}
       <View style={styles.paginationContainer}>
         {tour.photos?.map((_, i) => {
           return (

@@ -19,14 +19,14 @@ export const travelerNavbar: NavItem[] = [
   },
   {
     id: "3",
-    label: "Favorites",
-    icon: "heart-outline",
+    label: "Profile",
+    icon: "person-outline",
     enable: false,
   },
   {
-    id: "4",
-    label: "Profile",
-    icon: "person-outline",
+    id: "3",
+    label: "Log out",
+    icon: "exit-outline",
     enable: false,
   },
 ];

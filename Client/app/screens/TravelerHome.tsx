@@ -27,6 +27,7 @@ const TABS = [
   { label: "For you", value: "" },
   { label: "Following", value: "followed" },
   { label: "Free", value: "free" },
+  { label: "Favorites", value: "favorite" },
 ];
 
 const TravelerHome: React.FC = () => {
