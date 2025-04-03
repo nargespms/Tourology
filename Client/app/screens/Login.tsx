@@ -141,6 +141,8 @@ const LoginScreen: React.FC = () => {
                 setEmailError("");
                 setLoginError(false);
               }}
+              spellCheck={false}
+              autoCorrect={false}
             />
             {emailError ? (
               <Text style={styles.errorText}>{emailError}</Text>

@@ -429,7 +429,7 @@ export default function CreateTour() {
               onChange={(params) => {
                 setRange(params);
                 setStartDate(params.startDate);
-                setEndDate(params.endDate);
+                setEndDate(params?.endDate ? params.endDate : params.startDate);
                 if (errors.startDate && params.startDate) {
                   setErrors((prev) => ({ ...prev, startDate: false }));
                 }

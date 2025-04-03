@@ -196,6 +196,8 @@ const RegisterStepOne: React.FC = () => {
                 placeholderTextColor="#999"
                 value={firstName}
                 onChangeText={onChangeFirstName}
+                spellCheck={false}
+                autoCorrect={false}
               />
               {!!firstNameError && (
                 <Text style={styles.errorText}>{firstNameError}</Text>
@@ -208,6 +210,8 @@ const RegisterStepOne: React.FC = () => {
                 placeholderTextColor="#999"
                 value={lastName}
                 onChangeText={onChangeLastName}
+                spellCheck={false}
+                autoCorrect={false}
               />
               {!!lastNameError && (
                 <Text style={styles.errorText}>{lastNameError}</Text>
@@ -223,6 +227,8 @@ const RegisterStepOne: React.FC = () => {
                 value={email}
                 onChangeText={onChangeEmail}
                 key={emailError}
+                spellCheck={false}
+                autoCorrect={false}
               />
               {!!emailError && (
                 <Text style={styles.errorText}>{emailError}</Text>

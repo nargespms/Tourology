@@ -26,6 +26,7 @@ import { getAvatar } from "../api/media";
 import { formatDate } from "../utils/formats";
 import { useQuery } from "@tanstack/react-query";
 import { getTour } from "../api/tours";
+import { useLoggedUser } from "../contexts/loggedUserData";
 
 const TABS = [
   { label: "All", value: "all" },
@@ -35,6 +36,7 @@ const TABS = [
 const TourGuideActiveTour: React.FC = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [isQRModalVisible, setQRModalVisible] = useState(false);
+  const { data: complementaryTourGuide } = useLoggedUser();
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -54,11 +56,15 @@ const TourGuideActiveTour: React.FC = () => {
   };
   const handleBottomNavChange = (name: string) => {
     if (name === "Explore") {
-      // navigation.navigate("TourGuideExplore" as never);
+      Alert.alert("Coming soon", "This feature is not available yet.");
     } else if (name === "Home") {
       navigation.navigate("TourGuideHome" as never);
     } else if (name === "check-ins") {
       setQRModalVisible(true);
+    } else if (name === "Profile") {
+      navigation.navigate("TourGuideProfile" as never, {
+        complementaryTourGuide,
+      });
     }
   };
 

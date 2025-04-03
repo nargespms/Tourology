@@ -23,12 +23,6 @@ export const travelerNavbar: NavItem[] = [
     icon: "person-outline",
     enable: false,
   },
-  {
-    id: "3",
-    label: "Log out",
-    icon: "exit-outline",
-    enable: false,
-  },
 ];
 export const tourGuideNavbar: NavItem[] = [
   {

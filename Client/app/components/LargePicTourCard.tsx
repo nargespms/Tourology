@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   infoContainer: {
-    paddingTop: 12,
+    paddingTop: 8,
     paddingBottom: 12,
   },
   infoContainerFirstRow: {
