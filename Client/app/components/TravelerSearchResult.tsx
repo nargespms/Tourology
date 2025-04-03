@@ -1,7 +1,7 @@
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { act, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -37,14 +37,20 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
 
+  console.log("activeFilter", activeFilter);
+
   const {
     isFetching,
     isFetched,
     data: searchResult,
     refetch,
   } = useQuery({
-    queryKey: ["searchTours"],
-    queryFn: () => searchTours(searchQuery),
+    queryKey: ["searchTours", searchQuery, activeFilter],
+    queryFn: () =>
+      searchTours({
+        text: searchQuery,
+        ...activeFilter,
+      }),
     enabled: false,
     cacheTime: 0,
   });
@@ -62,10 +68,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   });
 
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      refetch();
+    if (!searchQuery) {
+      setActiveFilter(null);
     }
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 0 || activeFilter) {
+      refetch();
+    }
+  }, [searchQuery, activeFilter]);
 
   useEffect(() => {
     queryClient.removeQueries("searchTours");
@@ -86,7 +98,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     clearSearch();
   };
 
-  const hasSearchQuery = !!searchQuery && !!searchQuery.length;
+  const hasSearchQuery =
+    (!!searchQuery && !!searchQuery.length) || !!activeFilter;
   const result = hasSearchQuery ? searchResult : nearbyResult;
   const isLoading = isFetching || isNearbyFetching;
   const isLoaded = isFetched || isNearbyFetched;
@@ -212,7 +225,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         <AdvancedSearchOptions
           activeFilter={activeFilter}
           onSubmit={(filter) => {
-            console.log(filter);
             setActiveFilter(filter);
             setIsFilterModalVisible(false);
           }}

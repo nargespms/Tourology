@@ -17,11 +17,11 @@ import PriceRangeSlider from "./PriceRangeSlider";
 import LocationSearchInput from "./locationSearchInput";
 
 export type Filter = {
-  pricingOption: string;
-  priceRange: number[];
-  rating: number;
-  date: DateType;
-  selectedCategory: string[];
+  pricingOption?: string;
+  priceRange?: number[];
+  rating?: number;
+  date?: DateType;
+  selectedCategory?: string[];
 };
 
 interface AdvancedSearchOptionsProps {
@@ -35,14 +35,14 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
 
   const [filter, setFilter] = useState(activeFilter ? activeFilter : null);
   const [pricingOption, setPricingOption] = useState<string>(
-    activeFilter ? activeFilter.pricingOption : "Paid"
+    activeFilter ? activeFilter?.pricingOption : "Paid"
   );
   const [priceRange, setPriceRange] = useState<number[]>(
-    activeFilter ? activeFilter.priceRange : [10, 500]
+    activeFilter ? activeFilter?.priceRange : [10, 500]
   );
   const [isDatePickerEnable, setIsDatePickerEnable] = useState<boolean>(false);
   const [rating, setRating] = useState<number>(
-    activeFilter ? activeFilter.rating : 0
+    activeFilter ? activeFilter?.rating : undefined
   );
   const [date, setDate] = useState<DateType>(
     activeFilter ? activeFilter.date : undefined
@@ -73,6 +73,11 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
   }, [pricingOption]);
 
   const clearFilters = () => {
+    setPricingOption("Paid");
+    setPriceRange([10, 500]);
+    setRating(undefined);
+    setDate(undefined);
+    setSelectedCategory([]);
     setFilter(null);
   };
 
@@ -116,7 +121,13 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
                   styles.ratingTag,
                   rating === rate && styles.ratingTagSelected,
                 ]}
-                onPress={() => setRating(rate)}
+                onPress={() => {
+                  if (rating === rate) {
+                    setRating(undefined); // toggle off
+                  } else {
+                    setRating(rate); // toggle on
+                  }
+                }}
               >
                 <Text
                   style={[

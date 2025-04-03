@@ -72,15 +72,80 @@ class TourService {
     }
   }
 
-  async searchTours(query) {
+  // search
+  async searchTours(filters) {
+    console.log(filters, "filters");
     try {
-      const tours = await Tour.find({
-        state: "published",
-        $or: [
-          { name: { $regex: query, $options: "i" } },
-          { description: { $regex: query, $options: "i" } },
-        ],
-      }).sort({ createdAt: -1 });
+      const {
+        text,
+        date,
+        priceRange,
+        pricingOption,
+        rating,
+        selectedCategory,
+      } = filters;
+
+      const query = {};
+
+      const andConditions = [];
+
+      if (text) {
+        andConditions.push({
+          $or: [
+            { name: { $regex: text, $options: "i" } },
+            { description: { $regex: text, $options: "i" } },
+          ],
+        });
+      }
+
+      if (date) {
+        const start = new Date(date);
+        start.setUTCHours(0, 0, 0, 0);
+
+        const end = new Date(start);
+        end.setUTCHours(23, 59, 59, 999);
+        console.log("Incoming date:", date);
+        console.log("Normalized start:", start.toISOString());
+        console.log("Normalized end:", end.toISOString());
+
+        andConditions.push({
+          startDate: { $gte: start, $lte: end },
+        });
+      }
+
+      if (selectedCategory && selectedCategory.length > 0) {
+        andConditions.push({
+          category: { $in: selectedCategory },
+        });
+      }
+
+      if (priceRange && priceRange.length === 2) {
+        const [minPrice, maxPrice] = priceRange;
+        andConditions.push({
+          price: { $gte: minPrice, $lte: maxPrice },
+        });
+      }
+
+      if (pricingOption) {
+        if (pricingOption === "Free") {
+          andConditions.push({ paid: false });
+        } else if (pricingOption === "Paid") {
+          andConditions.push({ paid: true });
+        }
+      }
+
+      if (rating) {
+        andConditions.push({
+          rating: { $gte: rating },
+        });
+      }
+
+      if (andConditions.length > 0) {
+        query.$and = andConditions;
+      }
+
+      // Execute the query with Mongoose
+      const tours = await Tour.find(query).sort({ createdAt: -1 });
 
       return tours;
     } catch (err) {
@@ -88,6 +153,8 @@ class TourService {
       throw new Error("Unable to search tours");
     }
   }
+
+  // search
 
   async searchNearbyTours(distance, lat, lng) {
     try {

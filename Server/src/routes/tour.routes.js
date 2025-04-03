@@ -4,41 +4,55 @@ import { upload } from "../middleware/multerConfig.js";
 import requireAuth from "../middleware/auth.middleware.js";
 const router = Router();
 
-router.get('/host/:id', tourController.getToursByHost);
+router.get("/host/:id", tourController.getToursByHost);
 router.get("/user/booked", requireAuth, tourController.userBookedTours);
-router.get("/user/checked-in/:id", requireAuth, tourController.userHasCheckedIn);
-router.get('/search', tourController.searchTours);
-router.get('/nearby', tourController.searchNearbyTours);
+router.get(
+  "/user/checked-in/:id",
+  requireAuth,
+  tourController.userHasCheckedIn
+);
+router.post("/search", tourController.searchTours);
+router.get("/nearby", tourController.searchNearbyTours);
 
-router.post('/:id/check-in', requireAuth, upload.none(), tourController.checkInUser);
-router.post('/:id/change-state', requireAuth, upload.none(), tourController.changeTourState);
-router.get('/active', requireAuth, tourController.getActiveTour);
+router.post(
+  "/:id/check-in",
+  requireAuth,
+  upload.none(),
+  tourController.checkInUser
+);
+router.post(
+  "/:id/change-state",
+  requireAuth,
+  upload.none(),
+  tourController.changeTourState
+);
+router.get("/active", requireAuth, tourController.getActiveTour);
 
-router.get('/owned', requireAuth, tourController.getOwnedTours);
-router.get('/followed', requireAuth, tourController.getFollowedTourGuidesTours);
-router.get('/free', requireAuth, tourController.getFreeTours);
-router.get('/favorite', requireAuth, tourController.getFavoriteTours);
-router.get('/booked', requireAuth, tourController.getBookedTours);
+router.get("/owned", requireAuth, tourController.getOwnedTours);
+router.get("/followed", requireAuth, tourController.getFollowedTourGuidesTours);
+router.get("/free", requireAuth, tourController.getFreeTours);
+router.get("/favorite", requireAuth, tourController.getFavoriteTours);
+router.get("/booked", requireAuth, tourController.getBookedTours);
 router.get("/:id", tourController.getTour);
 router.get("/", tourController.getTours);
 
 router.post("/:id/favorite", requireAuth, tourController.toggleFavoriteTour);
 router.get("/:id/favorite", requireAuth, tourController.getTourIsFavorite);
 
-router.post('/:id/feedback', requireAuth, upload.none(), tourController.upsertFeedback);
-router.get('/:id/feedback', requireAuth, tourController.getFeedback);
-
 router.post(
-  "/",
+  "/:id/feedback",
   requireAuth,
-  upload.any(),
-  tourController.createTour
+  upload.none(),
+  tourController.upsertFeedback
 );
+router.get("/:id/feedback", requireAuth, tourController.getFeedback);
 
-router.post('/:id/book', requireAuth, tourController.bookATour);
-router.get('/:id/booked', requireAuth, tourController.isBooked);
+router.post("/", requireAuth, upload.any(), tourController.createTour);
 
-router.put('/:id', requireAuth, upload.any(), tourController.updateTour);
-router.delete('/:id', requireAuth, tourController.deleteTour);
+router.post("/:id/book", requireAuth, tourController.bookATour);
+router.get("/:id/booked", requireAuth, tourController.isBooked);
+
+router.put("/:id", requireAuth, upload.any(), tourController.updateTour);
+router.delete("/:id", requireAuth, tourController.deleteTour);
 
 export default router;

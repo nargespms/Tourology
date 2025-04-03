@@ -43,9 +43,17 @@ const deleteTour = async (req, res) => {
 
 const searchTours = async (req, res) => {
   try {
-    const query = req.query.q;
+    const { text, date, priceRange, pricingOption, rating, selectedCategory } =
+      req.body;
 
-    const tours = await tourService.searchTours(query);
+    const tours = await tourService.searchTours({
+      text,
+      date,
+      priceRange,
+      pricingOption,
+      rating,
+      selectedCategory,
+    });
 
     res.json(tours);
   } catch (err) {

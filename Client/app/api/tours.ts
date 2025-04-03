@@ -6,6 +6,15 @@ import { API_URL } from "./config";
 
 const BASE_URL = `${API_URL}/api/tours`;
 
+interface SearchFilters {
+  text?: string;
+  date?: string;
+  priceRange?: [number, number];
+  pricingOption?: string;
+  rating?: number;
+  selectedCategory?: string[];
+}
+
 export const getTours = async (
   filter: "" | "followed" | "free" = "" | "favorite"
 ) => {
@@ -32,11 +41,14 @@ export const getTour = async (id: string) => {
   }
 };
 
-export const searchTours = async (query: string) => {
-  const response = await fetch(`${BASE_URL}/search?q=${query}`, {
+export const searchTours = async (filters: SearchFilters) => {
+  const response = await fetch(`${BASE_URL}/search`, {
+    method: "POST",
     headers: {
+      "Content-Type": "application/json",
       authorization: `Bearer ${(await getUserInfo()).token}`,
     },
+    body: JSON.stringify(filters),
   });
 
   if (response.ok) {
