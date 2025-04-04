@@ -462,7 +462,7 @@ export default function CreateTour() {
               onChange={(params) => {
                 setRange(params);
                 setStartDate(params.startDate);
-                setEndDate(params?.endDate ? params.endDate : params.startDate);
+                setEndDate(params?.endDate ?? undefined);
                 if (errors.startDate && params.startDate) {
                   setErrors((prev) => ({ ...prev, startDate: false }));
                 }
@@ -471,11 +471,15 @@ export default function CreateTour() {
             <View style={{ marginTop: 16 }}>
               <Text style={{ paddingBottom: 4 }}>
                 <Text style={{ fontWeight: 700 }}>Start date: </Text>
-                {dayjs(range.startDate).locale("en").format("MMM DD, YYYY")}
+                {range.startDate
+                  ? dayjs(range.startDate).locale("en").format("MMM DD, YYYY")
+                  : ""}
               </Text>
               <Text style={{ paddingVertical: 8 }}>
                 <Text style={{ fontWeight: 700 }}>End date: </Text>
-                {dayjs(range.endDate).locale("en").format("MMM DD, YYYY")}
+                {range.endDate
+                  ? dayjs(range.endDate).locale("en").format("MMM DD, YYYY")
+                  : ""}
               </Text>
             </View>
 
@@ -491,6 +495,8 @@ export default function CreateTour() {
                 onPress={() => {
                   setIsRangeDateEnable(false);
                   setRange({ startDate: undefined, endDate: undefined });
+                  setStartDate(undefined);
+                  setEndDate(undefined);
                 }}
               >
                 <Text>Cancel</Text>
@@ -499,8 +505,15 @@ export default function CreateTour() {
                 style={styles.saveButton}
                 onPress={() => {
                   setIsRangeDateEnable(false);
-                  setStartDate(range.startDate);
-                  setEndDate(range.endDate);
+                  const start = range.startDate;
+                  const end = range.endDate ?? range.startDate;
+
+                  setStartDate(start);
+                  setEndDate(end);
+
+                  if (errors.startDate && start) {
+                    setErrors((prev) => ({ ...prev, startDate: false }));
+                  }
                 }}
               >
                 <Text style={{ color: "#fff" }}>Set</Text>
