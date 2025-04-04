@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
@@ -17,9 +17,10 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             cd /opt/app/Server
+            # Clean untracked files (like package-lock.json) to avoid merge issues
+            git clean -fd
+            git reset --hard HEAD
             git pull origin main
             npm install
-            # kill pm2 tourology process if it exists
             pm2 delete tourology || true
-            # start pm2 tourology process
             pm2 start npm --name tourology -- start
