@@ -1,6 +1,8 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://172.16.1.59:4001");
+const socket = io("http://49.13.114.192:4000", {
+  transports: ["websocket"],
+});
 
 socket.on("connect", () => {
   console.log("✅ Connected:", socket.id);

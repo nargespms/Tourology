@@ -6,29 +6,19 @@ import { Server } from "socket.io";
  */
 
 class LiveLocationService {
-  io = null; // Socket.io instance
-  groups = null; // Map<groupId, Set<socketId>>
+  io = null;
+  groups = new Map();
 
-  constructor() {
-    this.groups = new Map();
+  setup(httpServer) {
+    if (!httpServer) {
+      throw new Error("❗ setup() requires an HTTP server.");
+    }
 
-    this.io = new Server({
+    this.io = new Server(httpServer, {
       cors: {
         origin: "*",
         methods: ["GET", "POST"],
       },
-    });
-
-    const port = process.env.SOCKET_PORT || 4001;
-    this.io.listen(port); // Do NOT pass a callback here
-    console.log(`✅ Socket.io server running on port ${port}`);
-
-    this.io.on("error", (err) => {
-      console.error("Socket.io error:", err);
-    });
-
-    this.io.on("connect_error", (err) => {
-      console.error("Socket.io connection error:", err);
     });
 
     this.io.on("connection", (socket) => {
@@ -40,7 +30,6 @@ class LiveLocationService {
         this.updateLocation(socket, payload)
       );
       socket.on("disconnect", () => this.handleDisconnect(socket));
-      socket.on("error", (err) => console.error("Socket error:", err));
     });
   }
 
@@ -82,7 +71,6 @@ class LiveLocationService {
 
   updateLocation(socket, { groupId, location }) {
     if (!this.groups.has(groupId)) {
-      // Rejoin the group if it doesn't exist
       this.joinGroup(socket, groupId);
     }
 
@@ -93,40 +81,6 @@ class LiveLocationService {
 
     console.log(`📍 Location update from ${socket.id} in group ${groupId}`);
   }
-
-  getGroupMembers(groupId) {
-    return this.groups.get(groupId) || new Set();
-  }
-
-  getGroupIdBySocket(socketId) {
-    for (const [groupId, sockets] of this.groups.entries()) {
-      if (sockets.has(socketId)) {
-        return groupId;
-      }
-    }
-    return null;
-  }
-
-  getSocketById(socketId) {
-    return this.io?.sockets?.sockets?.get(socketId);
-  }
-
-  getGroupById(groupId) {
-    return this.groups.get(groupId);
-  }
-
-  getIo() {
-    return this.io;
-  }
-
-  getGroups() {
-    return this.groups;
-  }
-}
-
-// Allow running standalone
-if (import.meta && import.meta.url === `file://${process.argv[1]}`) {
-  new LiveLocationService();
 }
 
 const liveLocationService = new LiveLocationService();

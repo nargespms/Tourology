@@ -48,7 +48,6 @@ export const LiveLocationManager = {
           accuracy: Location.Accuracy.High,
         });
 
-        console.log(socket, currentGroupId);
         if (socket && currentGroupId) {
           socket.emit("locationUpdate", {
             groupId: currentGroupId,
