@@ -19,4 +19,7 @@ jobs:
             cd /opt/app
             git pull origin main
             npm install
-            pm2 restart tourology || pm2 start npm --name "tourology" -- start
+            # kill pm2 tourology process if it exists
+            pm2 delete tourology || true
+            # start pm2 tourology process
+            pm2 start npm --name tourology -- start
