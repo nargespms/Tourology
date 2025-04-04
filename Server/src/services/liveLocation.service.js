@@ -19,14 +19,20 @@ class LiveLocationService {
       },
     });
 
-    this.io.listen(process.env.SOCKET_PORT || 4001, () => {
-      console.log(
-        `Socket.io server running on port ${process.env.SOCKET_PORT || 4001}`
-      );
+    const port = process.env.SOCKET_PORT || 4001;
+    this.io.listen(port); // Do NOT pass a callback here
+    console.log(`✅ Socket.io server running on port ${port}`);
+
+    this.io.on("error", (err) => {
+      console.error("Socket.io error:", err);
+    });
+
+    this.io.on("connect_error", (err) => {
+      console.error("Socket.io connection error:", err);
     });
 
     this.io.on("connection", (socket) => {
-      console.log(`Socket connected: ${socket.id}`);
+      console.log(`🎉 Socket connected: ${socket.id}`);
 
       socket.on("join", (groupId) => this.joinGroup(socket, groupId));
       socket.on("leave", (groupId) => this.leaveGroup(socket, groupId));
@@ -46,7 +52,7 @@ class LiveLocationService {
     }
 
     this.groups.get(groupId).add(socket.id);
-    console.log(`Socket ${socket.id} joined group ${groupId}`);
+    console.log(`➡️ Socket ${socket.id} joined group ${groupId}`);
   }
 
   leaveGroup(socket, groupId) {
@@ -61,7 +67,7 @@ class LiveLocationService {
       }
     }
 
-    console.log(`Socket ${socket.id} left group ${groupId}`);
+    console.log(`⬅️ Socket ${socket.id} left group ${groupId}`);
   }
 
   handleDisconnect(socket) {
@@ -71,18 +77,21 @@ class LiveLocationService {
       }
     }
 
-    console.log(`Socket disconnected: ${socket.id}`);
+    console.log(`❌ Socket disconnected: ${socket.id}`);
   }
 
   updateLocation(socket, { groupId, location }) {
-    if (this.groups.has(groupId)) {
-      this.io.to(groupId).emit("locationUpdate", {
-        socketId: socket.id,
-        location,
-      });
-
-      console.log(`Socket ${socket.id} updated location in group ${groupId}`);
+    if (!this.groups.has(groupId)) {
+      // Rejoin the group if it doesn't exist
+      this.joinGroup(socket, groupId);
     }
+
+    this.io.to(groupId).emit("locationUpdate", {
+      socketId: socket.id,
+      location,
+    });
+
+    console.log(`📍 Location update from ${socket.id} in group ${groupId}`);
   }
 
   getGroupMembers(groupId) {
@@ -113,6 +122,11 @@ class LiveLocationService {
   getGroups() {
     return this.groups;
   }
+}
+
+// Allow running standalone
+if (import.meta && import.meta.url === `file://${process.argv[1]}`) {
+  new LiveLocationService();
 }
 
 const liveLocationService = new LiveLocationService();

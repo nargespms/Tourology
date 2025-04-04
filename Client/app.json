@@ -10,14 +10,23 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nargespm.Tourology"
+      "bundleIdentifier": "com.nargespm.Tourology",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We use your location to show it to your tour group.",
+        "NSLocationAlwaysUsageDescription": "We use your location in the background to share your live position with the tour group."
+      }
     },
     "android": {
+      "package": "com.nargespm.Tourology",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.nargespm.Tourology"
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -32,7 +41,7 @@
       [
         "expo-location",
         {
-          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": true,
           "rationale": {
             "title": "Allow location access",
             "message": "We need your permission to get location"

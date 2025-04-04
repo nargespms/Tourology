@@ -28,6 +28,8 @@ import TourGuideTourList from "../components/TourGuideTourList";
 import { tourGuideNavbar } from "../data/navbarOptions";
 import CustomTabs from "../components/CustomeTabs";
 import { useLoggedUser } from "../contexts/loggedUserData";
+import { LiveLocationManager } from "../utils/LiveLocationManagers";
+import { SOCKET_URL } from "../api/config";
 
 const Tabs = [
   { label: "Planned", value: "published" },
@@ -144,6 +146,28 @@ const TourGuideHome: React.FC = () => {
       await refetch();
     },
   });
+
+  // share live location if user has an active tour
+  useEffect(() => {
+    if (!activeTour) {
+      return;
+    }
+
+    LiveLocationManager.start(
+      activeTour?._id,
+      complementaryTourGuide?._id,
+      SOCKET_URL
+    ).catch((error) => {
+      console.error("Error starting live location sharing:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error starting live location sharing",
+        text2: error.message,
+        visibilityTime: 7000,
+        topOffset: 50,
+      });
+    });
+  }, [activeTour]);
 
   const { mutate } = useMutation<string, unknown, string>({
     mutationFn: deleteTour,
