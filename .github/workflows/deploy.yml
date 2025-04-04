@@ -16,7 +16,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd /path/to/your/app
+            cd /opt/app
             git pull origin main
             npm install
             pm2 restart tourology || pm2 start npm --name "tourology" -- start
