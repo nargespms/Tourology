@@ -16,7 +16,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd /opt/app
+            cd /opt/app/Server
             git pull origin main
             npm install
             # kill pm2 tourology process if it exists
