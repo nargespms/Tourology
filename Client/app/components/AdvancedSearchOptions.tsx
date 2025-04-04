@@ -163,6 +163,7 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
           <View
             style={{
               flexGrow: 1,
+              flexShrink: 1,
               marginLeft: 16,
             }}
           >

@@ -27,6 +27,8 @@ import StopListSection, { StopData } from "../components/StopListSection";
 import getId from "../utils/getId";
 import { getUserInfo } from "../utils/userSession";
 import MapWithNominatim from "../components/MapWithNominatim";
+import MultiSelectDropDown from "../components/MultiSelectDropDown";
+import { tourCategories } from "../data/tours";
 
 export default function CreateTour() {
   const navigation = useNavigation();
@@ -48,6 +50,9 @@ export default function CreateTour() {
   const [pricingOption, setPricingOption] = useState<string>("Paid");
   const [price, setPrice] = useState("");
   const [maxAttendees, setMaxAttendees] = useState("");
+
+  // category
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
 
   // Dates
   const [startDate, setStartDate] = useState<DateType>();
@@ -76,6 +81,7 @@ export default function CreateTour() {
     startDate: false,
     endDate: false,
     photos: false,
+    selectedCategory: false,
   });
 
   const { mutate } = useMutation({
@@ -157,6 +163,7 @@ export default function CreateTour() {
       routeName: !routeName.trim(),
       routeDescription: !routeDescription.trim(),
       locationText: !locationText.trim(),
+      selectedCategory: selectedCategory.length === 0,
       price: false,
       maxAttendees: false,
       startDate: false,
@@ -191,6 +198,7 @@ export default function CreateTour() {
       state,
       description: routeDescription,
       location: locationText,
+      category: selectedCategory,
       region: region,
       paid: pricingOption === "Paid",
       price: pricingOption === "Paid" ? parseFloat(price) : 0,
@@ -275,6 +283,31 @@ export default function CreateTour() {
             }}
             multiline
           />
+
+          <Text style={[styles.label]}>Category*</Text>
+
+          <View
+            style={{
+              flexGrow: 1,
+            }}
+          >
+            <MultiSelectDropDown
+              options={tourCategories}
+              selectedOptions={selectedCategory}
+              onSelect={(option) => {
+                setSelectedCategory([option]); // always keep only one
+
+                if (errors.selectedCategory) {
+                  setErrors((prev) => ({ ...prev, selectedCategory: false }));
+                }
+              }}
+              onRemove={(option) => {
+                setSelectedCategory((prev) =>
+                  prev.filter((item) => item !== option)
+                );
+              }}
+            />
+          </View>
 
           <Text style={styles.label}>City/ Province/ State*</Text>
 

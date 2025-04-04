@@ -36,15 +36,18 @@ const MultiSelectDropDown: React.FC<MultiSelectDropDownProps> = ({
           style={styles.dropdownSelector}
           onPress={() => setDropdownOpen((prev) => !prev)}
         >
-          <Text style={styles.dropdownText}>
-            {selectedOptions.length > 0
-              ? selectedOptions.join(", ")
-              : "Select expertise..."}
-          </Text>
+          {selectedOptions.length > 0 ? (
+            <Text style={styles.dropdownText}>
+              {selectedOptions.join(", ")}
+            </Text>
+          ) : (
+            <Text style={{ color: "#999" }}>Select expertise...</Text>
+          )}
           <Ionicons
             name={dropdownOpen ? "chevron-up" : "chevron-down"}
             size={18}
             color="#444"
+            style={styles.dropdownItemIcon}
           />
         </TouchableOpacity>
 
@@ -115,12 +118,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
+  dropdownItemIcon: {
+    position: "absolute",
+    right: 10,
+  },
 
   dropdownItemTextSelected: {
     fontWeight: "bold",
     color: "#0057d9",
   },
   dropdownSelector: {
+    flexWrap: "wrap",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -128,6 +136,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#ffffff",
+    paddingRight: 16,
   },
 });

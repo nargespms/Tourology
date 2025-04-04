@@ -22,6 +22,7 @@ const tourSchema = new Schema(
     paid: { type: Boolean, required: true },
     price: { type: Number, required: false },
     state: { type: String, required: true },
+    category: { type: [String], default: [], required: true },
     host: {
       type: {
         id: { type: Types.ObjectId, required: true },
