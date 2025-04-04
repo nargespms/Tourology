@@ -72,9 +72,7 @@ class TourService {
     }
   }
 
-  // search
   async searchTours(filters) {
-    console.log(filters, "filters");
     try {
       const {
         text,
@@ -99,18 +97,19 @@ class TourService {
       }
 
       if (date) {
-        const start = new Date(date);
-        start.setUTCHours(0, 0, 0, 0);
+        const dayStr = new Date(date).toISOString().split("T")[0];
 
-        const end = new Date(start);
-        end.setUTCHours(23, 59, 59, 999);
-        console.log("Incoming date:", date);
-        console.log("Normalized start:", start.toISOString());
-        console.log("Normalized end:", end.toISOString());
-
-        andConditions.push({
-          startDate: { $gte: start, $lte: end },
-        });
+        andConditions.push(
+          { startDate: { $type: "date" } },
+          {
+            $expr: {
+              $eq: [
+                { $dateToString: { format: "%Y-%m-%d", date: "$startDate" } },
+                dayStr,
+              ],
+            },
+          }
+        );
       }
 
       if (selectedCategory && selectedCategory.length > 0) {
@@ -153,8 +152,6 @@ class TourService {
       throw new Error("Unable to search tours");
     }
   }
-
-  // search
 
   async searchNearbyTours(distance, lat, lng) {
     try {

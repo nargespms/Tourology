@@ -31,8 +31,8 @@ const tourSchema = new Schema(
       required: true,
     },
     maxAttendees: { type: Number, required: false },
-    startDate: { type: String, required: false },
-    endDate: { type: String, required: false },
+    startDate: { type: Date, required: false },
+    endDate: { type: Date, required: false },
     createdAt: { type: Date, required: true, default: Date.now },
     rating: { type: Number, required: false },
     reviews: {
