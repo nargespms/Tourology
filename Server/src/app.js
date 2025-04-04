@@ -1,8 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js"; // <-- .js extension
+import connectDB from "./config/db.js";
 import routes from "./routes/index.js";
+import "./services/liveLocation.service.js";
 
 dotenv.config();
 

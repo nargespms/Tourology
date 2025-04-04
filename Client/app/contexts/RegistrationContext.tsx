@@ -62,11 +62,6 @@ export const RegistrationProvider: React.FC<{
     skills: [],
     languages: [],
     profilePicUri: "",
-    profilePicture: {
-      uri: "",
-      name: "",
-      type: "",
-    },
     profileName: "",
   });
 
