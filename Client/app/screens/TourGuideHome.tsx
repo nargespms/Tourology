@@ -216,7 +216,7 @@ const TourGuideHome: React.FC = () => {
             color="white"
             style={{ paddingRight: 8 }}
           />
-          <Text style={{ color: "#fff", fontSize: 14 }}>New tour</Text>
+          <Text style={{ color: "#fff", fontSize: 14 }}>New tour </Text>
         </TouchableOpacity>
       </View>
 
@@ -260,6 +260,7 @@ const styles = StyleSheet.create({
   contentWrapper: {
     flex: 1,
     paddingHorizontal: 18,
+    paddingBottom: 100,
   },
   listContent: {
     paddingBottom: 50,
@@ -317,7 +318,7 @@ const styles = StyleSheet.create({
 
   createTourButtonContainer: {
     position: "absolute",
-    bottom: 100,
+    bottom: 80,
     left: 0,
     right: 0,
     alignItems: "center",

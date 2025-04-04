@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     borderWidth: 1,
     borderColor: "#ddd",
-    borderRadius: 4,
+    borderRadius: 6,
     maxHeight: 200,
   },
   listItem: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#ddd",
     paddingHorizontal: 12,
