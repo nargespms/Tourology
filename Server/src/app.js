@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js"; // <-- .js extension
+import http from "http"; // ✅ NEW
+import connectDB from "./config/db.js";
 import routes from "./routes/index.js";
+import liveLocationService from "./services/liveLocation.service.js";
 
 dotenv.config();
 
@@ -11,10 +13,16 @@ connectDB();
 
 app.use(cors());
 app.use(express.json());
-
 app.use("/api", routes);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+// Create and start HTTP server
+const server = http.createServer(app);
+
+// Setup Socket.IO on top of Express HTTP server
+liveLocationService.setup(server);
+
+server.listen(PORT, () => {
+  console.log(`🚀 Server (Express + Socket.IO) running on port ${PORT}`);
 });
