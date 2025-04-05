@@ -168,7 +168,7 @@ export const getIsFavorite = async (id: string) => {
 
 export const toggleFavorite = async (id: string, unfavorite: boolean) => {
   const response = await fetch(
-    `${BASE_URL}/${id}/favorite?unfavorite=${unfavorite ? "1" : "0"}`,
+    `${BASE_URL}/${id}/favorite?unfavorite=${unfavorite ? "0" : "1"}`,
     {
       method: "POST",
       headers: {

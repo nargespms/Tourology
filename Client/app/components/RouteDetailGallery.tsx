@@ -25,7 +25,6 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
   tour,
 }) => {
   const [activePage, setActivePage] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const { data: LoggedInUser } = useLoggedUser();
 
@@ -40,6 +39,8 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
       setIsFavorite(data);
     },
   });
+
+  const [isFavorite, setIsFavorite] = useState(data);
 
   const { mutate: fave } = useMutation({
     mutationFn: () => toggleFavorite(tour._id, !isFavorite),
