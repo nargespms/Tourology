@@ -41,7 +41,11 @@ const getProfilePicture = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    req.params.filename = user.profilePicture;
+    if (user.profilePicture) {
+      req.params.filename = user.profilePicture;
+    } else {
+      req.params.filename = "../src/assets/avatar.jpg";
+    }
 
     console.log(
       "media",
@@ -50,12 +54,12 @@ const getProfilePicture = async (req, res) => {
       fs.existsSync(resolve(uploadDir, user.profilePicture))
     );
 
-    if (
-      user.profilePicture &&
-      !fs.existsSync(resolve(uploadDir, user.profilePicture))
-    ) {
-      req.params.filename = "../src/assets/avatar.jpg";
-    }
+    // if (
+    //   user.profilePicture &&
+    //   !fs.existsSync(resolve(uploadDir, user.profilePicture))
+    // ) {
+    //   req.params.filename = "../src/assets/avatar.jpg";
+    // }
 
     return await getMedia(req, res);
   } catch (err) {
