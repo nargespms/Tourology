@@ -47,20 +47,6 @@ const getProfilePicture = async (req, res) => {
       req.params.filename = "../src/assets/avatar.jpg";
     }
 
-    console.log(
-      "media",
-      user.profilePicture,
-      "---",
-      fs.existsSync(resolve(uploadDir, user.profilePicture))
-    );
-
-    // if (
-    //   user.profilePicture &&
-    //   !fs.existsSync(resolve(uploadDir, user.profilePicture))
-    // ) {
-    //   req.params.filename = "../src/assets/avatar.jpg";
-    // }
-
     return await getMedia(req, res);
   } catch (err) {
     console.error(err);
