@@ -69,7 +69,7 @@ class LiveLocationService {
     console.log(`❌ Socket disconnected: ${socket.id}`);
   }
 
-  updateLocation(socket, { groupId, location }) {
+  updateLocation(socket, { groupId, location, userId }) {
     if (!this.groups.has(groupId)) {
       this.joinGroup(socket, groupId);
     }
@@ -77,6 +77,7 @@ class LiveLocationService {
     this.io.to(groupId).emit("locationUpdate", {
       socketId: socket.id,
       location,
+      userId,
     });
 
     console.log(`📍 Location update from ${socket.id} in group ${groupId}`);

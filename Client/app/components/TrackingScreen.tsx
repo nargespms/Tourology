@@ -13,12 +13,8 @@ import TrackingMap from "./ TrackingMap";
 import { getAvatar } from "../api/media";
 import { Ionicons } from "@expo/vector-icons";
 import { LogBox } from "react-native";
+import { calcDistanceInKm } from "../utils/geo";
 LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-// test data
-const participantLocs = [
-  { latitude: 37.78945, longitude: -122.4203 },
-  { latitude: 37.78765, longitude: -122.4399 },
-];
 
 interface Location {
   latitude: number;
@@ -39,13 +35,13 @@ interface Guide {
   id: string;
   name: string;
   phone: string;
-  location: Location;
 }
 
 interface TrackingScreenProps {
   isGuide: boolean;
   guide: Guide;
   participants: Participant[];
+  locations: Record<string, Location>;
   traveler?: Participant; // traveler using this screen
 }
 
@@ -54,6 +50,7 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
   guide,
   participants,
   traveler,
+  locations,
 }) => {
   // Bottom sheet reference and configurations
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -67,6 +64,8 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
     Linking.openURL(`tel:${phone}`);
   };
 
+  const guideLocation = locations[guide.id];
+
   const participantArray = Object.values(participants || {})
     .filter((p) => p.checkedIn === true)
     .map((p, index) => ({
@@ -76,8 +75,11 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
       phone: p.phoneNumber,
       avatar: getAvatar(p.id),
       checkedIn: p.checkedIn,
-      distance: "200m", // placeholder
-      location: participantLocs[index], // match location by index temporarily
+      distance:
+        locations[p.id] && guideLocation
+          ? calcDistanceInKm(guideLocation, locations[p.id])
+          : "Distance not available",
+      location: locations[p.id],
     }));
 
   // Render item for participants list
@@ -106,12 +108,11 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
       <View style={styles.container}>
         {/* Tracking Map */}
         <TrackingMap
-          guideLocation={guide.location}
-          participantLocations={isGuide ? participantLocs : undefined}
-          travelerLocation={traveler?.location}
+          guideLocation={locations[guide.id]}
+          participants={isGuide ? participantArray : undefined}
+          travelerLocation={locations[traveler?.id]}
           tourGuideId={guide.id}
           travelerId={traveler?.id}
-          attendees={isGuide ? participants : undefined}
         />
 
         {/* Bottom Sheet */}
@@ -153,7 +154,11 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
               />
               <View style={{ flex: 1, marginLeft: 8 }}>
                 <Text style={styles.name}>{guide.name}</Text>
-                <Text style={styles.distance}>Nearby</Text>
+                <Text style={styles.distance}>
+                  {guideLocation
+                    ? calcDistanceInKm(guideLocation, locations[traveler.id])
+                    : "Distance not available"}
+                </Text>
               </View>
 
               <TouchableOpacity

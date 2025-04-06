@@ -9,9 +9,7 @@ export const LiveLocationManager = {
   async start(groupId: string, userId: string, serverUrl: string) {
     currentGroupId = groupId;
 
-    console.log("serverUrl", serverUrl);
-
-    console.log("🚀 Starting live location sharing for group:", groupId);
+    console.log("Starting live location sharing for group:", groupId);
 
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -25,12 +23,6 @@ export const LiveLocationManager = {
       socket.on("connect", () => {
         console.log("Socket connected:", socket?.id);
         socket?.emit("join", groupId);
-      });
-
-      socket.on("locationUpdate", (data) => {
-        if (data.socketId !== socket?.id) {
-          console.log("Received location:", data);
-        }
       });
 
       socket.on("disconnect", () => {
@@ -57,11 +49,9 @@ export const LiveLocationManager = {
               longitude: location.coords.longitude,
             },
           });
-
-          console.log("📡 Sent location:", location.coords);
         }
       } catch (error) {
-        console.error("⚠️ Failed to get location:", error);
+        console.error("Failed to get location:", error);
       }
     }, 5000); // every 10 seconds
   },
@@ -71,11 +61,13 @@ export const LiveLocationManager = {
       clearInterval(locationIntervalId);
       locationIntervalId = null;
     }
+  },
 
-    socket?.disconnect();
-    socket = null;
-    currentGroupId = null;
+  isActive() {
+    return !!socket && !!currentGroupId;
+  },
 
-    console.log("Live location sharing stopped");
+  getSocket() {
+    return socket;
   },
 };
