@@ -185,13 +185,31 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
           <View style={styles.startDateStyles}>
             <Text style={styles.filterTitle}>Date</Text>
 
-            <View style={[styles.input, { flexGrow: 1, marginLeft: 48 }]}>
+            <View
+              style={[
+                styles.input,
+                {
+                  flexGrow: 1,
+                  marginLeft: 48,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                },
+              ]}
+            >
               <TouchableOpacity onPress={() => setIsDatePickerEnable(true)}>
                 {date && (
                   <Text>{dayjs(date).locale("en").format("MMM DD, YYYY")}</Text>
                 )}
                 {!date && <Text style={{ color: "#999" }}>Select date </Text>}
               </TouchableOpacity>
+              {date && (
+                <TouchableOpacity
+                  onPress={() => setDate(undefined)}
+                  style={styles.clearButton}
+                >
+                  <Ionicons name="close-outline" size={22} color="#777" />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         )}
