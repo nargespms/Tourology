@@ -80,7 +80,7 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
           onPress={fave}
         >
           <Text style={styles.topButtonText}>
-            {!isFavorite ? (
+            {!isFetching && !isFavorite ? (
               <MaterialIcons name="favorite-outline" size={16} />
             ) : (
               <MaterialIcons name="favorite" size={16} />

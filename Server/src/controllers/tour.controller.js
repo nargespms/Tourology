@@ -43,8 +43,15 @@ const deleteTour = async (req, res) => {
 
 const searchTours = async (req, res) => {
   try {
-    const { text, date, priceRange, pricingOption, rating, selectedCategory } =
-      req.body;
+    const {
+      text,
+      date,
+      priceRange,
+      pricingOption,
+      rating,
+      selectedCategory,
+      coordinates,
+    } = req.body;
 
     const tours = await tourService.searchTours({
       text,
@@ -53,6 +60,7 @@ const searchTours = async (req, res) => {
       pricingOption,
       rating,
       selectedCategory,
+      coordinates,
     });
 
     res.json(tours);

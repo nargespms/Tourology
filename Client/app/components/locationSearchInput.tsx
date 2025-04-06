@@ -19,15 +19,22 @@ interface NominatimPlace {
 interface Props {
   onLocationSelect: (lat: number, lon: number, displayName: string) => void;
   error?: boolean;
+  selectedLocation?: {
+    coordinates: number[];
+    displayName: string;
+  };
 }
 
 export default function LocationSearchInput({
   onLocationSelect,
   error,
+  selectedLocation,
 }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<NominatimPlace[]>([]);
   const [loading, setLoading] = useState(false);
+
+  console.log("selected", typeof selectedLocation);
 
   useEffect(() => {
     if (!query) {
@@ -59,17 +66,28 @@ export default function LocationSearchInput({
     }
   };
 
-  const handleSelect = (place: NominatimPlace) => {
+  const handleSelect = ({ lat, lon, display_name }) => {
     // Convert lat/lon to numbers
-    const latitude = parseFloat(place.lat);
-    const longitude = parseFloat(place.lon);
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lon);
 
-    onLocationSelect(latitude, longitude, place.display_name);
+    onLocationSelect(latitude, longitude, display_name);
     // Optionally clear results
     setResults([]);
     // Optionally set query to place.display_name
-    setQuery(place.display_name);
+    setQuery(display_name);
   };
+
+  useEffect(() => {
+    if (selectedLocation?.displayName) {
+      setQuery(selectedLocation?.displayName);
+      handleSelect({
+        lat: selectedLocation.coordinates[1],
+        lon: selectedLocation.coordinates[0],
+        display_name: selectedLocation.displayName,
+      });
+    }
+  }, [selectedLocation?.displayName]);
 
   const handleClear = () => {
     setQuery("");

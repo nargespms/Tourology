@@ -35,8 +35,6 @@ export default function MapWithNominatim<Props>({
       coordinates: [lon, lat],
     }));
     onLocationSelect(region, displayName);
-
-    // If you want to store `displayName` somewhere, do it here
   };
 
   return (

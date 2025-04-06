@@ -43,6 +43,14 @@ const FilterTags: React.FC<FilterTagsProps> = ({ filter }) => {
         </View>
       )}
 
+      {filter?.locationDisplayName && (
+        <View style={styles.filterTag}>
+          <Text style={styles.filterTagText}>
+            {filter?.locationDisplayName}
+          </Text>
+        </View>
+      )}
+
       {/* Expertise/Category */}
       {"selectedCategory" in filter &&
         filter?.selectedCategory?.map((item) => (

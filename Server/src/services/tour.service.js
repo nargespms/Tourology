@@ -81,6 +81,7 @@ class TourService {
         pricingOption,
         rating,
         selectedCategory,
+        coordinates,
       } = filters;
 
       const query = {};
@@ -137,6 +138,24 @@ class TourService {
         andConditions.push({
           rating: { $gte: rating },
         });
+      }
+
+      if (coordinates && coordinates.length === 2) {
+        const [lng, lat] = filters.coordinates;
+
+        andConditions.push({
+          region: {
+            $near: {
+              $geometry: {
+                type: "Point",
+                coordinates: [lng, lat],
+              },
+              $maxDistance: 20000, // 20km radius
+            },
+          },
+        });
+      } else {
+        console.warn("⚠️ Location filter not applied - invalid coordinates");
       }
 
       if (andConditions.length > 0) {

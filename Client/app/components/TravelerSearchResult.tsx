@@ -37,8 +37,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
 
-  console.log("activeFilter", activeFilter);
-
   const {
     isFetching,
     isFetched,

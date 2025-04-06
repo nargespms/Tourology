@@ -21,6 +21,8 @@ export type Filter = {
   priceRange?: number[];
   rating?: number;
   date?: DateType;
+  coordinates: number[];
+  locationDisplayName?: string;
   selectedCategory?: string[];
 };
 
@@ -32,6 +34,7 @@ interface AdvancedSearchOptionsProps {
 
 const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
   const { onSubmit, onClose, activeFilter } = props;
+  console.log("active filter", activeFilter);
 
   const [filter, setFilter] = useState(activeFilter ? activeFilter : null);
   const [pricingOption, setPricingOption] = useState<string>(
@@ -52,6 +55,18 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
     activeFilter ? activeFilter.selectedCategory : []
   );
 
+  const [coordinates, setCoordinates] = useState<number[]>([]);
+  const [locationDisplayName, setLocationDisplayName] = useState<string>("");
+
+  const handleLocationSelect = (
+    lat: number,
+    lon: number,
+    displayName: string
+  ) => {
+    setCoordinates([lon, lat]);
+    setLocationDisplayName(displayName);
+  };
+
   useEffect(() => {
     setFilter({
       pricingOption,
@@ -59,8 +74,18 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
       rating,
       date,
       selectedCategory,
+      coordinates,
+      locationDisplayName,
     });
-  }, [pricingOption, rating, date, priceRange, selectedCategory]);
+  }, [
+    pricingOption,
+    rating,
+    date,
+    priceRange,
+    selectedCategory,
+    coordinates,
+    locationDisplayName,
+  ]);
 
   useEffect(() => {
     if (
@@ -79,6 +104,8 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
     setDate(undefined);
     setSelectedCategory([]);
     setFilter(null);
+    setCoordinates([]);
+    setLocationDisplayName("");
   };
 
   return (
@@ -101,10 +128,21 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
           <Text style={[styles.locationText, styles.filterTitle]}>
             Location
           </Text>
-          <View style={{ flexGrow: 1, marginLeft: 18 }}>
+          <View
+            style={{
+              flexGrow: 1,
+              marginLeft: 18,
+
+              flexShrink: 1,
+            }}
+          >
             <LocationSearchInput
+              selectedLocation={{
+                coordinates: activeFilter?.coordinates,
+                displayName: activeFilter?.locationDisplayName,
+              }}
               onLocationSelect={(lat, lon, displayName) => {
-                console.log(lat, lon, displayName);
+                handleLocationSelect(lat, lon, displayName);
               }}
             />
           </View>
