@@ -155,7 +155,7 @@ const TrackingScreen: React.FC<TrackingScreenProps> = ({
               <View style={{ flex: 1, marginLeft: 8 }}>
                 <Text style={styles.name}>{guide.name}</Text>
                 <Text style={styles.distance}>
-                  {guideLocation
+                  {guideLocation && locations[traveler.id]
                     ? calcDistanceInKm(guideLocation, locations[traveler.id])
                     : "Distance not available"}
                 </Text>
