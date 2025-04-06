@@ -26,6 +26,7 @@ import TrackingMap from "../components/ TrackingMap";
 import { useLoggedUser } from "../contexts/loggedUserData";
 import TrackingScreen from "../components/TrackingScreen";
 import { getUserLocation } from "../utils/UserLocation";
+import useTourLiveLocations from "../hooks/useTourLiveLocations";
 
 // For testing, static coordinate data:
 const guideLoc = {
@@ -140,6 +141,8 @@ const TravelerBookings: React.FC = () => {
       console.log("Location fetched", location);
     }
   };
+
+  const locations = useTourLiveLocations(trackingTour?._id, isTrackingEnabled);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -264,9 +267,8 @@ const TravelerBookings: React.FC = () => {
                 id: travelerData.id,
                 name: travelerData.name,
                 phone: travelerData.phone,
-                distance: "500m", // static distance for testing
-                location: travelerLoc,
               }}
+              locations={locations}
               participants={[]}
             />
           </View>

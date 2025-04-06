@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -15,18 +15,8 @@ import { changeTourState } from "../api/tours";
 import { formatDate } from "../utils/formats";
 import CustomModal from "./CustomeModal";
 import TrackingScreen from "./TrackingScreen";
-import { getUserLocation } from "../utils/UserLocation";
-
-// For testing, static coordinate data:
-const guideLoc = {
-  latitude: 37.78825,
-  longitude: -122.4324,
-};
-
-const participantLocs = [
-  { latitude: 37.78945, longitude: -122.4203 },
-  { latitude: 37.78765, longitude: -122.4399 },
-];
+import { LiveLocationManager } from "../utils/LiveLocationManagers";
+import useTourLiveLocations from "../hooks/useTourLiveLocations";
 
 const travelerLoc = {
   latitude: 37.78875,
@@ -57,17 +47,6 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
     },
   });
 
-  const fetchLocation = async () => {
-    const userLoc = await getUserLocation();
-
-    if (userLoc) {
-      console.log("Guide location:", userLoc);
-    } else {
-      console.log("Location unavailable");
-    }
-  };
-  fetchLocation();
-
   const endTour = () => {
     Alert.alert("End tour", "Are you sure you want to end this tour?", [
       {
@@ -87,6 +66,8 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
     console.log("Track attendees");
     setIsTrackingEnabled(true);
   };
+
+  const locations = useTourLiveLocations(tour._id, isTrackingEnabled);
 
   return (
     <View style={styles.container}>
@@ -157,8 +138,8 @@ const ActiveTourCard: React.FC<ActiveTourProps> = ({
               id: tour.host.id,
               name: tour.host.name,
               phone: tour.host.phone,
-              location: guideLoc,
             }}
+            locations={locations}
             participants={tour.attendees}
           />
         </View>

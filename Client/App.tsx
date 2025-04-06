@@ -12,6 +12,7 @@ import { LoggedUserProvider } from "./app/contexts/loggedUserData";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ShareLocation from "./app/components/ShareLocation";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
             <ActionSheetProvider>
               <ThemeProvider value={theme}>
                 <Navigator />
+                <ShareLocation />
                 <Toast config={toastConfig} />
               </ThemeProvider>
             </ActionSheetProvider>

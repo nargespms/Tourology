@@ -22,8 +22,6 @@ class LiveLocationService {
     });
 
     this.io.on("connection", (socket) => {
-      console.log(`🎉 Socket connected: ${socket.id}`);
-
       socket.on("join", (groupId) => this.joinGroup(socket, groupId));
       socket.on("leave", (groupId) => this.leaveGroup(socket, groupId));
       socket.on("locationUpdate", (payload) =>
@@ -41,7 +39,6 @@ class LiveLocationService {
     }
 
     this.groups.get(groupId).add(socket.id);
-    console.log(`➡️ Socket ${socket.id} joined group ${groupId}`);
   }
 
   leaveGroup(socket, groupId) {
@@ -55,8 +52,6 @@ class LiveLocationService {
         this.groups.delete(groupId);
       }
     }
-
-    console.log(`⬅️ Socket ${socket.id} left group ${groupId}`);
   }
 
   handleDisconnect(socket) {
@@ -65,11 +60,9 @@ class LiveLocationService {
         this.leaveGroup(socket, groupId);
       }
     }
-
-    console.log(`❌ Socket disconnected: ${socket.id}`);
   }
 
-  updateLocation(socket, { groupId, location }) {
+  updateLocation(socket, { groupId, location, userId }) {
     if (!this.groups.has(groupId)) {
       this.joinGroup(socket, groupId);
     }
@@ -77,9 +70,8 @@ class LiveLocationService {
     this.io.to(groupId).emit("locationUpdate", {
       socketId: socket.id,
       location,
+      userId,
     });
-
-    console.log(`📍 Location update from ${socket.id} in group ${groupId}`);
   }
 }
 
