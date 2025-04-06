@@ -1,7 +1,7 @@
-import fs from 'fs';
-import { uploadDir } from '../middleware/multerConfig.js';
-import User from '../models/User.model.js';
-import { resolve } from 'path';
+import fs from "fs";
+import { uploadDir } from "../middleware/multerConfig.js";
+import User from "../models/User.model.js";
+import { resolve } from "path";
 
 const getMedia = async (req, res) => {
   try {
@@ -20,7 +20,8 @@ const getMedia = async (req, res) => {
 
     // set the appropriate content type
     if (filename.endsWith(".png")) res.setHeader("Content-Type", "image/png");
-    else if (filename.endsWith(".jpg")) res.setHeader("Content-Type", "image/jpeg");
+    else if (filename.endsWith(".jpg"))
+      res.setHeader("Content-Type", "image/jpeg");
 
     // send the file
     res.send(media);
@@ -28,7 +29,7 @@ const getMedia = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 const getProfilePicture = async (req, res) => {
   try {
@@ -42,15 +43,20 @@ const getProfilePicture = async (req, res) => {
 
     req.params.filename = user.profilePicture;
 
-    if (!fs.existsSync(resolve(uploadDir, user.profilePicture))) {
+    if (
+      user.profilePicture &&
+      !fs.existsSync(resolve(uploadDir, user.profilePicture))
+    ) {
+      console.log("getprofile");
       req.params.filename = "../src/assets/avatar.jpg";
     }
+    console.log("");
 
     return await getMedia(req, res);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
-}
+};
 
 export default { getMedia, getProfilePicture };
