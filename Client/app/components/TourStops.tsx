@@ -32,14 +32,15 @@ const TourStops = (props: TourStopsProps) => {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
+            latitudeDelta: 0.03,
+            longitudeDelta: 0.03,
             longitude: stopsArray[0].region.coordinates[0],
             latitude: stopsArray[0].region.coordinates[1],
           }}
           scrollEnabled={mapInteractionEnabled}
           zoomEnabled={mapInteractionEnabled}
           rotateEnabled={mapInteractionEnabled}
+          key={`${stopsArray[0].region.coordinates[0]}-${stopsArray[0].region.coordinates[1]}`}
         >
           <Polyline
             coordinates={stopsArray.map((stop) => ({
@@ -49,13 +50,14 @@ const TourStops = (props: TourStopsProps) => {
             strokeColor="#fd6a6a"
             strokeWidth={3}
           />
-          {stopsArray.map((stop) => (
+          {stopsArray.map((stop, index) => (
             <Marker
               key={stop.id}
               coordinate={{
                 latitude: stop.region.coordinates[1],
                 longitude: stop.region.coordinates[0],
               }}
+              zIndex={index + 1}
               onPress={() => handleMarkerPress(stop)}
             />
           ))}
