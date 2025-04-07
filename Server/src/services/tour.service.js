@@ -205,7 +205,9 @@ class TourService {
       const tours = await Tour.find({
         _id: { $in: user.favoriteTours },
         state: "published",
-      });
+      })
+        .sort({ createdAt: -1 })
+        .lean();
 
       return tours;
     } catch (err) {
