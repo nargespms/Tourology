@@ -72,9 +72,9 @@ const TourGuideProfile: React.FC = () => {
     onSuccess: () => {
       Alert.alert(
         `You are now ${!isFollowing ? "following" : "unfollowing"} ${
-          complementaryTourGuide.firstName +
+          capitalize(complementaryTourGuide.firstName) +
           " " +
-          complementaryTourGuide.lastName
+          capitalize(complementaryTourGuide.lastName)
         }`
       );
 
@@ -194,7 +194,8 @@ const TourGuideProfile: React.FC = () => {
                 }}
               >
                 <Text style={styles.profileName}>
-                  {tourGuide?.firstName} {tourGuide?.lastName}
+                  {capitalize(tourGuide?.firstName)}{" "}
+                  {capitalize(tourGuide?.lastName)}
                 </Text>
                 {tourGuide?.numberOfFollowers > 0 && (
                   <Text

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useRegistration } from "../contexts/RegistrationContext";
+import { capitalize } from "../utils/formats";
 
 const RegisterChooseRole: React.FC = () => {
   const navigation = useNavigation();
@@ -38,7 +39,7 @@ const RegisterChooseRole: React.FC = () => {
         resizeMode="cover"
       />
       <View style={styles.bodyContainer}>
-        <Text style={styles.title}>Welcome {data.firstName}!</Text>
+        <Text style={styles.title}>Welcome {capitalize(data.firstName)}!</Text>
         <Text style={styles.subtitle}>Are you a traveler or a tour guide?</Text>
 
         <View style={styles.roleContainer}>

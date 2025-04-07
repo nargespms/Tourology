@@ -28,7 +28,10 @@ export function pluralize(count: number, noun: string) {
   return `${count} ${noun}${count !== 1 ? "s" : ""}`;
 }
 
-export function capitalize(word: string) {
-  if (!word) return "";
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+export function capitalize(input: string) {
+  if (!input) return "";
+  return input
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }

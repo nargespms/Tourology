@@ -9,10 +9,6 @@ const ShareLocation = () => {
   const [enabled, setEnabled] = useState(false);
   const [activeTourId, setActiveTourId] = useState<string | null>(null);
 
-  console.log("data", data);
-  console.log("activeTourId", activeTourId);
-  console.log("enabled", enabled);
-
   useShareLiveLocation(enabled, activeTourId, data?.id);
 
   const { data: activeTour, refetch: refetchActiveTour } = useQuery({

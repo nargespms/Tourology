@@ -34,7 +34,6 @@ interface AdvancedSearchOptionsProps {
 
 const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
   const { onSubmit, onClose, activeFilter } = props;
-  console.log("active filter", activeFilter);
 
   const [filter, setFilter] = useState(activeFilter ? activeFilter : null);
   const [pricingOption, setPricingOption] = useState<string>(

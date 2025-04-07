@@ -23,7 +23,7 @@ import { tourGuideNavbar } from "../data/navbarOptions";
 import CustomModal from "../components/CustomeModal";
 import QRCodeScanner from "../components/QRCodeScanner";
 import { getAvatar } from "../api/media";
-import { formatDate } from "../utils/formats";
+import { capitalize, formatDate } from "../utils/formats";
 import { useQuery } from "@tanstack/react-query";
 import { getTour } from "../api/tours";
 import { useLoggedUser } from "../contexts/loggedUserData";
@@ -143,7 +143,7 @@ const TourGuideActiveTour: React.FC = () => {
                 style={styles.avatar}
               />
               <View style={styles.personDetails}>
-                <Text style={styles.personName}>{item.name}</Text>
+                <Text style={styles.personName}>{capitalize(item.name)}</Text>
                 <Text style={styles.statusText}>
                   {item.checkedIn
                     ? `Checked-in ${formatDate(item.checkedInDate)}`

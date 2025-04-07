@@ -34,8 +34,6 @@ export default function LocationSearchInput({
   const [results, setResults] = useState<NominatimPlace[]>([]);
   const [loading, setLoading] = useState(false);
 
-  console.log("selected", typeof selectedLocation);
-
   useEffect(() => {
     if (!query) {
       setResults([]);
