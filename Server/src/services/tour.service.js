@@ -182,7 +182,7 @@ class TourService {
               type: "Point",
               coordinates: [parseFloat(lng), parseFloat(lat)],
             },
-            $maxDistance: parseInt(distance, 10),
+            $maxDistance: Number(distance),
           },
         },
       }).sort({ createdAt: -1 });

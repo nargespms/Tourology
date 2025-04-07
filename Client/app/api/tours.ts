@@ -69,7 +69,7 @@ export const nearbyTours = async () => {
   } = location;
 
   const response = await fetch(
-    `${BASE_URL}/nearby?lat=${lat}&lng=${lng}&length=20000`,
+    `${BASE_URL}/nearby?lat=${lat}&lng=${lng}&length=30000`,
     {
       headers: {
         authorization: `Bearer ${(await getUserInfo()).token}`,
