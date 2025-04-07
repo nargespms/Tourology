@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-interface NominatimPlace {
+interface NominatePlace {
   display_name: string;
   lat: string;
   lon: string;
@@ -31,21 +31,39 @@ export default function LocationSearchInput({
   selectedLocation,
 }: Props) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<NominatimPlace[]>([]);
+  const [results, setResults] = useState<NominatePlace[]>([]);
   const [loading, setLoading] = useState(false);
+  const isSelectionMade = useRef(false); // Use ref instead of state to avoid re-renders
+  const timeoutId = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // Clear previous timeout
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+    }
+
     if (!query) {
       setResults([]);
       return;
     }
 
+    // Skip search if selection was just made
+    if (isSelectionMade.current) {
+      // Don't reset the flag here, only reset on explicit user actions
+      return;
+    }
+
     // Debounce or small delay to reduce spamming the API
-    const delayId = setTimeout(() => {
+    timeoutId.current = setTimeout(() => {
       fetchPlaces(query);
     }, 500);
 
-    return () => clearTimeout(delayId);
+    return () => {
+      // Cleanup timeout on unmount or when query changes
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current);
+      }
+    };
   }, [query]);
 
   const fetchPlaces = async (searchText: string) => {
@@ -69,15 +87,18 @@ export default function LocationSearchInput({
     const latitude = parseFloat(lat);
     const longitude = parseFloat(lon);
 
+    // Set flag to prevent re-search
+    isSelectionMade.current = true;
     onLocationSelect(latitude, longitude, display_name);
-    // Optionally clear results
+    // Clear results
     setResults([]);
-    // Optionally set query to place.display_name
+    // Set query to display_name
     setQuery(display_name);
   };
 
   useEffect(() => {
     if (selectedLocation?.displayName) {
+      isSelectionMade.current = true;
       setQuery(selectedLocation?.displayName);
       handleSelect({
         lat: selectedLocation.coordinates[1],
@@ -90,6 +111,16 @@ export default function LocationSearchInput({
   const handleClear = () => {
     setQuery("");
     setResults([]);
+    isSelectionMade.current = false;
+  };
+
+  const handleChangeText = (text: string) => {
+    if (text !== query) {
+      // Only reset the selection flag if user actually types something new
+      // that's different from the currently selected location
+      isSelectionMade.current = false;
+      setQuery(text);
+    }
   };
 
   return (
@@ -101,7 +132,7 @@ export default function LocationSearchInput({
           placeholder="Search city..."
           placeholderTextColor={"#999"}
           value={query}
-          onChangeText={setQuery}
+          onChangeText={handleChangeText}
         />
         {query.length > 0 && (
           <TouchableOpacity onPress={handleClear} style={styles.clearButton}>
