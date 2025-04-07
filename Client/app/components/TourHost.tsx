@@ -69,7 +69,7 @@ const TourHost: React.FC<TourHostProps> = (tourGuide) => {
         <View style={{ flex: 1 }}>
           <Text style={styles.guideName}>Hosted by {tourGuide.name}</Text>
           {isFetching && <Text style={styles.experience}>...</Text>}
-          {complementaryTourGuide && (
+          {!isFetching && complementaryTourGuide && (
             <Text style={styles.experience}>
               {pluralize(complementaryTourGuide.yearsOfExperience || 1, "year")}{" "}
               of experience

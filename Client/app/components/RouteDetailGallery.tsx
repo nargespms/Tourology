@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -11,7 +11,12 @@ import PagerView from "react-native-pager-view";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Tour } from "../types/tour";
 import { getMediaSrc } from "../api/media";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getIsFavorite, toggleFavorite } from "../api/tours";
 import { useLoggedUser } from "../contexts/loggedUserData";
 
@@ -32,20 +37,33 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
     setActivePage(e.nativeEvent.position);
   };
 
-  const { isFetching, data } = useQuery({
+  const [isFavorite, setIsFavorite] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { isFetching, status, data } = useQuery({
     queryKey: ["favorite", tour._id],
     queryFn: () => getIsFavorite(tour._id),
-    onSuccess: (data) => {
-      setIsFavorite(data);
-    },
   });
 
-  const [isFavorite, setIsFavorite] = useState(data);
+  useEffect(() => {
+    if (status === "success") {
+      setIsFavorite(data);
+    }
+  }, [status, data]);
 
   const { mutate: fave } = useMutation({
     mutationFn: () => toggleFavorite(tour._id, !isFavorite),
     onSuccess: () => {
       setIsFavorite(!isFavorite);
+
+      // invalidate a query to refetch the favorite status
+      queryClient.invalidateQueries({
+        queryKey: ["tours"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["favorite", tour._id],
+      });
     },
   });
 
@@ -74,13 +92,13 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
           <Ionicons name="arrow-back" size={18} />
         </Text>
       </TouchableOpacity>
-      {LoggedInUser.role === "traveler" && (
+      {LoggedInUser.role === "traveler" && !isFetching && (
         <TouchableOpacity
           style={[styles.topButton, styles.favoriteButton]}
           onPress={fave}
         >
           <Text style={styles.topButtonText}>
-            {!isFetching && !isFavorite ? (
+            {!isFavorite ? (
               <MaterialIcons name="favorite-outline" size={16} />
             ) : (
               <MaterialIcons name="favorite" size={16} />

@@ -218,6 +218,8 @@ export const userBookedTours = async () => {
     },
   });
 
+  console.log("token", await getUserInfo());
+
   if (!response.ok) {
     throw new Error("Failed to get user booked tours");
   }

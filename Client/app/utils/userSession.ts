@@ -1,9 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// Creating an in-memory storage instead of using AsyncStorage
+let userSessionData = null;
 
 // Save user info after login
 const storeUserInfo = async (user) => {
   try {
-    await AsyncStorage.setItem("user", JSON.stringify(user));
+    userSessionData = user;
   } catch (error) {
     console.error("Failed to save user info:", error);
   }
@@ -12,8 +13,7 @@ const storeUserInfo = async (user) => {
 // Retrieve user info
 const getUserInfo = async () => {
   try {
-    const user = await AsyncStorage.getItem("user");
-    return user ? JSON.parse(user) : null;
+    return userSessionData;
   } catch (error) {
     console.error("Failed to retrieve user info:", error);
     return null;
@@ -23,7 +23,7 @@ const getUserInfo = async () => {
 // Remove user info on logout
 const removeUserInfo = async () => {
   try {
-    await AsyncStorage.removeItem("user");
+    userSessionData = null;
   } catch (error) {
     console.error("Failed to remove user info:", error);
   }
