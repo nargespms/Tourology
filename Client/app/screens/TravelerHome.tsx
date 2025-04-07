@@ -22,6 +22,7 @@ import { travelerNavbar } from "../data/navbarOptions";
 import { Tour, followingData, forYouData, freeData } from "../data/tours";
 import { useQuery } from "@tanstack/react-query";
 import { getTours, searchTours } from "../api/tours";
+import { Filter } from "../components/AdvancedSearchOptions";
 
 const TABS = [
   { label: "For you", value: "" },
@@ -34,7 +35,7 @@ const TravelerHome: React.FC = () => {
   const [activeTab, setActiveTab] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+  const [filter, setFilter] = useState<Filter | null>(null);
   const navigation = useNavigation();
 
   const { isFetching, data } = useQuery({
@@ -112,6 +113,8 @@ const TravelerHome: React.FC = () => {
             {isSearchOpen && (
               <SearchResults
                 searchQuery={searchValue}
+                onFilterChange={setFilter}
+                filter={filter}
                 onClose={() => {
                   setIsSearchOpen(false);
                   setSearchValue("");

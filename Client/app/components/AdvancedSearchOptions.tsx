@@ -97,14 +97,7 @@ const AdvancedSearchOptions: React.FC<AdvancedSearchOptionsProps> = (props) => {
   }, [pricingOption]);
 
   const clearFilters = () => {
-    setPricingOption("Paid");
-    setPriceRange([10, 500]);
-    setRating(undefined);
-    setDate(undefined);
-    setSelectedCategory([]);
-    setFilter(null);
-    setCoordinates([]);
-    setLocationDisplayName("");
+    onSubmit(null);
   };
 
   return (

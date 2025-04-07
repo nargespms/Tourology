@@ -25,17 +25,20 @@ interface SearchResultsProps {
   searchQuery: string;
   onClose: () => void;
   clearSearch: () => void;
+  filter?: Filter | null;
+  onFilterChange?: (filter: Filter | null) => void;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
   searchQuery,
   onClose,
   clearSearch,
+  filter: activeFilter,
+  onFilterChange: setActiveFilter,
 }) => {
   const queryClient = useQueryClient();
 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<Filter | null>(null);
 
   const {
     isFetching,
@@ -64,12 +67,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     enabled: false,
     cacheTime: 0,
   });
-
-  useEffect(() => {
-    if (!searchQuery) {
-      setActiveFilter(null);
-    }
-  }, [searchQuery]);
 
   useEffect(() => {
     if (searchQuery.trim().length > 0 || activeFilter) {
@@ -151,6 +148,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
               <View
                 style={{
                   paddingHorizontal: 10,
+                  paddingVertical: 20,
                   display: "flex",
                   flexDirection: "row",
                 }}
