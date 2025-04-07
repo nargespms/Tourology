@@ -35,7 +35,5 @@ export default function useTourLiveLocations(
     };
   }, [isActive]);
 
-  console.log("locations", locations);
-
   return locations;
 }
