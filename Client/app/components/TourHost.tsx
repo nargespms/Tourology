@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { getAvatar } from "../api/media";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTourGuideInfo, followTourGuide } from "../api/users";
 import { pluralize } from "../utils/formats";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +21,7 @@ interface TourHostProps {
 const TourHost: React.FC<TourHostProps> = (tourGuide) => {
   const [isFollowing, setIsFollowing] = React.useState(false);
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
 
   const { isFetching, data: complementaryTourGuide } = useQuery({
     queryKey: ["tourGuide", tourGuide.id],
@@ -43,6 +44,9 @@ const TourHost: React.FC<TourHostProps> = (tourGuide) => {
       );
 
       setIsFollowing(!isFollowing);
+      queryClient.invalidateQueries({
+        queryKey: ["tours"],
+      });
     },
   });
 

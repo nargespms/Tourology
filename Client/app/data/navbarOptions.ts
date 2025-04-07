@@ -39,7 +39,7 @@ export const tourGuideNavbar: NavItem[] = [
   },
   {
     id: "3",
-    label: "check-ins",
+    label: "check-in",
     icon: "checkmark-circle-outline",
     enable: true,
   },

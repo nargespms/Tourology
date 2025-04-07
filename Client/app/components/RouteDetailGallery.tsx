@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   StyleSheet,
@@ -92,18 +93,21 @@ const RouteDetailsGallery: React.FC<RouteDetailsGalleryProps> = ({
           <Ionicons name="arrow-back" size={18} />
         </Text>
       </TouchableOpacity>
-      {LoggedInUser.role === "traveler" && !isFetching && (
+      {LoggedInUser.role === "traveler" && (
         <TouchableOpacity
           style={[styles.topButton, styles.favoriteButton]}
           onPress={fave}
         >
-          <Text style={styles.topButtonText}>
-            {!isFavorite ? (
-              <MaterialIcons name="favorite-outline" size={16} />
-            ) : (
-              <MaterialIcons name="favorite" size={16} />
-            )}
-          </Text>
+          {isFetching && <ActivityIndicator size="small" />}
+          {!isFetching && (
+            <Text style={styles.topButtonText}>
+              {!isFavorite ? (
+                <MaterialIcons name="favorite-outline" size={16} />
+              ) : (
+                <MaterialIcons name="favorite" size={16} />
+              )}
+            </Text>
+          )}
         </TouchableOpacity>
       )}
       <View style={styles.paginationContainer}>
