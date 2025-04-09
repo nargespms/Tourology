@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Camera, CameraView, useCameraPermissions } from "expo-camera";
-import React, { useEffect, useRef, useState } from "react";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import React, { useEffect, useRef } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { checkIn } from "../api/tours";
 

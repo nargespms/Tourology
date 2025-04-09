@@ -71,8 +71,6 @@ const TravelerBookings: React.FC = () => {
     queryFn: userBookedTours,
   });
 
-  // console.log("Bookings:", bookings);
-
   const bookingsList = (bookings?.filter((booking) => {
     if (activeTab === "upcoming") return booking?.upcoming;
     if (activeTab === "previous") return !booking?.upcoming;

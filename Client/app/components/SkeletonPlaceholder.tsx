@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, View, StyleSheet } from "react-native";
+import { Animated, StyleSheet } from "react-native";
 
 const SkeletonPlaceholder: React.FC<{
   width?: string;

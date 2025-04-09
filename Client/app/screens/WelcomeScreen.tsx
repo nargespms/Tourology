@@ -70,13 +70,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginButton: {
-    backgroundColor: "#4285F4", // or any preferred blue
+    backgroundColor: "#4285F4",
   },
   registerButton: {
     backgroundColor: "#ccc",
   },
   buttonText: {
-    color: "#fff", // Override this for the register button if you want darker text
+    color: "#fff",
     fontSize: 16,
     fontWeight: "500",
   },

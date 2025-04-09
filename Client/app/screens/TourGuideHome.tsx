@@ -1,6 +1,6 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   FlatList,
@@ -23,12 +23,11 @@ import {
 import ActiveTourCard from "../components/ActiveTourCard";
 import BottomNavBar from "../components/BottomNavBar";
 import CustomModal from "../components/CustomeModal";
+import CustomTabs from "../components/CustomeTabs";
 import QRCodeScanner from "../components/QRCodeScanner";
 import TourGuideTourList from "../components/TourGuideTourList";
-import { tourGuideNavbar } from "../data/navbarOptions";
-import CustomTabs from "../components/CustomeTabs";
 import { useLoggedUser } from "../contexts/loggedUserData";
-import { LiveLocationManager } from "../utils/LiveLocationManagers";
+import { tourGuideNavbar } from "../data/navbarOptions";
 
 const Tabs = [
   { label: "Planned", value: "published" },
@@ -159,9 +158,7 @@ const TourGuideHome: React.FC = () => {
       // If successful, reset or navigate
       refetch();
     },
-    onError: () => {
-      // Could handle error toast or something else here
-    },
+    onError: () => {},
   });
 
   return (

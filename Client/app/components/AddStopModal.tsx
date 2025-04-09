@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: "row",
     backgroundColor: "#fff",
     padding: 16,
     borderTopWidth: 1,

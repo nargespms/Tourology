@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { Camera, CameraView, useCameraPermissions } from "expo-camera";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";

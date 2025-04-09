@@ -91,9 +91,7 @@ export default function CreateTour() {
       navigation.goBack();
       queryClient.invalidateQueries("tourGuideTours");
     },
-    onError: () => {
-      // Could handle error toast or something else here
-    },
+    onError: () => {},
   });
 
   useEffect(() => {
@@ -102,23 +100,6 @@ export default function CreateTour() {
       await Location.requestForegroundPermissionsAsync();
     })();
   }, []);
-
-  // const handleLocationChange = async (text: string) => {
-  //   setLocationText(text);
-  //   setErrors((prev) => ({ ...prev, locationText: false }));
-  //   try {
-  //     const geoResult = await Location.geocodeAsync(text);
-  //     if (geoResult.length > 0) {
-  //       setRegion({
-  //         type: "Point",
-  //         coordinates: [geoResult[0].longitude, geoResult[0].latitude],
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.log("Geocode error:", error);
-  //     // fallback: do nothing
-  //   }
-  // };
 
   const handleAddStopPress = () => {
     setEditingStopIndex(null); // new stop

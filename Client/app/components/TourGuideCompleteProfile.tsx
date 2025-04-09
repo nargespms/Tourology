@@ -60,7 +60,7 @@ const TourGuideCompleteProfile: React.FC = () => {
       ...{
         profilePicture: undefined,
       },
-    })
+    });
   };
 
   const { mutate, isPending } = useSubmitRegister(() => {
@@ -97,8 +97,7 @@ const TourGuideCompleteProfile: React.FC = () => {
       });
     }
 
-    console.log('data', data);
-
+    console.log("data", data);
 
     mutate();
   };
@@ -198,10 +197,6 @@ const TourGuideCompleteProfile: React.FC = () => {
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
-
-            {/* <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-              <Text style={styles.skipButtonText}>Skip</Text>
-            </TouchableOpacity> */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -1,8 +1,7 @@
 import React from "react";
-import { StyleSheet, View, Text, ScrollView, Image } from "react-native";
-import { REVIEWS } from "../data/routeDetailsMock";
-import { Tour } from "../types/tour";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { getAvatar } from "../api/media";
+import { Tour } from "../types/tour";
 import { formatDate, pluralize } from "../utils/formats";
 
 type TourReviewProps = {

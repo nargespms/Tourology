@@ -1,7 +1,8 @@
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -9,17 +10,10 @@ import {
   View,
 } from "react-native";
 import PagerView from "react-native-pager-view";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { Tour } from "../types/tour";
 import { getMediaSrc } from "../api/media";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
 import { getIsFavorite, toggleFavorite } from "../api/tours";
 import { useLoggedUser } from "../contexts/loggedUserData";
+import { Tour } from "../types/tour";
 
 interface RouteDetailsGalleryProps {
   onGoBackTap: () => void;

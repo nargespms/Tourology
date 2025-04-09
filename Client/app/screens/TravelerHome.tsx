@@ -1,28 +1,25 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
-  Keyboard,
   Platform,
   SafeAreaView,
   StyleSheet,
-  View,
   Text,
-  Alert,
+  View,
 } from "react-native";
-import * as Location from "expo-location";
 
+import { useQuery } from "@tanstack/react-query";
+import { getTours } from "../api/tours";
+import { Filter } from "../components/AdvancedSearchOptions";
 import BottomNavBar from "../components/BottomNavBar";
 import CustomTabs from "../components/CustomeTabs";
+import LargePicTourCard from "../components/LargePicTourCard";
 import SearchBar from "../components/SearchBar";
 import SearchResults from "../components/TravelerSearchResult";
-import LargePicTourCard from "../components/LargePicTourCard";
 import { travelerNavbar } from "../data/navbarOptions";
-import { Tour, followingData, forYouData, freeData } from "../data/tours";
-import { useQuery } from "@tanstack/react-query";
-import { getTours, searchTours } from "../api/tours";
-import { Filter } from "../components/AdvancedSearchOptions";
 
 const TABS = [
   { label: "For you", value: "" },

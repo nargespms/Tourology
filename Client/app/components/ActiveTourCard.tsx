@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Image,
@@ -12,11 +12,10 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getMediaSrc } from "../api/media";
 import { changeTourState } from "../api/tours";
+import useTourLiveLocations from "../hooks/useTourLiveLocations";
 import { formatDate } from "../utils/formats";
 import CustomModal from "./CustomeModal";
 import TrackingScreen from "./TrackingScreen";
-import { LiveLocationManager } from "../utils/LiveLocationManagers";
-import useTourLiveLocations from "../hooks/useTourLiveLocations";
 
 const travelerLoc = {
   latitude: 37.78875,

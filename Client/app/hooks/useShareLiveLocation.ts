@@ -15,7 +15,6 @@ export default function useShareLiveLocation(
     }
 
     LiveLocationManager.start(tourId, userId, SOCKET_URL).catch((error) => {
-      // console.error("Error starting live location sharing:", error);
       Toast.show({
         type: "error",
         text1: "Error starting live location sharing",

@@ -49,7 +49,6 @@ export default function LocationSearchInput({
 
     // Skip search if selection was just made
     if (isSelectionMade.current) {
-      // Don't reset the flag here, only reset on explicit user actions
       return;
     }
 
@@ -116,8 +115,6 @@ export default function LocationSearchInput({
 
   const handleChangeText = (text: string) => {
     if (text !== query) {
-      // Only reset the selection flag if user actually types something new
-      // that's different from the currently selected location
       isSelectionMade.current = false;
       setQuery(text);
     }

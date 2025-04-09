@@ -1,17 +1,16 @@
 import React from "react";
 
-import WelcomeScreen from "@/app/screens/WelcomeScreen";
-import Register from "@/app/screens/Register";
-import Login from "@/app/screens/Login";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import TravelerHome from "@/app/screens/TravelerHome";
-import TourGuideHome from "@/app/screens/TourGuideHome";
-import TravelerBookings from "@/app/screens/TravelerBookings";
-import TravelerSearchResults from "@/app/components/TravelerSearchResult";
-import TourGuideActiveTour from "@/app/screens/TourGuideActiveTour";
-import TravelerRouteDetails from "@/app/screens/TravelerRouteDetails";
 import CreateTour from "@/app/screens/CreateTour";
+import Login from "@/app/screens/Login";
+import Register from "@/app/screens/Register";
+import TourGuideActiveTour from "@/app/screens/TourGuideActiveTour";
+import TourGuideHome from "@/app/screens/TourGuideHome";
 import TourGuideProfile from "@/app/screens/TourGuideProfile";
+import TravelerBookings from "@/app/screens/TravelerBookings";
+import TravelerHome from "@/app/screens/TravelerHome";
+import TravelerRouteDetails from "@/app/screens/TravelerRouteDetails";
+import WelcomeScreen from "@/app/screens/WelcomeScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 

@@ -29,13 +29,6 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
     queryFn: () => getFeedback(tourId),
   });
 
-  // useEffect(() => {
-  //   if (feedbackObj) {
-  //     setRating(feedbackObj.rating);
-  //     setFeedback(feedbackObj.description);
-  //   }
-  // }, [feedbackObj]);
-
   const { mutate: submit, isPending } = useMutation({
     mutationKey: "upsertFeedback",
     mutationFn: () => upsertFeedback(tourId, feedback, rating),
