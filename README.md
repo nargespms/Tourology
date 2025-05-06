@@ -1,6 +1,7 @@
 
 # Tourology
-## Demo Link: [](https://www.youtube.com/watch?v=77HP1Nsnf4c)
+### Demo Link: https://www.youtube.com/watch?v=77HP1Nsnf4c
+
 Tourology is a mobile application that connects Tour Guides and Travelers. Tour Guides can showcase their services and expertise, and Travelers can browse and book tours all around the world.
 
 This repository contains two main directories:
